@@ -1,0 +1,319 @@
+<!--
+@license
+Copyright 2016 The Advanced REST client authors <arc@mulesoft.com>
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../projects-menu/projects-menu.html">
+<link rel="import" href="../saved-menu/saved-menu.html">
+<link rel="import" href="../history-menu/history-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-item/paper-icon-item.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-selector/iron-selector.html">
+<link rel="import" href="../arc-icons/arc-icons.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+
+<!--
+Side navigation for Advanced REST Client.
+
+### Example
+```
+<arc-menu selected-request="request-id" route-base="request"></arc-menu>
+```
+
+### Styling
+`<arc-menu>` provides the following custom properties and mixins for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--arc-menu` | Mixin applied to the element | `{}`
+`--arc-menu-item-background-color` | Background color of each menu item | `transparent`
+`--arc-menu-selected-background-color` | Background color of selected menu item | `--accent-color`
+`--arc-menu-selected-color` | Color of selected menu item | `#fff`
+`--arc-menu-hover-background-color` | Background color of menu item when hovering | `#cccccc`
+
+@group UI Elements
+@element arc-menu
+@demo demo/index.html
+-->
+<dom-module id="arc-menu">
+  <template>
+    <style>
+    :host {
+      display: block;
+      height: var(--arc-menu-height, 100vh);
+      background-color: var(--arc-menu-background-color, #EEEEEE);
+      @apply --layout-vertical;
+      @apply --arc-menu;
+    }
+
+    .menu {
+      @apply --layout-flex;
+      @apply --layout-vertical;
+      overflow: hidden;
+    }
+
+    .flex {
+      @apply --layout-flex;
+    }
+
+    paper-item {
+      cursor: pointer;
+      transition: background-color 0.15s linear;
+      background-color: var(--arc-menu-item-background-color, transparent);
+    }
+
+    paper-item:focus {
+      background-color: var(--arc-menu-selected-background-color, --accent-color);
+      color: var(--arc-menu-selected-color, #fff);
+    }
+
+    paper-item:focus::before {
+      background-color: transparent;
+    }
+
+    paper-item.iron-selected {
+      background-color: var(--arc-menu-selected-background-color, --accent-color);
+      color: var(--arc-menu-selected-color, #fff);
+    }
+
+    paper-item.iron-selected paper-icon-button {
+      color: var(--arc-menu-selected-color, #fff);
+    }
+
+    paper-item:not(:focus):not(.iron-selected):not([selected]):hover {
+      background-color: var(--arc-menu-hover-background-color, #cccccc);
+    }
+
+    .toggle-icon {
+      transform: rotateZ(0deg);
+      transition: transform 0.3s linear;
+    }
+
+    .toggle-icon.opened {
+      transform: rotateZ(-180deg);
+    }
+
+    history-menu,
+    saved-menu,
+    projects-menu {
+      @apply --layout-flex;
+    }
+
+    .bottom-menu {
+      position: relative;
+      background-color: transparent;
+      border-top: 1px #E0E0E0 solid;
+      padding-left: 8px;
+      @apply --layout-horizontal;
+      @apply --layout-center;
+    }
+
+    paper-icon-item,
+    paper-icon-button {
+      cursor: pointer;
+    }
+    </style>
+    <iron-selector selected="[[routeBase]]" attr-for-selected="data-route" rel="menu" class="menu">
+      <paper-item data-route="request" on-tap="_itemTap">HTTP request</paper-item>
+      <paper-item data-route="socket" on-tap="_itemTap">Socket</paper-item>
+
+      <paper-item data-route="history">
+        <span data-route="history" on-tap="_itemTap" class="flex">History</span>
+        <paper-icon-button icon="arc:expand-more" title="Toogle history quick list" class$="toggle-icon [[_computeToggleIconClass(historyOpened)]]" on-tap="_toggleHistoryOpened"></paper-icon-button>
+      </paper-item>
+      <template is="dom-if" if="[[historyOpened]]">
+        <history-menu attr-for-opened="opened" opened$="[[historyOpened]]" selected-item="[[selectedRequest]]"></history-menu>
+      </template>
+
+      <paper-item data-route="saved">
+        <span data-route="saved" on-tap="_itemTap" class="flex">Saved</span>
+        <paper-icon-button icon="arc:expand-more" title="Toogle saved quick list" class$="toggle-icon [[_computeToggleIconClass(savedOpened)]]" on-tap="_toggleSavedOpened"></paper-icon-button>
+      </paper-item>
+      <template is="dom-if" if="[[savedOpened]]">
+        <saved-menu attr-for-opened="opened" opened$="[[savedOpened]]" selected-item="[[selectedRequest]]"></saved-menu>
+      </template>
+
+      <paper-item on-tap="_toggleProjectsOpened" title="Toogle projects list">
+        <span class="flex">Projects</span>
+        <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(projectsOpened)]]"></paper-icon-button>
+      </paper-item>
+      <template is="dom-if" if="[[projectsOpened]]">
+        <projects-menu opened$="{{projectsOpened}}" attr-for-opened="opened" selected-request="[[selectedRequest]]"></projects-menu>
+      </template>
+    </iron-selector>
+
+    <section class="bottom-menu" id="bottomMenu">
+      <div class="flex">
+        <span>
+          <paper-icon-button icon="arc:settings" data-route="settings" on-tap="_itemTap"></paper-icon-button>
+          <paper-tooltip position="top">Application settings</paper-tooltip>
+        </span>
+        <span>
+          <paper-icon-button icon="arc:import-export" data-route="dataimport" on-tap="_itemTap"></paper-icon-button>
+          <paper-tooltip position="top">Import and export options</paper-tooltip>
+        </span>
+        <span>
+          <paper-icon-button icon="arc:open-in-new" title="Open new window" on-tap="_newWindow"></paper-icon-button>
+          <paper-tooltip position="top">Open new window</paper-tooltip>
+        </span>
+      </div>
+
+      <paper-menu-button vertical-align="bottom" horizontal-align="left">
+        <paper-icon-button icon="arc:more-vert" class="dropdown-trigger"></paper-icon-button>
+        <paper-menu class="dropdown-content" id="actionsMenu" on-iron-select="_contextMenuAction">
+          <paper-icon-item data-action="view-logs">
+            <iron-icon icon="arc:list" item-icon title="See log collected by the app"></iron-icon>
+            Logs
+          </paper-icon-item>
+          <paper-icon-item data-action="bug-report">
+            <iron-icon icon="arc:bug-report" item-icon title="File a bug report"></iron-icon>
+            File bug report
+          </paper-icon-item>
+          <paper-icon-item data-action="about-view">
+            <iron-icon icon="arc:info" item-icon title="See app information and changelog"></iron-icon>
+            About ARC
+          </paper-icon-item>
+        </paper-menu>
+      </paper-menu-button>
+    </section>
+  </template>
+  <script>
+  Polymer({
+    is: 'arc-menu',
+    /**
+     * Fired when querying for hosting application version number.
+     * The hosting application should handle this event by setting
+     * `version` property on event's `detail` object.
+     *
+     * @event app-version
+     */
+    /**
+     * Fired when the user requested to see the logs.
+     *
+     * @event logs-requested
+     */
+    /**
+     * Fired when the user requested to open new window of the application.
+     *
+     * The event has the same properties as the `navigate` custom event. It is
+     * a description of the init route for the apps new window. All properties
+     * are optional and default route is used instead.
+     *
+     * @event app-new-window
+     */
+    properties: {
+      // Id if currently selected in the view request (history or saved)
+      selectedRequest: String,
+      // A route base value.
+      routeBase: String,
+      // If true "history" panel is opened
+      historyOpened: Boolean,
+      // If true "saved" panel is opened
+      savedOpened: Boolean,
+      // If true "projects" panel is opened
+      projectsOpened: Boolean
+    },
+    // Computes class for the toggle's button icon.
+    _computeToggleIconClass: function(opened) {
+      return opened ? 'opened' : undefined;
+    },
+    // Toggles history list opened state
+    _toggleHistoryOpened: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.historyOpened = !this.historyOpened;
+    },
+    // Toggles saved list opened state
+    _toggleSavedOpened: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.savedOpened = !this.savedOpened;
+    },
+    // Toggles projects list opened state
+    _toggleProjectsOpened: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.projectsOpened = !this.projectsOpened;
+    },
+    // Handler for active menu item tap event
+    _itemTap: function(e) {
+      var target = Polymer.dom(e).localTarget;
+      var routeBase = target.dataset.route;
+      if (!routeBase) {
+        throw new Error('Route not found in the item');
+      }
+      this.fire('navigate', {
+        base: routeBase
+      });
+    },
+    // Called when context menu action was selected
+    _contextMenuAction: function(e) {
+      var action = e.target.selectedItem.dataset.action;
+      e.target.selected = -1;
+      switch (action) {
+        case 'about-view':
+          this.fire('navigate', {
+            base: 'about'
+          });
+          break;
+        case 'view-logs': this.fire('logs-requested', {}); break;
+        case 'bug-report': this.reportIssue(); break;
+      }
+    },
+
+    /**
+     * Fires `app-version` to ask the hosting app for its version number.
+     * The hosting application should handle this event by setting
+     * `version` property on event's `detail` object.
+     */
+    queryAppVersion: function() {
+      if (this.appVersion) {
+        return this.appVersion;
+      }
+      var event = this.fire('app-version', {}, {
+        cancelable: true,
+        composed: true
+      });
+      if (event.detail.version) {
+        this.appVersion = event.detail.version;
+        return event.detail.version;
+      }
+      return 'unknown';
+    },
+
+    /**
+     * Opens an issue tracker - new issue report.
+     *
+     */
+    reportIssue: function() {
+      var appVersion = this.queryAppVersion();
+      var message = 'Your description here\n\n';
+      message += '## Expected outcome\nWhat should happen?\n\n';
+      message += '## Actual outcome\nWhat happened?\n\n';
+      message += `## Versions\nApp: ${appVersion}\n`;
+      message += `Platform: ${navigator.appVersion}\n\n`;
+      message += '## Steps to reproduce\n1. \n2. \n3. ';
+      message = encodeURIComponent(message);
+      window.open('https://github.com/jarrodek/ChromeRestClient/issues/new?body=' + message);
+    },
+    // Fires ARC's `app-new-window` global custom event to open new window
+    _newWindow: function() {
+      this.fire('app-new-window', {});
+    }
+  });
+  </script>
+</dom-module>
