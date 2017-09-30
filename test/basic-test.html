@@ -131,31 +131,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.isTrue(node.hasAttribute('opened'), type + '-menu is opened');
         });
       });
-
-      test('Fires app-version event', function() {
-        var eventData;
-        element.addEventListener('app-version', function(e) {
-          eventData = e.detail;
-        });
-        element.queryAppVersion();
-        assert.typeOf(eventData, 'object');
-      });
-
-      test('queryAppVersion returns "unknown" by default', function() {
-        var result = element.queryAppVersion();
-        assert.equal(result, 'unknown');
-      });
-
-      test('queryAppVersion returns version name', function() {
-        const version = 'test-version';
-        var clb = function(e) {
-          e.detail.version = version;
-          window.removeEventListener('app-version', clb);
-        };
-        window.addEventListener('app-version', clb);
-        var result = element.queryAppVersion();
-        assert.equal(result, version);
-      });
     });
     </script>
 
