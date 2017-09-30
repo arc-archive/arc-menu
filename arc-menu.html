@@ -16,15 +16,10 @@ the License.
 <link rel="import" href="../saved-menu/saved-menu.html">
 <link rel="import" href="../history-menu/history-menu.html">
 <link rel="import" href="../paper-item/paper-item.html">
-<link rel="import" href="../paper-item/paper-icon-item.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
 <link rel="import" href="../arc-icons/arc-icons.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../paper-tooltip/paper-tooltip.html">
-<link rel="import" href="../paper-menu-button/paper-menu-button.html">
-<link rel="import" href="../paper-menu/paper-menu.html">
-<link rel="import" href="../iron-icon/iron-icon.html">
 
 <!--
 Side navigation for Advanced REST Client.
@@ -113,16 +108,6 @@ Custom property | Description | Default
       @apply --layout-flex;
     }
 
-    .bottom-menu {
-      position: relative;
-      background-color: transparent;
-      border-top: 1px #E0E0E0 solid;
-      padding-left: 8px;
-      @apply --layout-horizontal;
-      @apply --layout-center;
-    }
-
-    paper-icon-item,
     paper-icon-button {
       cursor: pointer;
     }
@@ -155,41 +140,6 @@ Custom property | Description | Default
         <projects-menu opened$="{{projectsOpened}}" attr-for-opened="opened" selected-request="[[selectedRequest]]"></projects-menu>
       </template>
     </iron-selector>
-
-    <section class="bottom-menu" id="bottomMenu">
-      <div class="flex">
-        <span>
-          <paper-icon-button icon="arc:settings" data-route="settings" on-tap="_itemTap"></paper-icon-button>
-          <paper-tooltip position="top">Application settings</paper-tooltip>
-        </span>
-        <span>
-          <paper-icon-button icon="arc:import-export" data-route="dataimport" on-tap="_itemTap"></paper-icon-button>
-          <paper-tooltip position="top">Import and export options</paper-tooltip>
-        </span>
-        <span>
-          <paper-icon-button icon="arc:open-in-new" title="Open new window" on-tap="_newWindow"></paper-icon-button>
-          <paper-tooltip position="top">Open new window</paper-tooltip>
-        </span>
-      </div>
-
-      <paper-menu-button vertical-align="bottom" horizontal-align="left">
-        <paper-icon-button icon="arc:more-vert" class="dropdown-trigger"></paper-icon-button>
-        <paper-menu class="dropdown-content" id="actionsMenu" on-iron-select="_contextMenuAction">
-          <paper-icon-item data-action="view-logs">
-            <iron-icon icon="arc:list" item-icon title="See log collected by the app"></iron-icon>
-            Logs
-          </paper-icon-item>
-          <paper-icon-item data-action="bug-report">
-            <iron-icon icon="arc:bug-report" item-icon title="File a bug report"></iron-icon>
-            File bug report
-          </paper-icon-item>
-          <paper-icon-item data-action="about-view">
-            <iron-icon icon="arc:info" item-icon title="See app information and changelog"></iron-icon>
-            About ARC
-          </paper-icon-item>
-        </paper-menu>
-      </paper-menu-button>
-    </section>
   </template>
   <script>
   Polymer({
@@ -259,60 +209,6 @@ Custom property | Description | Default
       this.fire('navigate', {
         base: routeBase
       });
-    },
-    // Called when context menu action was selected
-    _contextMenuAction: function(e) {
-      var action = e.target.selectedItem.dataset.action;
-      e.target.selected = -1;
-      switch (action) {
-        case 'about-view':
-          this.fire('navigate', {
-            base: 'about'
-          });
-          break;
-        case 'view-logs': this.fire('logs-requested', {}); break;
-        case 'bug-report': this.reportIssue(); break;
-      }
-    },
-
-    /**
-     * Fires `app-version` to ask the hosting app for its version number.
-     * The hosting application should handle this event by setting
-     * `version` property on event's `detail` object.
-     */
-    queryAppVersion: function() {
-      if (this.appVersion) {
-        return this.appVersion;
-      }
-      var event = this.fire('app-version', {}, {
-        cancelable: true,
-        composed: true
-      });
-      if (event.detail.version) {
-        this.appVersion = event.detail.version;
-        return event.detail.version;
-      }
-      return 'unknown';
-    },
-
-    /**
-     * Opens an issue tracker - new issue report.
-     *
-     */
-    reportIssue: function() {
-      var appVersion = this.queryAppVersion();
-      var message = 'Your description here\n\n';
-      message += '## Expected outcome\nWhat should happen?\n\n';
-      message += '## Actual outcome\nWhat happened?\n\n';
-      message += `## Versions\nApp: ${appVersion}\n`;
-      message += `Platform: ${navigator.appVersion}\n\n`;
-      message += '## Steps to reproduce\n1. \n2. \n3. ';
-      message = encodeURIComponent(message);
-      window.open('https://github.com/jarrodek/ChromeRestClient/issues/new?body=' + message);
-    },
-    // Fires ARC's `app-new-window` global custom event to open new window
-    _newWindow: function() {
-      this.fire('app-new-window', {});
     }
   });
   </script>
