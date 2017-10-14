@@ -116,16 +116,16 @@ Custom property | Description | Default
       <paper-item data-route="request" on-tap="_itemTap">HTTP request</paper-item>
       <paper-item data-route="socket" on-tap="_itemTap">Socket</paper-item>
 
-      <paper-item data-route="history">
-        <span data-route="history" on-tap="_itemTap" class="flex">History</span>
+      <paper-item data-route="history" on-tap="_itemTap">
+        <span data-route="history" class="flex">History</span>
         <paper-icon-button icon="arc:expand-more" title="Toogle history quick list" class$="toggle-icon [[_computeToggleIconClass(historyOpened)]]" on-tap="_toggleHistoryOpened"></paper-icon-button>
       </paper-item>
       <template is="dom-if" if="[[historyOpened]]">
         <history-menu attr-for-opened="opened" opened$="[[historyOpened]]" selected-item="[[selectedRequest]]"></history-menu>
       </template>
 
-      <paper-item data-route="saved">
-        <span data-route="saved" on-tap="_itemTap" class="flex">Saved</span>
+      <paper-item data-route="saved" on-tap="_itemTap">
+        <span data-route="saved" class="flex">Saved</span>
         <paper-icon-button icon="arc:expand-more" title="Toogle saved quick list" class$="toggle-icon [[_computeToggleIconClass(savedOpened)]]" on-tap="_toggleSavedOpened"></paper-icon-button>
       </paper-item>
       <template is="dom-if" if="[[savedOpened]]">
