@@ -1,3 +1,9 @@
+<a name="0.2.2"></a>
+## [0.2.2](https://github.com/advanced-rest-client/arc-menu/compare/0.2.1...0.2.2) (2017-10-14)
+
+
+
+
 <a name="0.2.1"></a>
 ## 0.2.1 (2017-09-30)
 
