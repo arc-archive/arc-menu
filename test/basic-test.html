@@ -23,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <test-fixture id="basic">
       <template>
-        <arc-menu></arc-menu>
+        <arc-menu rest-api></arc-menu>
       </template>
     </test-fixture>
 
@@ -34,6 +34,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var element;
       setup(function() {
         element = fixture('basic');
+        TestHelpers.forceXIfStamp(element);
       });
 
       test('selectedRequest is undefined', function() {
@@ -116,7 +117,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         .querySelectorAll(selector)[index];
       }
 
-      ['history', 'saved', 'projects'].forEach((type, index) => {
+      ['history', 'saved', 'projects', 'restApi'].forEach((type, index) => {
         test('Toggles ' + type + ' opened property', function() {
           var node = geToggleElement(index);
           MockInteractions.tap(node);
@@ -126,8 +127,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('Renders ' + type + ' list', function() {
           element[type + 'Opened'] = true;
           TestHelpers.forceXIfStamp(element);
-          var node = element.$$(type + '-menu');
-          assert.ok(node, type + '-menu is in the DOM');
+          var name = type.replace(/([A-Z])/g, '-$1').toLowerCase();
+          var node = element.$$(name + '-menu');
+          assert.ok(node, name + '-menu is in the DOM');
           assert.isTrue(node.hasAttribute('opened'), type + '-menu is opened');
         });
       });
