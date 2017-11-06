@@ -20,7 +20,7 @@ the License.
 <link rel="import" href="../iron-selector/iron-selector.html">
 <link rel="import" href="../arc-icons/arc-icons.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-
+<link rel="import" href="../rest-api-menu/rest-api-menu.html">
 <!--
 Side navigation for Advanced REST Client.
 
@@ -139,6 +139,16 @@ Custom property | Description | Default
       <template is="dom-if" if="[[projectsOpened]]">
         <projects-menu opened$="{{projectsOpened}}" attr-for-opened="opened" selected-request="[[selectedRequest]]"></projects-menu>
       </template>
+
+      <template is="dom-if" if="[[restApis]]">
+        <paper-item on-tap="_toggleApisOpened" title="Toogle REST APIs list">
+          <span class="flex">REST APIs</span>
+          <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(restApisOpened)]]"></paper-icon-button>
+        </paper-item>
+        <template is="dom-if" if="[[restApisOpened]]">
+          <rest-api-menu opened$="[[restApisOpened]]" attr-for-opened="opened"></rest-api-menu>
+        </template>
+      </template>
     </iron-selector>
   </template>
   <script>
@@ -175,7 +185,11 @@ Custom property | Description | Default
       // If true "saved" panel is opened
       savedOpened: Boolean,
       // If true "projects" panel is opened
-      projectsOpened: Boolean
+      projectsOpened: Boolean,
+      // Set to tru to display `REST APIs` menu entry
+      restApis: Boolean,
+      // If true "REST APIs" panel is opened.
+      restApisOpened: Boolean
     },
     // Computes class for the toggle's button icon.
     _computeToggleIconClass: function(opened) {
@@ -198,6 +212,12 @@ Custom property | Description | Default
       e.preventDefault();
       e.stopPropagation();
       this.projectsOpened = !this.projectsOpened;
+    },
+    // Toggles APIs list opened state
+    _toggleApisOpened: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.restApisOpened = !this.restApisOpened;
     },
     // Handler for active menu item tap event
     _itemTap: function(e) {

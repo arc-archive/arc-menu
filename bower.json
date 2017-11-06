@@ -28,7 +28,8 @@
     "iron-selector": "PolymerElements/iron-selector#<2",
     "arc-icons": "advanced-rest-client/arc-icons#^1.0.22",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#<2",
-    "iron-collapse": "PolymerElements/iron-collapse#<2"
+    "iron-collapse": "PolymerElements/iron-collapse#<2",
+    "rest-api-menu": "advanced-rest-client/rest-api-menu#^0.1.1"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#1.0.0",
