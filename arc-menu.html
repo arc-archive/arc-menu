@@ -140,13 +140,13 @@ Custom property | Description | Default
         <projects-menu opened$="[[projectsOpened]]" attr-for-opened="opened" selected-request="[[selectedRequest]]"></projects-menu>
       </template>
 
-      <template is="dom-if" if="[[restApis]]">
+      <template is="dom-if" if="[[restApi]]">
         <paper-item on-tap="_toggleApisOpened" title="Toogle REST APIs list">
           <span class="flex">REST APIs</span>
-          <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(restApisOpened)]]"></paper-icon-button>
+          <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(restApiOpened)]]"></paper-icon-button>
         </paper-item>
-        <template is="dom-if" if="[[restApisOpened]]">
-          <rest-api-menu opened$="[[restApisOpened]]" attr-for-opened="opened"></rest-api-menu>
+        <template is="dom-if" if="[[restApiOpened]]">
+          <rest-api-menu opened$="[[restApiOpened]]" attr-for-opened="opened"></rest-api-menu>
         </template>
       </template>
     </iron-selector>
@@ -187,9 +187,9 @@ Custom property | Description | Default
       // If true "projects" panel is opened
       projectsOpened: Boolean,
       // Set to tru to display `REST APIs` menu entry
-      restApis: Boolean,
+      restApi: Boolean,
       // If true "REST APIs" panel is opened.
-      restApisOpened: Boolean
+      restApiOpened: Boolean
     },
     // Computes class for the toggle's button icon.
     _computeToggleIconClass: function(opened) {
@@ -217,7 +217,7 @@ Custom property | Description | Default
     _toggleApisOpened: function(e) {
       e.preventDefault();
       e.stopPropagation();
-      this.restApisOpened = !this.restApisOpened;
+      this.restApiOpened = !this.restApiOpened;
     },
     // Handler for active menu item tap event
     _itemTap: function(e) {
