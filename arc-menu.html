@@ -137,7 +137,7 @@ Custom property | Description | Default
         <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(projectsOpened)]]"></paper-icon-button>
       </paper-item>
       <template is="dom-if" if="[[projectsOpened]]">
-        <projects-menu opened$="{{projectsOpened}}" attr-for-opened="opened" selected-request="[[selectedRequest]]"></projects-menu>
+        <projects-menu opened$="[[projectsOpened]]" attr-for-opened="opened" selected-request="[[selectedRequest]]"></projects-menu>
       </template>
 
       <template is="dom-if" if="[[restApis]]">
