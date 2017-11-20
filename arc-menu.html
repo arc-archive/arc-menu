@@ -132,18 +132,18 @@ Custom property | Description | Default
         <saved-menu attr-for-opened="opened" opened$="[[savedOpened]]" selected-item="[[selectedRequest]]"></saved-menu>
       </template>
 
-      <paper-item on-tap="_toggleProjectsOpened" title="Toogle projects list">
+      <paper-item data-route="legacy-projects" on-tap="_itemTap">
         <span class="flex">Projects</span>
-        <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(projectsOpened)]]"></paper-icon-button>
+        <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(projectsOpened)]]" on-tap="_toggleProjectsOpened" title="Toogle projects list"></paper-icon-button>
       </paper-item>
       <template is="dom-if" if="[[projectsOpened]]">
         <projects-menu opened$="[[projectsOpened]]" attr-for-opened="opened" selected-request="[[selectedRequest]]"></projects-menu>
       </template>
 
       <template is="dom-if" if="[[restApi]]">
-        <paper-item on-tap="_toggleApisOpened" title="Toogle REST APIs list">
+        <paper-item data-route="rest-projects" on-tap="_itemTap">
           <span class="flex">REST APIs</span>
-          <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(restApiOpened)]]"></paper-icon-button>
+          <paper-icon-button icon="arc:expand-more" class$="toggle-icon [[_computeToggleIconClass(restApiOpened)]]" on-tap="_toggleApisOpened" title="Toogle REST APIs list"></paper-icon-button>
         </paper-item>
         <template is="dom-if" if="[[restApiOpened]]">
           <rest-api-menu opened$="[[restApiOpened]]" attr-for-opened="opened"></rest-api-menu>
@@ -221,7 +221,10 @@ Custom property | Description | Default
     },
     // Handler for active menu item tap event
     _itemTap: function(e) {
-      var target = Polymer.dom(e).localTarget;
+      var target = this._findInPath(Polymer.dom(e).path, 'paper-item');
+      if (!target) {
+        throw new Error('Target not recognized in path');
+      }
       var routeBase = target.dataset.route;
       if (!routeBase) {
         throw new Error('Route not found in the item');
@@ -229,6 +232,29 @@ Custom property | Description | Default
       this.fire('navigate', {
         base: routeBase
       });
+    },
+    /**
+     * Finds a node in the evet's path.
+     * Note, this function returns first node in the path that matched the
+     * `nodeName`
+     *
+     * @param {Array<Node>} path Event's node path.
+     * @param {String} nodeName Node name to search for.
+     * @return {Node|undefined} The node of undefined if not found.
+     */
+    _findInPath: function(path, nodeName) {
+      nodeName = nodeName.toLowerCase();
+      if (!path || !path.length) {
+        return;
+      }
+      for (var i = 0, len = path.length; i < len; i++) {
+        if (!path[i].nodeName) {
+          continue;
+        }
+        if (path[i].nodeName.toLowerCase() === nodeName) {
+          return path[i];
+        }
+      }
     }
   });
   </script>

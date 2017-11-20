@@ -21,7 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
   <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
   <link rel="import" href="../../paper-toast/paper-toast.html">
-  <script src="../test/data-generator.js"></script>
+  <script src="data-generator.js"></script>
   <script src="../../chance/dist/chance.min.js"></script>
   <link rel="import" href="../arc-menu.html">
 
@@ -55,7 +55,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   window.addEventListener('navigate', function(e) {
     var toast = document.getElementById('navToast');
     var d = e.detail;
-    toast.text = 'Navigation ocurred to: ' + d.base + ', and id: ' + d.id;
+    toast.text = 'Navigation ocurred to: ' + d.base;
+    if (d.id) {
+      toast.text += ', and id: ' + d.id;
+    }
     toast.opened = true;
   });
   window.addEventListener('logs-requested', function() {
