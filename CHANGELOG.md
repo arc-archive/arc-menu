@@ -1,3 +1,17 @@
+<a name="0.2.6"></a>
+## [0.2.6](https://github.com/advanced-rest-client/arc-menu/compare/0.2.5...0.2.6) (2017-11-20)
+
+
+### New
+
+* Added navigation to project pages. ([45af4dc225c5ee0804d72ac2872cce371b1b7318](https://github.com/advanced-rest-client/arc-menu/commit/45af4dc225c5ee0804d72ac2872cce371b1b7318))
+
+### Update
+
+* Moved data generator to demo page. ([f33ec125ae6b5e6cb433dfc4ac400fbce821142b](https://github.com/advanced-rest-client/arc-menu/commit/f33ec125ae6b5e6cb433dfc4ac400fbce821142b))
+
+
+
 <a name="0.2.5"></a>
 ## [0.2.5](https://github.com/advanced-rest-client/arc-menu/compare/0.2.4...0.2.5) (2017-11-06)
 
