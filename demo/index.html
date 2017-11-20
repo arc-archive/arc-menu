@@ -55,7 +55,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   window.addEventListener('navigate', function(e) {
     var toast = document.getElementById('navToast');
     var d = e.detail;
-    toast.text = 'Navigation ocurred to: ' + d.base + ', and id: ' + d.id;
+    toast.text = 'Navigation ocurred to: ' + d.base;
+    if (d.id) {
+      toast.text += ', and id: ' + d.id;
+    }
     toast.opened = true;
   });
   window.addEventListener('logs-requested', function() {
