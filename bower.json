@@ -1,7 +1,7 @@
 {
   "name": "arc-menu",
   "description": "Side navigation for Advanced REST Client",
-  "version": "0.2.7",
+  "version": "0.5.0",
   "license": "Apache-2.0 OR CC-BY-4.0",
   "authors": [
     "The Advanced REST client authors <arc@mulesoft.com>"
@@ -22,14 +22,11 @@
     "polymer": "Polymer/polymer#^1.9.2",
     "history-menu": "advanced-rest-client/history-menu#^0.1.1",
     "saved-menu": "advanced-rest-client/saved-menu#^0.1.3",
-    "projects-menu": "advanced-rest-client/projects-menu#^0.1.1",
     "paper-item": "PolymerElements/paper-item#<2",
-    "paper-icon-button": "PolymerElements/paper-icon-button#<2",
-    "iron-selector": "PolymerElements/iron-selector#<2",
-    "arc-icons": "advanced-rest-client/arc-icons#^1.0.22",
+    "paper-button": "PolymerElements/paper-button#<2",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#<2",
-    "iron-collapse": "PolymerElements/iron-collapse#<2",
-    "rest-api-menu": "advanced-rest-client/rest-api-menu#^0.1.1"
+    "paper-tabs": "PolymerElements/paper-tabs#<2",
+    "arc-api-menu": "advanced-rest-client/arc-api-menu#^0.1.1"
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#1.0.0",

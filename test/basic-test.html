@@ -37,24 +37,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         TestHelpers.forceXIfStamp(element);
       });
 
-      test('selectedRequest is undefined', function() {
-        assert.isUndefined(element.selectedRequest);
+      test('isHistory is set', function() {
+        assert.isTrue(element.isHistory);
       });
 
-      test('routeBase is undefined', function() {
-        assert.isUndefined(element.routeBase);
+      test('isSaved is undefined', function() {
+        assert.isFalse(element.isSaved);
       });
 
-      test('historyOpened is undefined', function() {
-        assert.isUndefined(element.historyOpened);
-      });
-
-      test('savedOpened is undefined', function() {
-        assert.isUndefined(element.savedOpened);
-      });
-
-      test('projectsOpened is undefined', function() {
-        assert.isUndefined(element.projectsOpened);
+      test('isProjects is undefined', function() {
+        assert.isFalse(element.isProjects);
       });
 
       function geActiveElement(route, nodeName) {
@@ -94,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.addEventListener('navigate', function(e) {
           eventData = e.detail;
         });
-        var node = geActiveElement('history', 'span');
+        var node = geActiveElement('history', 'paper-button');
         MockInteractions.tap(node);
         assert.typeOf(eventData, 'object');
         assert.equal(eventData.base, 'history');
@@ -105,33 +97,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.addEventListener('navigate', function(e) {
           eventData = e.detail;
         });
-        var node = geActiveElement('saved', 'span');
+        element.selected = 1;
+        TestHelpers.forceXIfStamp(element);
+        var node = geActiveElement('saved', 'paper-button');
         MockInteractions.tap(node);
         assert.typeOf(eventData, 'object');
         assert.equal(eventData.base, 'saved');
       });
+    });
 
-      function geToggleElement(index) {
-        var selector = 'paper-icon-button.toggle-icon';
-        return Polymer.dom(element.root)
-        .querySelectorAll(selector)[index];
-      }
+    suite('Selection change', function() {
 
-      ['history', 'saved', 'projects', 'restApi'].forEach((type, index) => {
-        test('Toggles ' + type + ' opened property', function() {
-          var node = geToggleElement(index);
-          MockInteractions.tap(node);
-          assert.isTrue(element[type + 'Opened']);
-        });
+      var element;
+      setup(function() {
+        element = fixture('basic');
+        // TestHelpers.forceXIfStamp(element);
+      });
 
-        test('Renders ' + type + ' list', function() {
-          element[type + 'Opened'] = true;
-          TestHelpers.forceXIfStamp(element);
-          var name = type.replace(/([A-Z])/g, '-$1').toLowerCase();
-          var node = element.$$(name + '-menu');
-          assert.ok(node, name + '-menu is in the DOM');
-          assert.isTrue(node.hasAttribute('opened'), type + '-menu is opened');
-        });
+      test('Default selection is set', function() {
+        assert.equal(element.selected, 0);
+        assert.isTrue(element.isHistory);
+        assert.isFalse(element.isSaved);
+        assert.isFalse(element.isProjects);
+      });
+
+      test('Selectes saved panel', function() {
+        element.selected = 1;
+        assert.isFalse(element.isHistory);
+        assert.isTrue(element.isSaved);
+        assert.isFalse(element.isProjects);
+      });
+
+      test('Selectes APIs panel', function() {
+        element.selected = 2;
+        assert.isFalse(element.isHistory);
+        assert.isFalse(element.isSaved);
+        assert.isTrue(element.isProjects);
       });
     });
     </script>

@@ -47,8 +47,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <paper-toast id="genToast" text="The request data has been generated"></paper-toast>
     <paper-toast id="delToast" text="The request data has been removed"></paper-toast>
     <paper-toast id="navToast" text="" duration="5000"></paper-toast>
-    <paper-toast id="logsToast" text="Logs viewer requested"></paper-toast>
-    <paper-toast id="newWindowToast" text="Application new window requested"></paper-toast>
   </template>
   <script>
   /* global DataGenerator */
@@ -61,13 +59,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     toast.opened = true;
   });
-  window.addEventListener('logs-requested', function() {
-    var toast = document.getElementById('logsToast');
-    toast.opened = true;
-  });
-  window.addEventListener('app-new-window', function() {
-    var toast = document.getElementById('newWindowToast');
-    toast.opened = true;
+  window.addEventListener('rest-api-index-list', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.detail.result = Promise.resolve([]);
   });
   (function(scope) {
     scope.generate = function() {
