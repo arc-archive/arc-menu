@@ -6,7 +6,7 @@ Side navigation for Advanced REST Client.
 
 ### Example
 ```
-<arc-menu selected-request="request-id" route-base="request"></arc-menu>
+<arc-menu></arc-menu>
 ```
 
 ### Styling
@@ -18,13 +18,10 @@ Custom property | Description | Default
 `--arc-menu-item-background-color` | Background color of each menu item | `transparent`
 `--arc-menu-selected-background-color` | Background color of selected menu item | `--accent-color`
 `--arc-menu-selected-color` | Color of selected menu item | `#fff`
-`--arc-menu-hover-background-color` | Background color of menu item when hovering | `#cccccc`
 
 
 
 ### Events
 | Name | Description | Params |
 | --- | --- | --- |
-| app-new-window | Fired when the user requested to open new window of the application.  The event has the same properties as the `navigate` custom event. It is a description of the init route for the apps new window. All properties are optional and default route is used instead. | __none__ |
-| app-version | Fired when querying for hosting application version number. The hosting application should handle this event by setting `version` property on event's `detail` object. | __none__ |
-| logs-requested | Fired when the user requested to see the logs. | __none__ |
+| navigate | Fired when the user performed a navigation action.  It uses ARC's standard navigation event: https://github.com/advanced-rest-client/arc-electron/wiki/Navigation-events---dev-guide | __none__ |
