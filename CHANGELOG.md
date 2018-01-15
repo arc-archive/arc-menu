@@ -1,3 +1,13 @@
+<a name="0.5.1"></a>
+## [0.5.1](https://github.com/advanced-rest-client/arc-menu/compare/0.2.7...0.5.1) (2018-01-15)
+
+
+### Breaking
+
+* Complete redesign of the element and its API  ([cc7a07b43849cbed387cb2b584874a8f4ea5aac6](https://github.com/advanced-rest-client/arc-menu/commit/cc7a07b43849cbed387cb2b584874a8f4ea5aac6))
+
+
+
 <a name="0.2.7"></a>
 ## [0.2.7](https://github.com/advanced-rest-client/arc-menu/compare/0.2.6...0.2.7) (2017-11-20)
 
