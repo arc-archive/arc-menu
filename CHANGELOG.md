@@ -1,3 +1,9 @@
+<a name="0.5.2"></a>
+## [0.5.2](https://github.com/advanced-rest-client/arc-menu/compare/0.5.1...0.5.2) (2018-01-15)
+
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/advanced-rest-client/arc-menu/compare/0.2.7...0.5.1) (2018-01-15)
 
