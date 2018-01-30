@@ -40,6 +40,7 @@ Custom property | Description | Default
 `--arc-menu-bottom-actions` | Mixin applied to the bottom pane with additional actions. | `{}`
 `--arc-menu-bottom-actions-button` | Mixin applied to the buttons in bottom action pane. | `{}`
 `--arc-menu-bottom-actions-button-hover` | Mixin applied to the buttons in bottom action pane when hovering. | `{}`
+`--arc-menu-tabs-color` | Color of the papaer tabs | ``
 
 @group UI Elements
 @element arc-menu
@@ -97,6 +98,10 @@ Custom property | Description | Default
 
     [hidden] {
       display: none !important;
+    }
+
+    paper-tab {
+      color: var(--arc-menu-tabs-color);
     }
     </style>
     <div rel="menu" class="menu">
