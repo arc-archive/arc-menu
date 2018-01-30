@@ -38,6 +38,8 @@ Custom property | Description | Default
 `--arc-menu-selected-background-color` | Background color of selected menu item | `--accent-color`
 `--arc-menu-selected-color` | Color of selected menu item | `#fff`
 `--arc-menu-bottom-actions` | Mixin applied to the bottom pane with additional actions. | `{}`
+`--arc-menu-bottom-actions-button` | Mixin applied to the buttons in bottom action pane. | `{}`
+`--arc-menu-bottom-actions-button-hover` | Mixin applied to the buttons in bottom action pane when hovering. | `{}`
 
 @group UI Elements
 @element arc-menu
@@ -83,6 +85,14 @@ Custom property | Description | Default
 
     .actions {
       @apply --arc-menu-bottom-actions;
+    }
+
+    .actions paper-button {
+      @apply --arc-menu-bottom-actions-button;
+    }
+
+    .actions paper-button:hover {
+      @apply --arc-menu-bottom-actions-button-hover;
     }
 
     [hidden] {
