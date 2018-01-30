@@ -37,6 +37,7 @@ Custom property | Description | Default
 `--arc-menu-item-background-color` | Background color of each menu item | `transparent`
 `--arc-menu-selected-background-color` | Background color of selected menu item | `--accent-color`
 `--arc-menu-selected-color` | Color of selected menu item | `#fff`
+`--arc-menu-bottom-actions` | Mixin applied to the bottom pane with additional actions. | `{}`
 
 @group UI Elements
 @element arc-menu
@@ -79,6 +80,14 @@ Custom property | Description | Default
     arc-api-menu {
       @apply --layout-flex;
     }
+
+    .actions {
+      @apply --arc-menu-bottom-actions;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
     </style>
     <div rel="menu" class="menu">
       <paper-item data-route="request" on-tap="_itemTap">HTTP request</paper-item>
@@ -91,7 +100,7 @@ Custom property | Description | Default
       <history-menu attr-for-opened="opened" hidden="[[!isHistory]]" opened$="[[isHistory]]"></history-menu>
       <saved-menu attr-for-opened="opened" hidden="[[!isSaved]]" opened$="[[isSaved]]"></saved-menu>
       <arc-api-menu opened$="[[isProjects]]" rest-api="[[restApi]]" hidden="[[!isProjects]]" attr-for-opened="opened"></arc-api-menu>
-      <div class="actions">
+      <div class="actions" hidden$="[[_computeHiddenActions(isHistory, isSaved)]]">
         <template is="dom-if" if="[[isHistory]]">
           <paper-button data-route="history" on-tap="openHistoryList">History list</paper-button>
         </template>
@@ -198,6 +207,10 @@ Custom property | Description | Default
           return path[i];
         }
       }
+    },
+
+    _computeHiddenActions: function(isHistory, isSaved) {
+      return !isHistory && !isSaved;
     }
 
     /**
