@@ -18,6 +18,10 @@ Custom property | Description | Default
 `--arc-menu-item-background-color` | Background color of each menu item | `transparent`
 `--arc-menu-selected-background-color` | Background color of selected menu item | `--accent-color`
 `--arc-menu-selected-color` | Color of selected menu item | `#fff`
+`--arc-menu-bottom-actions` | Mixin applied to the bottom pane with additional actions. | `{}`
+`--arc-menu-bottom-actions-button` | Mixin applied to the buttons in bottom action pane. | `{}`
+`--arc-menu-bottom-actions-button-hover` | Mixin applied to the buttons in bottom action pane when hovering. | `{}`
+`--arc-menu-tabs-color` | Color of the papaer tabs | ``
 
 
 
