@@ -41,6 +41,7 @@ Custom property | Description | Default
 `--arc-menu-bottom-actions-button` | Mixin applied to the buttons in bottom action pane. | `{}`
 `--arc-menu-bottom-actions-button-hover` | Mixin applied to the buttons in bottom action pane when hovering. | `{}`
 `--arc-menu-tabs-color` | Color of the papaer tabs | ``
+`--arc-menu-tabs-color-unselected` | Color of the papaer tabs when not selected | ``
 
 @group UI Elements
 @element arc-menu
@@ -54,6 +55,10 @@ Custom property | Description | Default
       height: var(--arc-menu-height, 100vh);
       background-color: var(--arc-menu-background-color, #EEEEEE);
       @apply --arc-menu;
+
+      --paper-tab-content-unselected: {
+        color: var(--arc-menu-tabs-color-unselected);
+      };
     }
 
     .menu {
