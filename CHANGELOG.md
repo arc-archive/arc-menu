@@ -1,3 +1,15 @@
+<a name="0.5.3"></a>
+## [0.5.3](https://github.com/advanced-rest-client/arc-menu/compare/0.5.2...0.5.3) (2018-01-30)
+
+
+### Update
+
+* Added mixin for bottom actions panel. ([a43dc271efe205ddccb35f24c22168389f570ebb](https://github.com/advanced-rest-client/arc-menu/commit/a43dc271efe205ddccb35f24c22168389f570ebb))
+* Adding styles for action buttons. ([a14335cf99f00be067c71c20430445f137bb0ecd](https://github.com/advanced-rest-client/arc-menu/commit/a14335cf99f00be067c71c20430445f137bb0ecd))
+* Adding variable for tabs color. ([c640a3cdd8141ebd674fafac5a736f424c1ae025](https://github.com/advanced-rest-client/arc-menu/commit/c640a3cdd8141ebd674fafac5a736f424c1ae025))
+
+
+
 <a name="0.5.2"></a>
 ## [0.5.2](https://github.com/advanced-rest-client/arc-menu/compare/0.5.1...0.5.2) (2018-01-15)
 
