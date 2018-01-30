@@ -1,3 +1,13 @@
+<a name="0.5.5"></a>
+## [0.5.5](https://github.com/advanced-rest-client/arc-menu/compare/0.5.4...0.5.5) (2018-01-30)
+
+
+### Update
+
+* Adding tabs unselected color CSS variable. ([bb46cf1c433a889f3966b4473629b0661bbaa647](https://github.com/advanced-rest-client/arc-menu/commit/bb46cf1c433a889f3966b4473629b0661bbaa647))
+
+
+
 <a name="0.5.4"></a>
 ## [0.5.4](https://github.com/advanced-rest-client/arc-menu/compare/0.5.3...0.5.4) (2018-01-30)
 

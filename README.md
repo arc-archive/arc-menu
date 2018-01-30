@@ -22,6 +22,7 @@ Custom property | Description | Default
 `--arc-menu-bottom-actions-button` | Mixin applied to the buttons in bottom action pane. | `{}`
 `--arc-menu-bottom-actions-button-hover` | Mixin applied to the buttons in bottom action pane when hovering. | `{}`
 `--arc-menu-tabs-color` | Color of the papaer tabs | ``
+`--arc-menu-tabs-color-unselected` | Color of the papaer tabs when not selected | ``
 
 
 
