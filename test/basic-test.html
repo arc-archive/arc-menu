@@ -1,138 +1,74 @@
 <!doctype html>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
-    <script src="../../iron-test-helpers/test-helpers.js"></script>
-    <script src="../../iron-test-helpers/mock-interactions.js"></script>
     <link rel="import" href="../arc-menu.html">
   </head>
   <body>
 
-    <test-fixture id="basic">
+    <test-fixture id="History">
       <template>
-        <arc-menu rest-api></arc-menu>
+        <arc-menu></arc-menu>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="Saved">
+      <template>
+        <arc-menu selected="1"></arc-menu>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="Projects">
+      <template>
+        <arc-menu selected="2"></arc-menu>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="Apis">
+      <template>
+        <arc-menu selected="3"></arc-menu>
       </template>
     </test-fixture>
 
     <script>
-    /* global fixture, assert, MockInteractions, TestHelpers */
     suite('basic', function() {
-
-      var element;
-      setup(function() {
-        element = fixture('basic');
-        TestHelpers.forceXIfStamp(element);
-      });
-
-      test('isHistory is set', function() {
-        assert.isTrue(element.isHistory);
-      });
-
-      test('isSaved is undefined', function() {
-        assert.isFalse(element.isSaved);
-      });
-
-      test('isProjects is undefined', function() {
-        assert.isFalse(element.isProjects);
-      });
-
-      function geActiveElement(route, nodeName) {
-        var selector = '';
-        if (nodeName) {
-          selector += nodeName;
-        }
-        selector += '[data-route="' + route + '"]';
-        return Polymer.dom(element.root)
-        .querySelector(selector);
-      }
-
-      test('Fires navigate event for the request', function() {
-        var eventData;
-        element.addEventListener('navigate', function(e) {
-          eventData = e.detail;
+      test('Opens default menu', (done) => {
+        const element = fixture('History');
+        flush(() => {
+          const node = element.shadowRoot.querySelector('history-menu');
+          assert.ok(node);
+          done();
         });
-        var node = geActiveElement('request');
-        MockInteractions.tap(node);
-        assert.typeOf(eventData, 'object');
-        assert.equal(eventData.base, 'request');
       });
 
-      test('Fires navigate event for the web socket', function() {
-        var eventData;
-        element.addEventListener('navigate', function(e) {
-          eventData = e.detail;
+      test('Opens saved menu', (done) => {
+        const element = fixture('Saved');
+        flush(() => {
+          const node = element.shadowRoot.querySelector('saved-menu');
+          assert.ok(node);
+          done();
         });
-        var node = geActiveElement('socket');
-        MockInteractions.tap(node);
-        assert.typeOf(eventData, 'object');
-        assert.equal(eventData.base, 'socket');
       });
 
-      test('Fires navigate event for the history', function() {
-        var eventData;
-        element.addEventListener('navigate', function(e) {
-          eventData = e.detail;
+      test('Opens projects menu', (done) => {
+        const element = fixture('Projects');
+        flush(() => {
+          const node = element.shadowRoot.querySelector('projects-menu');
+          assert.ok(node);
+          done();
         });
-        var node = geActiveElement('history', 'paper-button');
-        MockInteractions.tap(node);
-        assert.typeOf(eventData, 'object');
-        assert.equal(eventData.base, 'history');
       });
 
-      test('Fires navigate event for the saved', function() {
-        var eventData;
-        element.addEventListener('navigate', function(e) {
-          eventData = e.detail;
+      test('Opens APIs menu', (done) => {
+        const element = fixture('Apis');
+        flush(() => {
+          const node = element.shadowRoot.querySelector('rest-api-menu');
+          assert.ok(node);
+          done();
         });
-        element.selected = 1;
-        TestHelpers.forceXIfStamp(element);
-        var node = geActiveElement('saved', 'paper-button');
-        MockInteractions.tap(node);
-        assert.typeOf(eventData, 'object');
-        assert.equal(eventData.base, 'saved');
-      });
-    });
-
-    suite('Selection change', function() {
-
-      var element;
-      setup(function() {
-        element = fixture('basic');
-        // TestHelpers.forceXIfStamp(element);
-      });
-
-      test('Default selection is set', function() {
-        assert.equal(element.selected, 0);
-        assert.isTrue(element.isHistory);
-        assert.isFalse(element.isSaved);
-        assert.isFalse(element.isProjects);
-      });
-
-      test('Selectes saved panel', function() {
-        element.selected = 1;
-        assert.isFalse(element.isHistory);
-        assert.isTrue(element.isSaved);
-        assert.isFalse(element.isProjects);
-      });
-
-      test('Selectes APIs panel', function() {
-        element.selected = 2;
-        assert.isFalse(element.isHistory);
-        assert.isFalse(element.isSaved);
-        assert.isTrue(element.isProjects);
       });
     });
     </script>
