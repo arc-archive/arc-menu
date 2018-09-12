@@ -34,10 +34,14 @@
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
     "iron-test-helpers": "PolymerElements/iron-test-helpers#^2.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
-    "chance": "^1.0.11",
     "paper-toast": "PolymerElements/paper-toast#^2.0.0",
     "app-pouchdb": "PolymerElements/app-pouchdb#^2.0.0",
-    "arc-models": "advanced-rest-client/arc-models#2.0.0-preview"
+    "arc-models": "advanced-rest-client/arc-models#2.0.0-preview",
+    "web-animations-js": "web-animations/web-animations-js#^2.3",
+    "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^2.0.3",
+    "paper-listbox": "PolymerElements/paper-listbox#^2.0.0",
+    "paper-item": "PolymerElements/paper-item#^2.0.0",
+    "arc-data-generator": "advanced-rest-client/arc-data-generator#^1.0.0"
   },
   "ignore": [
     "**/.*",

@@ -121,7 +121,7 @@ the License.
           <span class="spacer"></span>
           <paper-icon-button on-click="_popupHistory" icon="arc:open-in-new" alt="Popup history menu" title="Opens history menu in new window"></paper-icon-button>
         </div>
-        <history-menu></history-menu>
+        <history-menu list-type="[[listType]]"></history-menu>
       </template>
       <template is="dom-if" if="[[_computeOpened(selected, 1)]]">
         <div class="menu-actions">
@@ -152,7 +152,7 @@ the License.
             </section>
           </aside>
         </iron-collapse>
-        <saved-menu></saved-menu>
+        <saved-menu list-type="[[listType]]"></saved-menu>
       </template>
       <template is="dom-if" if="[[_computeOpened(selected, 2)]]">
         <div class="menu-actions">
@@ -160,7 +160,7 @@ the License.
           <span class="spacer"></span>
           <paper-icon-button on-click="_popupProjects" icon="arc:open-in-new" alt="Popup saved menu" title="Opens projects menu in new window"></paper-icon-button>
         </div>
-        <projects-menu></projects-menu>
+        <projects-menu list-type="[[listType]]"></projects-menu>
       </template>
       <template is="dom-if" if="[[_computeOpened(selected, 3)]]">
         <div class="menu-actions">
@@ -206,7 +206,19 @@ the License.
           observer: '_selectedChanged'
         },
 
-        _savedWarningOpened: Boolean
+        _savedWarningOpened: Boolean,
+        /**
+         * Changes information density of list items.
+         * By default it uses material's peper item with two lines (72px heigth)
+         * Possible values are:
+         *
+         * - `default` or empty - regular list view
+         * - `comfortable` - enables MD single line list item vie (52px heigth)
+         * - `compact` - enables list that has 40px heigth (touch recommended)
+         */
+        listType: {
+          type: String
+        }
       };
     }
 
