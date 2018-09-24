@@ -342,6 +342,9 @@ the License.
      * @param {String} type Panel name
      */
     _popupMenu(type) {
+      if (!this.allowPopup) {
+        return;
+      }
       this.dispatchEvent(new CustomEvent('popup-menu', {
         composed: true,
         bubbles: true,
