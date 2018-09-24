@@ -108,28 +108,36 @@ the License.
     }
     </style>
     <div rel="menu" class="menu">
-      <paper-tabs selected="{{selected}}">
-        <paper-tab>History</paper-tab>
-        <paper-tab>Saved</paper-tab>
-        <paper-tab>Projects</paper-tab>
-        <paper-tab>APIs</paper-tab>
+      <paper-tabs selected="{{selected}}" id="tabs">
+        <template is="dom-if" if="[[historyEnabled]]">
+          <paper-tab hidden$="[[hideHistory]]">History</paper-tab>
+        </template>
+        <paper-tab hidden$="[[hideSaved]]">Saved</paper-tab>
+        <paper-tab hidden$="[[hideProjects]]">Projects</paper-tab>
+        <paper-tab hidden$="[[hideApis]]">APIs</paper-tab>
       </paper-tabs>
-      <template is="dom-if" if="[[_computeOpened(selected, 0)]]">
+
+      <template is="dom-if" if="[[_computeHistoryOpened(selected, historyEnabled, hideHistory)]]">
         <div class="menu-actions">
           <paper-button on-click="_openHistoryList" title="Opens history in full screen">All history</paper-button>
-          <paper-button on-click="_refreshHistoryList" title="Forces refresh data from datastore">Refresh</paper-button>
+          <paper-button on-click="refreshHistoryList" title="Forces refresh data from datastore">Refresh</paper-button>
           <span class="spacer"></span>
-          <paper-icon-button on-click="_popupHistory" icon="arc:open-in-new" alt="Popup history menu" title="Opens history menu in new window"></paper-icon-button>
+          <template is="dom-if" if="[[allowPopup]]">
+            <paper-icon-button on-click="popupHistory" icon="arc:open-in-new" alt="Popup history menu" title="Opens history menu in new window"></paper-icon-button>
+          </template>
         </div>
         <history-menu list-type="[[listType]]"></history-menu>
       </template>
-      <template is="dom-if" if="[[_computeOpened(selected, 1)]]">
+
+      <template is="dom-if" if="[[_computeSavedOpened(selected, hideSaved)]]">
         <div class="menu-actions">
           <paper-button on-click="_openSavedList" title="Opens saved requests list in full screen">All saved</paper-button>
-          <paper-button on-click="_refreshSavedList" title="Forces refresh data from datastore">Refresh</paper-button>
+          <paper-button on-click="refreshSavedList" title="Forces refresh data from datastore">Refresh</paper-button>
           <span class="spacer"></span>
           <paper-icon-button class="warning-toggle" on-click="_toggleSavedWarning" icon="arc:warning" title="Toggle warning message"></paper-icon-button>
-          <paper-icon-button on-click="_popupSaved" icon="arc:open-in-new" alt="Popup saved menu" title="Opens saved requests menu in new window"></paper-icon-button>
+          <template is="dom-if" if="[[allowPopup]]">
+            <paper-icon-button on-click="popupSaved" icon="arc:open-in-new" alt="Popup saved menu" title="Opens saved requests menu in new window"></paper-icon-button>
+          </template>
         </div>
         <iron-collapse opened="[[_savedWarningOpened]]">
           <aside class="warning-message">
@@ -154,21 +162,27 @@ the License.
         </iron-collapse>
         <saved-menu list-type="[[listType]]"></saved-menu>
       </template>
-      <template is="dom-if" if="[[_computeOpened(selected, 2)]]">
+
+      <template is="dom-if" if="[[_computeProjectsOpened(selected, hideProjects)]]">
         <div class="menu-actions">
-          <paper-button on-click="_refreshProjectsList" title="Forces refresh data from datastore">Refresh</paper-button>
+          <paper-button on-click="refreshProjectsList" title="Forces refresh data from datastore">Refresh</paper-button>
           <span class="spacer"></span>
-          <paper-icon-button on-click="_popupProjects" icon="arc:open-in-new" alt="Popup saved menu" title="Opens projects menu in new window"></paper-icon-button>
+          <template is="dom-if" if="[[allowPopup]]">
+            <paper-icon-button on-click="popupProjects" icon="arc:open-in-new" alt="Popup saved menu" title="Opens projects menu in new window"></paper-icon-button>
+          </template>
         </div>
         <projects-menu list-type="[[listType]]"></projects-menu>
       </template>
-      <template is="dom-if" if="[[_computeOpened(selected, 3)]]">
+
+      <template is="dom-if" if="[[_computeApisOpened(selected, hideApis)]]">
         <div class="menu-actions">
           <paper-button on-click="_openApisList" title="Opens saved requests list in full screen">All APIs</paper-button>
-          <paper-button on-click="_refreshApisList" title="Forces refresh data from datastore">Refresh</paper-button>
+          <paper-button on-click="refreshApisList" title="Forces refresh data from datastore">Refresh</paper-button>
           <paper-button on-click="_exporeApis" title="Opens APIs expore screen">Explore</paper-button>
           <span class="spacer"></span>
-          <paper-icon-button on-click="_popupApis" icon="arc:open-in-new" alt="Popup APIs menu" title="Opens APIs menu in new window"></paper-icon-button>
+          <template is="dom-if" if="[[allowPopup]]">
+            <paper-icon-button on-click="popupApis" icon="arc:open-in-new" alt="Popup APIs menu" title="Opens APIs menu in new window"></paper-icon-button>
+          </template>
         </div>
         <rest-api-menu></rest-api-menu>
       </template>
@@ -216,18 +230,44 @@ the License.
          * - `comfortable` - enables MD single line list item vie (52px heigth)
          * - `compact` - enables list that has 40px heigth (touch recommended)
          */
-        listType: {
-          type: String
-        }
+        listType: String,
+        /**
+         * If set the history menu is rendered. This cames from application
+         * settings and is different from `noHistory` which is intended to
+         * temporaily remove the history from the view (for menu popup option)
+         */
+        historyEnabled: {type: Boolean, observer: '_historyEnabledChanegd'},
+        /**
+         * When set it hiddes history from the view
+         */
+        hideHistory: {type: Boolean, observer: '_hideHistoryChanegd'},
+        /**
+         * When set it hiddes saved list from the view
+         */
+        hideSaved: {type: Boolean, observer: '_hideSavedChanegd'},
+        /**
+         * When set it hiddes projects from the view
+         */
+        hideProjects: {type: Boolean, observer: '_hideProjectsChanegd'},
+        /**
+         * When set it hiddes APIs list from the view
+         */
+        hideApis: {type: Boolean, observer: '_hideApisChanegd'},
+        /**
+         * Renders popup menu buttons when this property is set.
+         */
+        allowPopup: Boolean
       };
     }
 
-    _computeOpened(selected, type) {
-      return selected === type;
+    static get observers() {
+      return [
+        '_rerenderTabs(historyEnabled, hideHistory, hideSaved, hideProjects, hideApis)'
+      ];
     }
 
     _selectedChanged(selected) {
-      if (selected !== 0 && selected !== 0) {
+      if (selected !== 0 && selected !== 1) {
         return;
       }
       Polymer.RenderStatus.afterNextRender(this, () => {
@@ -269,49 +309,70 @@ the License.
 
     _refreshList(type) {
       const node = this.shadowRoot.querySelector(type);
-      node.refresh();
+      if (node && node.refresh) {
+        node.refresh();
+      }
     }
-
-    _refreshHistoryList() {
+    /**
+     * Forces to refresh history list
+     */
+    refreshHistoryList() {
       this._refreshList('history-menu');
     }
-
-    _refreshSavedList() {
+    /**
+     * Forces to refresh saved list
+     */
+    refreshSavedList() {
       this._refreshList('saved-menu');
     }
-
-    _refreshProjectsList() {
+    /**
+     * Forces to refresh projects list
+     */
+    refreshProjectsList() {
       this._refreshList('projects-menu');
     }
-
-    _refreshApisList() {
+    /**
+     * Forces to refresh apis list
+     */
+    refreshApisList() {
       this._refreshList('rest-api-menu');
     }
-
+    /**
+     * Dispatches `popup-menu` custom event
+     * @param {String} type Panel name
+     */
     _popupMenu(type) {
       this.dispatchEvent(new CustomEvent('popup-menu', {
         composed: true,
         bubbles: true,
         cancelable: true,
         detail: {
-          type: type
+          type
         }
       }));
     }
-
-    _popupHistory() {
+    /**
+     * Requests to popup history menu.
+     */
+    popupHistory() {
       this._popupMenu('history-menu');
     }
-
-    _popupSaved() {
+    /**
+     * Requests to popup saved menu.
+     */
+    popupSaved() {
       this._popupMenu('saved-menu');
     }
-
-    _popupProjects() {
+    /**
+     * Requests to popup projects menu.
+     */
+    popupProjects() {
       this._popupMenu('projects-menu');
     }
-
-    _popupApis() {
+    /**
+     * Requests to popup apis menu.
+     */
+    popupApis() {
       this._popupMenu('rest-api-menu');
     }
 
@@ -335,12 +396,147 @@ the License.
       }
     }
     /**
+     * Computes condition value if history menu should be rendered
+     * @param {Number} selected Currently selected panel
+     * @param {Boolean} historyEnabled
+     * @param {Boolean} hideHistory
+     * @return {Boolean}
+     */
+    _computeHistoryOpened(selected, historyEnabled, hideHistory) {
+      if (!historyEnabled || hideHistory) {
+        return false;
+      }
+      return !selected;
+    }
+    /**
+     * Computes condition value if saved menu should be rendered
+     * @param {Number} selected Currently selected panel
+     * @param {Boolean} hideSaved
+     * @return {Boolean}
+     */
+    _computeSavedOpened(selected, hideSaved) {
+      if (hideSaved) {
+        return false;
+      }
+      return selected === 1;
+    }
+    /**
+     * Computes condition value if projects menu should be rendered
+     * @param {Number} selected Currently selected panel
+     * @param {Boolean} hideProjects
+     * @return {Boolean}
+     */
+    _computeProjectsOpened(selected, hideProjects) {
+      if (hideProjects) {
+        return false;
+      }
+      return selected === 2;
+    }
+    /**
+     * Computes condition value if saved apis should be rendered
+     * @param {Number} selected Currently selected panel
+     * @param {Boolean} hideApis
+     * @return {Boolean}
+     */
+    _computeApisOpened(selected, hideApis) {
+      if (hideApis) {
+        return false;
+      }
+      return selected === 3;
+    }
+    /**
+     * Calls `notifyResize()` of the tabs to re-render selection.
+     */
+    _rerenderTabs() {
+      if (!this.$ || !this.$.tabs) {
+        return;
+      }
+      this.$.tabs.notifyResize();
+    }
+    /**
+     * Selects first panel that is not hidden
+     */
+    _selectFirstAvailable() {
+      if (!this.hideHistory && this.historyEnabled) {
+        this.selected = 0;
+      } else if (!this.hideSaved) {
+        this.selected = 1;
+      } else if (!this.hideProjects) {
+        this.selected = 2;
+      } else if (!this.hideApis) {
+        this.selected = 3;
+      }
+    }
+    /**
+     * Calls `_selectFirstAvailable()` if `panelId` is current selection.
+     * @param {Number} panelId
+     */
+    _updateSelectionIfNeeded(panelId) {
+      if (panelId === this.selected) {
+        this._selectFirstAvailable();
+      }
+    }
+    /**
+     * Updates selection when history panel is removed
+     * @param {Boolean} val
+     */
+    _hideHistoryChanegd(val) {
+      if (val) {
+        this._updateSelectionIfNeeded(0);
+      }
+    }
+    /**
+     * Updates selection when saved panel is removed
+     * @param {Boolean} val
+     */
+    _hideSavedChanegd(val) {
+      if (val) {
+        this._updateSelectionIfNeeded(1);
+      }
+    }
+    /**
+     * Updates selection when saved panel is removed
+     * @param {Boolean} val
+     */
+    _hideProjectsChanegd(val) {
+      if (val) {
+        this._updateSelectionIfNeeded(2);
+      }
+    }
+    /**
+     * Updates selection when saved panel is removed
+     * @param {Boolean} val
+     */
+    _hideApisChanegd(val) {
+      if (val) {
+        this._updateSelectionIfNeeded(3);
+      }
+    }
+    /**
+     * Updates selection when history is disabled/enabled
+     * @param {Boolean} val
+     * @param {?Boolean} old
+     */
+    _historyEnabledChanegd(val, old) {
+      if (!val && old !== undefined) {
+        this._updateSelectionIfNeeded(0);
+      } else if (val && this.selected !== 0) {
+        this.selected = 0;
+      }
+    }
+    /**
      * Fired when the user performed a navigation action.
      *
      * It uses ARC's standard navigation event:
      * https://github.com/advanced-rest-client/arc-electron/wiki/Navigation-events---dev-guide
      *
      * @event navigate
+     */
+
+    /**
+     * Dispatched when  the user requested to popup a panel.
+     * @event popup-menu
+     * @param {String} type
      */
   }
   window.customElements.define(ArcMenu.is, ArcMenu);

@@ -41,7 +41,9 @@
     "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^2.0.3",
     "paper-listbox": "PolymerElements/paper-listbox#^2.0.0",
     "paper-item": "PolymerElements/paper-item#^2.0.0",
-    "arc-data-generator": "advanced-rest-client/arc-data-generator#^1.0.0"
+    "arc-data-generator": "advanced-rest-client/arc-data-generator#^1.0.0",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
+    "arc-electron-default-theme": "advanced-rest-client/arc-electron-default-theme#2.0.0-preview"
   },
   "ignore": [
     "**/.*",
