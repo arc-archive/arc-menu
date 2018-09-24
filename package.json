@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "description": "Side navigation for Advanced REST Client",
   "devDependencies": {
-    "@polymer/gen-typescript-declarations": "^1.1.1"
+    "@polymer/gen-typescript-declarations": "^1.5.1"
   },
   "private": false,
   "main": "arc-menu.html",
