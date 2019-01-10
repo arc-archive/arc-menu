@@ -108,14 +108,16 @@ the License.
     }
     </style>
     <div rel="menu" class="menu">
-      <paper-tabs selected="{{selected}}" id="tabs">
-        <template is="dom-if" if="[[historyEnabled]]">
-          <paper-tab hidden$="[[hideHistory]]">History</paper-tab>
-        </template>
-        <paper-tab hidden$="[[hideSaved]]">Saved</paper-tab>
-        <paper-tab hidden$="[[hideProjects]]">Projects</paper-tab>
-        <paper-tab hidden$="[[hideApis]]">APIs</paper-tab>
-      </paper-tabs>
+      <div class="tabs">
+        <paper-tabs selected="{{selected}}" id="tabs">
+          <template is="dom-if" if="[[historyEnabled]]">
+            <paper-tab hidden$="[[hideHistory]]">History</paper-tab>
+          </template>
+          <paper-tab hidden$="[[hideSaved]]">Saved</paper-tab>
+          <paper-tab hidden$="[[hideProjects]]">Projects</paper-tab>
+          <paper-tab hidden$="[[hideApis]]">APIs</paper-tab>
+        </paper-tabs>
+      </div>
 
       <template is="dom-if" if="[[_computeHistoryOpened(selected, historyEnabled, hideHistory)]]">
         <div class="menu-actions">
