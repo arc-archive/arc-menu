@@ -125,3 +125,24 @@
 
 
 
+# [2.0.0](https://github.com/advanced-rest-client/arc-menu/compare/0.5.5...2.0.0) (2019-01-26)
+
+
+### Docs
+
+* Adding docs ([1b0f0963043d7ca2686905effb2bfc561301861a](https://github.com/advanced-rest-client/arc-menu/commit/1b0f0963043d7ca2686905effb2bfc561301861a))
+* Updating polymer docs ([686d8e9fc08a0ce6c9351f3e3a1a668478ddd3ae](https://github.com/advanced-rest-client/arc-menu/commit/686d8e9fc08a0ce6c9351f3e3a1a668478ddd3ae))
+
+### Update
+
+* Adding list-type attribute ([e34df5bef9eb40f095cbc6866ed0dff885c2f4e3](https://github.com/advanced-rest-client/arc-menu/commit/e34df5bef9eb40f095cbc6866ed0dff885c2f4e3))
+* Adding new API, changing existing ([f1fc5009e0fe4f45418421cf5805f6d781445175](https://github.com/advanced-rest-client/arc-menu/commit/f1fc5009e0fe4f45418421cf5805f6d781445175))
+* Bumping version ([7d0afc99a9e85e7bff8b13cfd7eed2fc65ee2e78](https://github.com/advanced-rest-client/arc-menu/commit/7d0afc99a9e85e7bff8b13cfd7eed2fc65ee2e78))
+* Updating tests, adding vocerage, updating docs ([f5c3a3904245174cd95f0cb364c82483e1b2a1f3](https://github.com/advanced-rest-client/arc-menu/commit/f5c3a3904245174cd95f0cb364c82483e1b2a1f3))
+
+### Upodate
+
+* Adding condition to `popup-menu` handler ([f36d0070238d51a848bd43a10e3969e6c020711a](https://github.com/advanced-rest-client/arc-menu/commit/f36d0070238d51a848bd43a10e3969e6c020711a))
+
+
+
