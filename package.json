@@ -1,6 +1,6 @@
 {
   "name": "@arc-components/arc-menu",
-  "version": "2.0.0-preview",
+  "version": "2.0.0",
   "license": "Apache-2.0",
   "description": "Side navigation for Advanced REST Client",
   "devDependencies": {
