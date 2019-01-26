@@ -80,8 +80,8 @@ the License.
 
     .warning-message {
       @apply --layout-horizontal;
-      background-color: #FFB74D;
-      color: black;
+      background-color: var(--arc-menu-warning-gb-color, #FFB74D);
+      color: var(--arc-menu-warning-color, black);
       font-size: 16px;
       border-radius: 3px;
       padding-right: 12px;
@@ -95,15 +95,15 @@ the License.
       margin-left: 24px;
       margin-right: 12px;
       margin-top: 24px;
-      color: #ffffff;
+      color: var(--arc-menu-warning-icon-color, #ffffff);
     }
 
     .warning-toggle {
-      color: #FF5722;
+      color: var(--arc-menu-warning-toggle-color, #FF5722);
     }
 
     .ticket-button {
-      background-color: #fff;
+      background-color: var(--arc-menu-warning-button-gb-color, #fff);
       margin-top: 12px;
     }
     </style>
@@ -121,11 +121,11 @@ the License.
 
       <template is="dom-if" if="[[_computeHistoryOpened(selected, historyEnabled, hideHistory)]]">
         <div class="menu-actions">
-          <paper-button on-click="_openHistoryList" title="Opens history in full screen">All history</paper-button>
-          <paper-button on-click="refreshHistoryList" title="Forces refresh data from datastore">Refresh</paper-button>
+          <paper-button on-click="_openHistoryList" data-action="open-history" title="Opens history in full screen">All history</paper-button>
+          <paper-button on-click="refreshHistoryList" data-action="refresh-history" title="Forces refresh data from datastore">Refresh</paper-button>
           <span class="spacer"></span>
           <template is="dom-if" if="[[allowPopup]]">
-            <paper-icon-button on-click="popupHistory" icon="arc:open-in-new" alt="Popup history menu" title="Opens history menu in new window"></paper-icon-button>
+            <paper-icon-button on-click="popupHistory" data-action="popup-history" icon="arc:open-in-new" alt="Popup history menu" title="Opens history menu in new window"></paper-icon-button>
           </template>
         </div>
         <history-menu list-type="[[listType]]"></history-menu>
@@ -133,12 +133,12 @@ the License.
 
       <template is="dom-if" if="[[_computeSavedOpened(selected, hideSaved)]]">
         <div class="menu-actions">
-          <paper-button on-click="_openSavedList" title="Opens saved requests list in full screen">All saved</paper-button>
-          <paper-button on-click="refreshSavedList" title="Forces refresh data from datastore">Refresh</paper-button>
+          <paper-button on-click="_openSavedList" data-action="open-saved" title="Opens saved requests list in full screen">All saved</paper-button>
+          <paper-button on-click="refreshSavedList" data-action="refresh-saved" title="Forces refresh data from datastore">Refresh</paper-button>
           <span class="spacer"></span>
-          <paper-icon-button class="warning-toggle" on-click="_toggleSavedWarning" icon="arc:warning" title="Toggle warning message"></paper-icon-button>
+          <paper-icon-button class="warning-toggle" on-click="_toggleSavedWarning" data-action="toggle-saved-removal-messsage" icon="arc:warning" title="Toggle warning message"></paper-icon-button>
           <template is="dom-if" if="[[allowPopup]]">
-            <paper-icon-button on-click="popupSaved" icon="arc:open-in-new" alt="Popup saved menu" title="Opens saved requests menu in new window"></paper-icon-button>
+            <paper-icon-button on-click="popupSaved" data-action="popup-saved" icon="arc:open-in-new" alt="Popup saved menu" title="Opens saved requests menu in new window"></paper-icon-button>
           </template>
         </div>
         <iron-collapse opened="[[_savedWarningOpened]]">
@@ -167,10 +167,10 @@ the License.
 
       <template is="dom-if" if="[[_computeProjectsOpened(selected, hideProjects)]]">
         <div class="menu-actions">
-          <paper-button on-click="refreshProjectsList" title="Forces refresh data from datastore">Refresh</paper-button>
+          <paper-button on-click="refreshProjectsList" data-action="refresh-projects" title="Forces refresh data from datastore">Refresh</paper-button>
           <span class="spacer"></span>
           <template is="dom-if" if="[[allowPopup]]">
-            <paper-icon-button on-click="popupProjects" icon="arc:open-in-new" alt="Popup saved menu" title="Opens projects menu in new window"></paper-icon-button>
+            <paper-icon-button on-click="popupProjects" data-action="popup-saved" icon="arc:open-in-new" alt="Popup saved menu" title="Opens projects menu in new window"></paper-icon-button>
           </template>
         </div>
         <projects-menu list-type="[[listType]]"></projects-menu>
@@ -178,12 +178,12 @@ the License.
 
       <template is="dom-if" if="[[_computeApisOpened(selected, hideApis)]]">
         <div class="menu-actions">
-          <paper-button on-click="_openApisList" title="Opens saved requests list in full screen">All APIs</paper-button>
-          <paper-button on-click="refreshApisList" title="Forces refresh data from datastore">Refresh</paper-button>
-          <paper-button on-click="_exporeApis" title="Opens APIs expore screen">Explore</paper-button>
+          <paper-button on-click="_openApisList" data-action="open-rest-apis" title="Opens saved requests list in full screen">All APIs</paper-button>
+          <paper-button on-click="refreshApisList" data-action="refresh-rest-apis" title="Forces refresh data from datastore">Refresh</paper-button>
+          <paper-button on-click="_exporeApis" data-action="explore-rest-apis" title="Opens APIs expore screen">Explore</paper-button>
           <span class="spacer"></span>
           <template is="dom-if" if="[[allowPopup]]">
-            <paper-icon-button on-click="popupApis" icon="arc:open-in-new" alt="Popup APIs menu" title="Opens APIs menu in new window"></paper-icon-button>
+            <paper-icon-button on-click="popupApis" data-action="popup-rest-apis" icon="arc:open-in-new" alt="Popup APIs menu" title="Opens APIs menu in new window"></paper-icon-button>
           </template>
         </div>
         <rest-api-menu></rest-api-menu>
@@ -288,7 +288,7 @@ the License.
         bubbles: true,
         cancelable: true,
         detail: {
-          base: base
+          base
         }
       }));
     }
@@ -453,9 +453,6 @@ the License.
      * Calls `notifyResize()` of the tabs to re-render selection.
      */
     _rerenderTabs() {
-      if (!this.$ || !this.$.tabs) {
-        return;
-      }
       this.$.tabs.notifyResize();
     }
     /**
@@ -542,6 +539,14 @@ the License.
      * Dispatched when  the user requested to popup a panel.
      * @event popup-menu
      * @param {String} type
+     */
+    /**
+     * Dispatched when requested to open an URL.
+     * If this event is not handled then it uses `window.open()` instead.
+     * To handle the event cancel it by calling `e.preventDefault()`.
+     *
+     * @event open-external-url
+     * @param {String} url The URL to open.
      */
   }
   window.customElements.define(ArcMenu.is, ArcMenu);

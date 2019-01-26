@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "history-menu": "advanced-rest-client/history-menu#^2.0.0",
+    "history-menu": "advanced-rest-client/history-menu#^2.0.1",
     "saved-menu": "advanced-rest-client/saved-menu#^2.0.0",
     "rest-api-menu": "advanced-rest-client/rest-api-menu#^2.0.0",
     "projects-menu": "advanced-rest-client/projects-menu#^2.0.0",

@@ -20,7 +20,6 @@
   <link rel="import" href="../../arc-data-generator/arc-data-generator.html">
   <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
   <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
-  <script src="../../chance/dist/chance.min.js"></script>
   <link rel="import" href="../arc-menu.html">
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
@@ -106,6 +105,13 @@
     e.preventDefault();
     e.stopPropagation();
     e.detail.result = Promise.resolve([]);
+  });
+  window.addEventListener('workspace-open-project-requests', function(e) {
+    const toast = document.getElementById('navToast');
+    const {project, replace} = e.detail;
+    const id = project._id || project;
+    toast.text = (replace ? 'Replacing' : 'Opening') + ` project ${id}`;
+    toast.opened = true;
   });
   (function(scope) {
     scope.historyEnabled = true;
