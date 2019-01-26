@@ -11,37 +11,80 @@
   <link rel="import" href="../../paper-toast/paper-toast.html">
   <link rel="import" href="../../app-pouchdb/pouchdb.html">
   <link rel="import" href="../../arc-models/rest-api-model.html">
-  <script src="data-generator.js"></script>
-  <script src="../../chance/dist/chance.min.js"></script>
+  <link rel="import" href="../../arc-models/project-model.html">
+  <link rel="import" href="../../arc-models/request-model.html">
+  <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
+  <link rel="import" href="../../paper-listbox/paper-listbox.html">
+  <link rel="import" href="../../paper-item/paper-item.html">
+  <link rel="import" href="../../neon-animation/web-animations.html">
+  <link rel="import" href="../../arc-data-generator/arc-data-generator.html">
+  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
+  <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
   <link rel="import" href="../arc-menu.html">
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
-    :root {
-      --arc-font-title: {
-        @apply --paper-font-title;
-      };
-
-      --arc-font-body1: {
-        @apply --paper-font-body1;
-      };
+    html,
+    body {
+      background-color: #e5e5e5;
+      margin: 0;
+      padding: 0;
     }
+
     arc-menu {
-      height: calc(100vh - 60px);
+      height: calc(100vh - 256px);
+    }
+
+    .card {
+      @apply --shadow-elevation-4dp;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #fff;
+      margin-top: 20px;
+      margin-bottom: 20px;
     }
     </style>
   </custom-style>
 </head>
 <body unresolved>
   <rest-api-model></rest-api-model>
+  <project-model></project-model>
+  <request-model></request-model>
+
   <dom-bind id="app">
     <template is="dom-bind">
-      <div class="vertical-section-container centered">
-        <arc-menu rest-api></arc-menu>
-        <div class="controls">
-          <button on-tap="generate">Generate 100 requests items</button>
-          <button on-tap="delete">Clear data</button>
-        </div>
-      </div>
+      <section class="centered card" role="main">
+        <arc-menu
+          rest-api
+          list-type="[[listType]]"
+          history-enabled="[[historyEnabled]]"
+          hide-history="[[hideHistory]]"
+          hide-saved="[[hideSaved]]"
+          hide-projects="[[hideProjects]]"
+          hide-apis="[[hideApis]]"
+          allow-popup="[[allowPopup]]"></arc-menu>
+      </section>
+
+      <section class="centered card">
+        <button on-tap="generate">Generate 100 requests items</button>
+        <button on-tap="delete">Clear data</button>
+
+        <paper-dropdown-menu label="Select list type">
+          <paper-listbox slot="dropdown-content" attr-for-selected="data-value" selected="{{listType}}">
+            <paper-item data-value="default">Default</paper-item>
+            <paper-item data-value="comfortable">Comfortable</paper-item>
+            <paper-item data-value="compact">Compact</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </section>
+
+      <section class="centered card">
+        <paper-toggle-button checked="{{historyEnabled}}">History enabled</paper-toggle-button>
+        <paper-toggle-button checked="{{hideHistory}}">Hide history</paper-toggle-button>
+        <paper-toggle-button checked="{{hideSaved}}">Hide saved</paper-toggle-button>
+        <paper-toggle-button checked="{{hideProjects}}">Hide projects</paper-toggle-button>
+        <paper-toggle-button checked="{{hideApis}}">Hide APIs</paper-toggle-button>
+        <paper-toggle-button checked="{{allowPopup}}">Allow popup menu</paper-toggle-button>
+      </section>
       <paper-toast id="genToast" text="The request data has been generated"></paper-toast>
       <paper-toast id="delToast" text="The request data has been removed"></paper-toast>
       <paper-toast id="navToast" text="" duration="5000"></paper-toast>
@@ -63,9 +106,25 @@
     e.stopPropagation();
     e.detail.result = Promise.resolve([]);
   });
+  window.addEventListener('workspace-open-project-requests', function(e) {
+    const toast = document.getElementById('navToast');
+    const {project, replace} = e.detail;
+    const id = project._id || project;
+    toast.text = (replace ? 'Replacing' : 'Opening') + ` project ${id}`;
+    toast.opened = true;
+  });
   (function(scope) {
+    scope.historyEnabled = true;
     scope.generate = function() {
-      DataGenerator.generateData(100)
+      DataGenerator.insertSavedRequestData({
+        requestsSize: 100,
+        projectsSize: 15
+      })
+      .then(() => {
+        return DataGenerator.insertHistoryRequestData({
+          requestsSize: 500
+        });
+      })
       .then(() => {
         document.getElementById('genToast').opened = true;
         const e = new CustomEvent('data-imported', {
