@@ -49,6 +49,7 @@ the License.
     rest-api-menu,
     projects-menu {
       @apply --layout-flex;
+      height: calc(100% - 96px);
     }
 
     .menu-actions {
@@ -109,13 +110,13 @@ the License.
     </style>
     <div rel="menu" class="menu">
       <div class="tabs">
-        <paper-tabs selected="{{selected}}" id="tabs">
+        <paper-tabs selected="{{selected}}" id="tabs" on-dragover="_dragoverHandler" on-dragleave="_dragleaveHandler">
           <template is="dom-if" if="[[historyEnabled]]">
-            <paper-tab hidden$="[[hideHistory]]">History</paper-tab>
+            <paper-tab data-type="history" hidden$="[[hideHistory]]">History</paper-tab>
           </template>
-          <paper-tab hidden$="[[hideSaved]]">Saved</paper-tab>
-          <paper-tab hidden$="[[hideProjects]]">Projects</paper-tab>
-          <paper-tab hidden$="[[hideApis]]">APIs</paper-tab>
+          <paper-tab data-type="saved" hidden$="[[hideSaved]]">Saved</paper-tab>
+          <paper-tab data-type="projects" hidden$="[[hideProjects]]">Projects</paper-tab>
+          <paper-tab data-type="rest-apis" hidden$="[[hideApis]]">APIs</paper-tab>
         </paper-tabs>
       </div>
 
@@ -128,7 +129,7 @@ the License.
             <paper-icon-button on-click="popupHistory" data-action="popup-history" icon="arc:open-in-new" alt="Popup history menu" title="Opens history menu in new window"></paper-icon-button>
           </template>
         </div>
-        <history-menu list-type="[[listType]]"></history-menu>
+        <history-menu list-type="[[listType]]" draggable-enabled="[[draggableEnabled]]"></history-menu>
       </template>
 
       <template is="dom-if" if="[[_computeSavedOpened(selected, hideSaved)]]">
@@ -162,7 +163,7 @@ the License.
             </section>
           </aside>
         </iron-collapse>
-        <saved-menu list-type="[[listType]]"></saved-menu>
+        <saved-menu list-type="[[listType]]" draggable-enabled="[[draggableEnabled]]"></saved-menu>
       </template>
 
       <template is="dom-if" if="[[_computeProjectsOpened(selected, hideProjects)]]">
@@ -173,7 +174,7 @@ the License.
             <paper-icon-button on-click="popupProjects" data-action="popup-saved" icon="arc:open-in-new" alt="Popup saved menu" title="Opens projects menu in new window"></paper-icon-button>
           </template>
         </div>
-        <projects-menu list-type="[[listType]]"></projects-menu>
+        <projects-menu list-type="[[listType]]" draggable-enabled="[[draggableEnabled]]"></projects-menu>
       </template>
 
       <template is="dom-if" if="[[_computeApisOpened(selected, hideApis)]]">
@@ -212,7 +213,9 @@ the License.
    * @demo demo/index.html
    */
   class ArcMenu extends Polymer.Element {
-    static get is() {return 'arc-menu';}
+    static get is() {
+      return 'arc-menu';
+    }
     static get properties() {
       return {
         // Currently selected menu tab
@@ -258,7 +261,18 @@ the License.
         /**
          * Renders popup menu buttons when this property is set.
          */
-        allowPopup: Boolean
+        allowPopup: Boolean,
+        /**
+         * Adds draggable property to the request list item element.
+         * The `dataTransfer` object has `arc/request-object` mime type with
+         * serialized JSON with request model.
+         */
+        draggableEnabled: {type: Boolean, value: false},
+        /**
+         * A timeout after which the project item is opened when dragging a
+         * request over.
+         */
+        dragOpenTimeout: {type: Number, value: 700}
       };
     }
 
@@ -525,6 +539,96 @@ the License.
       } else if (val && this.selected !== 0) {
         this.selected = 0;
       }
+    }
+    /**
+     * Finds paper-tab element in event path.
+     * @param {Event} e Event with `path` or `composedPath()`
+     * @return {Element|undefined}
+     */
+    _findPaperTab(e) {
+      const path = e.path || e.composedPath();
+      for (let i = 0, len = path.length; i < len; i++) {
+        const target = path[i];
+        if (target.nodeName === 'PAPER-TAB') {
+          return target;
+        }
+      }
+    }
+    /**
+     * Handler for `dragover` event on paper tabs.
+     * Opens the tab if the dragged element can be dropped in corresponding menu.
+     * @param {DragEvent} e
+     */
+    _dragoverHandler(e) {
+      if (!this.draggableEnabled) {
+        return;
+      }
+      if (e.dataTransfer.types.indexOf('arc/request-object') === -1) {
+        return;
+      }
+      const tab = this._findPaperTab(e);
+      if (!tab) {
+        return;
+      }
+      const type = tab.dataset.type;
+      if (['saved', 'projects'].indexOf(type) === -1) {
+        return;
+      }
+      e.preventDefault();
+      if (this.__dragTypeCallback === type) {
+        return;
+      }
+      this._cancelDragTimeout();
+      const selected = this.selected;
+      if (type === 'saved' && selected === 1) {
+        return;
+      }
+      if (type === 'projects' && selected === 2) {
+        return;
+      }
+      this.__dragTypeCallback = type;
+      this.__dragOverTimeout = setTimeout(() => this._openMenuDragOver(), this.dragOpenTimeout);
+    }
+    /**
+     * Handler for `dragleave` event on project node.
+     * @param {DragEvent} e
+     */
+    _dragleaveHandler(e) {
+      if (!this.draggableEnabled) {
+        return;
+      }
+      if (e.dataTransfer.types.indexOf('arc/request-object') === -1) {
+        return;
+      }
+      e.preventDefault();
+      this._cancelDragTimeout();
+    }
+    /**
+     * Cancels the timer set in the dragover event
+     */
+    _cancelDragTimeout() {
+      if (this.__dragOverTimeout) {
+        clearTimeout(this.__dragOverTimeout);
+        this.__dragOverTimeout = undefined;
+      }
+      this.__dragTypeCallback = undefined;
+    }
+
+    _openMenuDragOver() {
+      if (!this.draggableEnabled) {
+        return;
+      }
+      const type = this.__dragTypeCallback;
+      this._cancelDragTimeout();
+      let selection;
+      switch (type) {
+        case 'saved': selection = 1; break;
+        case 'projects': selection = 2; break;
+      }
+      if (selection === undefined) {
+        return;
+      }
+      this.selected = selection;
     }
     /**
      * Fired when the user performed a navigation action.

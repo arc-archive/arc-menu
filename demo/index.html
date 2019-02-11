@@ -31,7 +31,7 @@
     }
 
     arc-menu {
-      height: calc(100vh - 256px);
+      height: calc(100vh - 900px);
     }
 
     .card {
@@ -41,6 +41,27 @@
       background-color: #fff;
       margin-top: 20px;
       margin-bottom: 20px;
+    }
+
+    .draggable-toggle {
+      margin: 12px 0;
+    }
+
+    #dragOutput {
+      display: block;
+      padding: 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      background-color: #FFF8E1;
+    }
+
+    .drop-target {
+      border: 2px transparent dashed;
+      box-sizing: border-box;
+    }
+
+    .drop-target.drag-over {
+      border-color: #8BC34A;
     }
     </style>
   </custom-style>
@@ -61,12 +82,22 @@
           hide-saved="[[hideSaved]]"
           hide-projects="[[hideProjects]]"
           hide-apis="[[hideApis]]"
-          allow-popup="[[allowPopup]]"></arc-menu>
+          allow-popup="[[allowPopup]]"
+          draggable-enabled="[[draggableEnabled]]"></arc-menu>
+      </section>
+
+      <section class="centered card drop-target" on-dragover="_dragoverHandler" on-dragleave="_dragleaveHandler" on-drop="_dropHandler">
+        Drop object here
+        <output id="dragOutput" hidden></output>
       </section>
 
       <section class="centered card">
         <button on-tap="generate">Generate 100 requests items</button>
         <button on-tap="delete">Clear data</button>
+
+        <div class="draggable-toggle">
+          <paper-toggle-button checked="{{draggableEnabled}}">Enable experimental item draggable</paper-toggle-button>
+        </div>
 
         <paper-dropdown-menu label="Select list type">
           <paper-listbox slot="dropdown-content" attr-for-selected="data-value" selected="{{listType}}">
@@ -115,6 +146,7 @@
   });
   (function(scope) {
     scope.historyEnabled = true;
+    scope.draggableEnabled = true;
     scope.generate = function() {
       DataGenerator.insertSavedRequestData({
         requestsSize: 100,
@@ -145,6 +177,38 @@
         });
         document.body.dispatchEvent(e);
       });
+    };
+
+    scope._dragoverHandler = function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      e.currentTarget.classList.add('drag-over');
+    };
+
+    scope._dragleaveHandler = function(e) {
+      e.currentTarget.classList.remove('drag-over');
+    };
+
+    scope._dropHandler = function(e) {
+      e.preventDefault();
+      let data;
+      if (e.dataTransfer.types.indexOf('arc/request-object') !== -1) {
+        data = e.dataTransfer.getData('arc/request-object');
+      } else if (e.dataTransfer.types.indexOf('arc/project-object') !== -1) {
+        data = e.dataTransfer.getData('arc/project-object');
+      }
+      e.currentTarget.classList.remove('drag-over');
+      if (data) {
+        data = JSON.parse(data);
+        console.log(data);
+      } else {
+        data = '';
+      }
+      const out = document.getElementById('dragOutput');
+      out.innerText = JSON.stringify(data, null, 2);
+      if (out.hasAttribute('hidden')) {
+        out.removeAttribute('hidden');
+      }
     };
   })(document.getElementById('app'));
   </script>

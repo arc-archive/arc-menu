@@ -611,11 +611,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 218,
+              "line": 221,
               "column": 8
             },
             "end": {
-              "line": 222,
+              "line": 225,
               "column": 9
             }
           },
@@ -634,11 +634,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 224,
+              "line": 227,
               "column": 8
             },
             "end": {
-              "line": 224,
+              "line": 227,
               "column": 36
             }
           },
@@ -655,11 +655,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 234,
+              "line": 237,
               "column": 8
             },
             "end": {
-              "line": 234,
+              "line": 237,
               "column": 24
             }
           },
@@ -676,11 +676,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 240,
+              "line": 243,
               "column": 8
             },
             "end": {
-              "line": 240,
+              "line": 243,
               "column": 75
             }
           },
@@ -698,11 +698,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 244,
+              "line": 247,
               "column": 8
             },
             "end": {
-              "line": 244,
+              "line": 247,
               "column": 69
             }
           },
@@ -720,11 +720,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 248,
+              "line": 251,
               "column": 8
             },
             "end": {
-              "line": 248,
+              "line": 251,
               "column": 65
             }
           },
@@ -742,11 +742,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 252,
+              "line": 255,
               "column": 8
             },
             "end": {
-              "line": 252,
+              "line": 255,
               "column": 71
             }
           },
@@ -764,11 +764,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 256,
+              "line": 259,
               "column": 8
             },
             "end": {
-              "line": 256,
+              "line": 259,
               "column": 63
             }
           },
@@ -786,11 +786,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 260,
+              "line": 263,
               "column": 8
             },
             "end": {
-              "line": 260,
+              "line": 263,
               "column": 27
             }
           },
@@ -799,6 +799,50 @@
               "attributeType": "Boolean"
             }
           }
+        },
+        {
+          "name": "draggableEnabled",
+          "type": "boolean | null | undefined",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 269,
+              "column": 8
+            },
+            "end": {
+              "line": 269,
+              "column": 55
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "attributeType": "Boolean"
+            }
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "dragOpenTimeout",
+          "type": "number | null | undefined",
+          "description": "A timeout after which the project item is opened when dragging a\nrequest over.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 274,
+              "column": 8
+            },
+            "end": {
+              "line": 274,
+              "column": 51
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "attributeType": "Number"
+            }
+          },
+          "defaultValue": "700"
         }
       ],
       "methods": [
@@ -3024,11 +3068,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 270,
+              "line": 284,
               "column": 4
             },
             "end": {
-              "line": 282,
+              "line": 296,
               "column": 5
             }
           },
@@ -3048,11 +3092,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 284,
+              "line": 298,
               "column": 4
             },
             "end": {
-              "line": 293,
+              "line": 307,
               "column": 5
             }
           },
@@ -3072,11 +3116,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 295,
+              "line": 309,
               "column": 4
             },
             "end": {
-              "line": 297,
+              "line": 311,
               "column": 5
             }
           },
@@ -3092,11 +3136,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 299,
+              "line": 313,
               "column": 4
             },
             "end": {
-              "line": 301,
+              "line": 315,
               "column": 5
             }
           },
@@ -3112,11 +3156,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 303,
+              "line": 317,
               "column": 4
             },
             "end": {
-              "line": 305,
+              "line": 319,
               "column": 5
             }
           },
@@ -3132,11 +3176,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 307,
+              "line": 321,
               "column": 4
             },
             "end": {
-              "line": 309,
+              "line": 323,
               "column": 5
             }
           },
@@ -3152,11 +3196,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 311,
+              "line": 325,
               "column": 4
             },
             "end": {
-              "line": 316,
+              "line": 330,
               "column": 5
             }
           },
@@ -3176,11 +3220,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 320,
+              "line": 334,
               "column": 4
             },
             "end": {
-              "line": 322,
+              "line": 336,
               "column": 5
             }
           },
@@ -3196,11 +3240,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 326,
+              "line": 340,
               "column": 4
             },
             "end": {
-              "line": 328,
+              "line": 342,
               "column": 5
             }
           },
@@ -3216,11 +3260,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 332,
+              "line": 346,
               "column": 4
             },
             "end": {
-              "line": 334,
+              "line": 348,
               "column": 5
             }
           },
@@ -3236,11 +3280,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 338,
+              "line": 352,
               "column": 4
             },
             "end": {
-              "line": 340,
+              "line": 354,
               "column": 5
             }
           },
@@ -3256,11 +3300,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 345,
+              "line": 359,
               "column": 4
             },
             "end": {
-              "line": 357,
+              "line": 371,
               "column": 5
             }
           },
@@ -3282,11 +3326,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 361,
+              "line": 375,
               "column": 4
             },
             "end": {
-              "line": 363,
+              "line": 377,
               "column": 5
             }
           },
@@ -3302,11 +3346,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 367,
+              "line": 381,
               "column": 4
             },
             "end": {
-              "line": 369,
+              "line": 383,
               "column": 5
             }
           },
@@ -3322,11 +3366,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 373,
+              "line": 387,
               "column": 4
             },
             "end": {
-              "line": 375,
+              "line": 389,
               "column": 5
             }
           },
@@ -3342,11 +3386,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 379,
+              "line": 393,
               "column": 4
             },
             "end": {
-              "line": 381,
+              "line": 395,
               "column": 5
             }
           },
@@ -3362,11 +3406,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 383,
+              "line": 397,
               "column": 4
             },
             "end": {
-              "line": 385,
+              "line": 399,
               "column": 5
             }
           },
@@ -3382,11 +3426,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 387,
+              "line": 401,
               "column": 4
             },
             "end": {
-              "line": 401,
+              "line": 415,
               "column": 5
             }
           },
@@ -3402,11 +3446,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 409,
+              "line": 423,
               "column": 4
             },
             "end": {
-              "line": 414,
+              "line": 428,
               "column": 5
             }
           },
@@ -3436,11 +3480,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 421,
+              "line": 435,
               "column": 4
             },
             "end": {
-              "line": 426,
+              "line": 440,
               "column": 5
             }
           },
@@ -3466,11 +3510,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 433,
+              "line": 447,
               "column": 4
             },
             "end": {
-              "line": 438,
+              "line": 452,
               "column": 5
             }
           },
@@ -3496,11 +3540,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 445,
+              "line": 459,
               "column": 4
             },
             "end": {
-              "line": 450,
+              "line": 464,
               "column": 5
             }
           },
@@ -3526,11 +3570,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 454,
+              "line": 468,
               "column": 4
             },
             "end": {
-              "line": 456,
+              "line": 470,
               "column": 5
             }
           },
@@ -3546,11 +3590,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 460,
+              "line": 474,
               "column": 4
             },
             "end": {
-              "line": 470,
+              "line": 484,
               "column": 5
             }
           },
@@ -3566,11 +3610,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 475,
+              "line": 489,
               "column": 4
             },
             "end": {
-              "line": 479,
+              "line": 493,
               "column": 5
             }
           },
@@ -3591,11 +3635,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 484,
+              "line": 498,
               "column": 4
             },
             "end": {
-              "line": 488,
+              "line": 502,
               "column": 5
             }
           },
@@ -3616,11 +3660,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 493,
+              "line": 507,
               "column": 4
             },
             "end": {
-              "line": 497,
+              "line": 511,
               "column": 5
             }
           },
@@ -3641,11 +3685,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 502,
+              "line": 516,
               "column": 4
             },
             "end": {
-              "line": 506,
+              "line": 520,
               "column": 5
             }
           },
@@ -3666,11 +3710,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 511,
+              "line": 525,
               "column": 4
             },
             "end": {
-              "line": 515,
+              "line": 529,
               "column": 5
             }
           },
@@ -3691,11 +3735,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 521,
+              "line": 535,
               "column": 4
             },
             "end": {
-              "line": 527,
+              "line": 541,
               "column": 5
             }
           },
@@ -3710,6 +3754,122 @@
               "type": "?Boolean"
             }
           ],
+          "return": {
+            "type": "void"
+          }
+        },
+        {
+          "name": "_findPaperTab",
+          "description": "Finds paper-tab element in event path.",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 547,
+              "column": 4
+            },
+            "end": {
+              "line": 555,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e",
+              "type": "Event",
+              "description": "Event with `path` or `composedPath()`"
+            }
+          ],
+          "return": {
+            "type": "(Element | undefined)"
+          }
+        },
+        {
+          "name": "_dragoverHandler",
+          "description": "Handler for `dragover` event on paper tabs.\nOpens the tab if the dragged element can be dropped in corresponding menu.",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 561,
+              "column": 4
+            },
+            "end": {
+              "line": 590,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e",
+              "type": "DragEvent"
+            }
+          ],
+          "return": {
+            "type": "void"
+          }
+        },
+        {
+          "name": "_dragleaveHandler",
+          "description": "Handler for `dragleave` event on project node.",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 595,
+              "column": 4
+            },
+            "end": {
+              "line": 604,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e",
+              "type": "DragEvent"
+            }
+          ],
+          "return": {
+            "type": "void"
+          }
+        },
+        {
+          "name": "_cancelDragTimeout",
+          "description": "Cancels the timer set in the dragover event",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 608,
+              "column": 4
+            },
+            "end": {
+              "line": 614,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "return": {
+            "type": "void"
+          }
+        },
+        {
+          "name": "_openMenuDragOver",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 616,
+              "column": 4
+            },
+            "end": {
+              "line": 631,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [],
           "return": {
             "type": "void"
           }
@@ -4681,11 +4841,11 @@
       "metadata": {},
       "sourceRange": {
         "start": {
-          "line": 213,
+          "line": 214,
           "column": 2
         },
         "end": {
-          "line": 550,
+          "line": 654,
           "column": 3
         }
       },
@@ -4698,11 +4858,11 @@
           "description": "Currently selected menu tab",
           "sourceRange": {
             "start": {
-              "line": 218,
+              "line": 221,
               "column": 8
             },
             "end": {
-              "line": 222,
+              "line": 225,
               "column": 9
             }
           },
@@ -4714,11 +4874,11 @@
           "description": "Changes information density of list items.\nBy default it uses material's peper item with two lines (72px heigth)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px heigth)\n- `compact` - enables list that has 40px heigth (touch recommended)",
           "sourceRange": {
             "start": {
-              "line": 234,
+              "line": 237,
               "column": 8
             },
             "end": {
-              "line": 234,
+              "line": 237,
               "column": 24
             }
           },
@@ -4730,11 +4890,11 @@
           "description": "If set the history menu is rendered. This cames from application\nsettings and is different from `noHistory` which is intended to\ntemporaily remove the history from the view (for menu popup option)",
           "sourceRange": {
             "start": {
-              "line": 240,
+              "line": 243,
               "column": 8
             },
             "end": {
-              "line": 240,
+              "line": 243,
               "column": 75
             }
           },
@@ -4746,11 +4906,11 @@
           "description": "When set it hiddes history from the view",
           "sourceRange": {
             "start": {
-              "line": 244,
+              "line": 247,
               "column": 8
             },
             "end": {
-              "line": 244,
+              "line": 247,
               "column": 69
             }
           },
@@ -4762,11 +4922,11 @@
           "description": "When set it hiddes saved list from the view",
           "sourceRange": {
             "start": {
-              "line": 248,
+              "line": 251,
               "column": 8
             },
             "end": {
-              "line": 248,
+              "line": 251,
               "column": 65
             }
           },
@@ -4778,11 +4938,11 @@
           "description": "When set it hiddes projects from the view",
           "sourceRange": {
             "start": {
-              "line": 252,
+              "line": 255,
               "column": 8
             },
             "end": {
-              "line": 252,
+              "line": 255,
               "column": 71
             }
           },
@@ -4794,11 +4954,11 @@
           "description": "When set it hiddes APIs list from the view",
           "sourceRange": {
             "start": {
-              "line": 256,
+              "line": 259,
               "column": 8
             },
             "end": {
-              "line": 256,
+              "line": 259,
               "column": 63
             }
           },
@@ -4810,16 +4970,48 @@
           "description": "Renders popup menu buttons when this property is set.",
           "sourceRange": {
             "start": {
-              "line": 260,
+              "line": 263,
               "column": 8
             },
             "end": {
-              "line": 260,
+              "line": 263,
               "column": 27
             }
           },
           "metadata": {},
           "type": "boolean | null | undefined"
+        },
+        {
+          "name": "draggable-enabled",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
+          "sourceRange": {
+            "start": {
+              "line": 269,
+              "column": 8
+            },
+            "end": {
+              "line": 269,
+              "column": 55
+            }
+          },
+          "metadata": {},
+          "type": "boolean | null | undefined"
+        },
+        {
+          "name": "drag-open-timeout",
+          "description": "A timeout after which the project item is opened when dragging a\nrequest over.",
+          "sourceRange": {
+            "start": {
+              "line": 274,
+              "column": 8
+            },
+            "end": {
+              "line": 274,
+              "column": 51
+            }
+          },
+          "metadata": {},
+          "type": "number | null | undefined"
         }
       ],
       "events": [

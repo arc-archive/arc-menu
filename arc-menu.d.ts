@@ -91,6 +91,19 @@ declare namespace UiElements {
      * Renders popup menu buttons when this property is set.
      */
     allowPopup: boolean|null|undefined;
+
+    /**
+     * Adds draggable property to the request list item element.
+     * The `dataTransfer` object has `arc/request-object` mime type with
+     * serialized JSON with request model.
+     */
+    draggableEnabled: boolean|null|undefined;
+
+    /**
+     * A timeout after which the project item is opened when dragging a
+     * request over.
+     */
+    dragOpenTimeout: number|null|undefined;
     _selectedChanged(selected: any): void;
     _navigateScreen(base: any): void;
     _openHistoryList(): void;
@@ -215,6 +228,30 @@ declare namespace UiElements {
      * Updates selection when history is disabled/enabled
      */
     _historyEnabledChanegd(val: Boolean|null, old: Boolean|null): void;
+
+    /**
+     * Finds paper-tab element in event path.
+     *
+     * @param e Event with `path` or `composedPath()`
+     */
+    _findPaperTab(e: Event|null): Element|null|undefined;
+
+    /**
+     * Handler for `dragover` event on paper tabs.
+     * Opens the tab if the dragged element can be dropped in corresponding menu.
+     */
+    _dragoverHandler(e: DragEvent|null): void;
+
+    /**
+     * Handler for `dragleave` event on project node.
+     */
+    _dragleaveHandler(e: DragEvent|null): void;
+
+    /**
+     * Cancels the timer set in the dragover event
+     */
+    _cancelDragTimeout(): void;
+    _openMenuDragOver(): void;
   }
 }
 
