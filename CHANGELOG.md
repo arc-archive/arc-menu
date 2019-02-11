@@ -146,3 +146,30 @@
 
 
 
+## [2.0.1](https://github.com/advanced-rest-client/arc-menu/compare/0.5.5...2.0.1) (2019-02-11)
+
+
+### Docs
+
+* Adding docs ([1b0f0963043d7ca2686905effb2bfc561301861a](https://github.com/advanced-rest-client/arc-menu/commit/1b0f0963043d7ca2686905effb2bfc561301861a))
+* Updating polymer docs ([686d8e9fc08a0ce6c9351f3e3a1a668478ddd3ae](https://github.com/advanced-rest-client/arc-menu/commit/686d8e9fc08a0ce6c9351f3e3a1a668478ddd3ae))
+
+### New
+
+* Adding drag and drop support ([7ea71adcc40d12ca058bd81ed07a6d1f3a9f2eec](https://github.com/advanced-rest-client/arc-menu/commit/7ea71adcc40d12ca058bd81ed07a6d1f3a9f2eec))
+
+### Update
+
+* Adding list-type attribute ([e34df5bef9eb40f095cbc6866ed0dff885c2f4e3](https://github.com/advanced-rest-client/arc-menu/commit/e34df5bef9eb40f095cbc6866ed0dff885c2f4e3))
+* Adding new API, changing existing ([f1fc5009e0fe4f45418421cf5805f6d781445175](https://github.com/advanced-rest-client/arc-menu/commit/f1fc5009e0fe4f45418421cf5805f6d781445175))
+* Bumping version ([7d0afc99a9e85e7bff8b13cfd7eed2fc65ee2e78](https://github.com/advanced-rest-client/arc-menu/commit/7d0afc99a9e85e7bff8b13cfd7eed2fc65ee2e78))
+* Updating project metadata ([d2ea3810ef16ae090e48fa431ad1c236c25a052d](https://github.com/advanced-rest-client/arc-menu/commit/d2ea3810ef16ae090e48fa431ad1c236c25a052d))
+* Updating tests configuration ([f301da6e706645da0a6a7d46e554db8002fffdc5](https://github.com/advanced-rest-client/arc-menu/commit/f301da6e706645da0a6a7d46e554db8002fffdc5))
+* Updating tests, adding vocerage, updating docs ([f5c3a3904245174cd95f0cb364c82483e1b2a1f3](https://github.com/advanced-rest-client/arc-menu/commit/f5c3a3904245174cd95f0cb364c82483e1b2a1f3))
+
+### Upodate
+
+* Adding condition to `popup-menu` handler ([f36d0070238d51a848bd43a10e3969e6c020711a](https://github.com/advanced-rest-client/arc-menu/commit/f36d0070238d51a848bd43a10e3969e6c020711a))
+
+
+
