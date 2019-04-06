@@ -5,24 +5,12 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   arc-menu.html
+ *   arc-menu.js
  */
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
-
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/utils/render-status.d.ts" />
-/// <reference path="../saved-menu/saved-menu.d.ts" />
-/// <reference path="../history-menu/history-menu.d.ts" />
-/// <reference path="../rest-api-menu/rest-api-menu.d.ts" />
-/// <reference path="../projects-menu/projects-menu.d.ts" />
-/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
-/// <reference path="../paper-tabs/paper-tabs.d.ts" />
-/// <reference path="../paper-tabs/paper-tab.d.ts" />
-/// <reference path="../paper-button/paper-button.d.ts" />
-/// <reference path="../iron-collapse/iron-collapse.d.ts" />
 
 declare namespace UiElements {
 
@@ -41,7 +29,7 @@ declare namespace UiElements {
    * `--arc-menu-tabs-color` | Color of the papaer tabs | ``
    * `--arc-menu-tabs-color-unselected` | Color of the papaer tabs when not selected | ``
    */
-  class ArcMenu extends Polymer.Element {
+  class ArcMenu extends PolymerElement {
 
     /**
      * Currently selected menu tab
@@ -255,6 +243,11 @@ declare namespace UiElements {
   }
 }
 
-interface HTMLElementTagNameMap {
-  "arc-menu": UiElements.ArcMenu;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "arc-menu": UiElements.ArcMenu;
+  }
 }
+
+export {};

@@ -3,25 +3,34 @@
   "plugins": {
     "local": {
       "disabled": true,
-      "browsers": ["chrome", "firefox"]
+      "browsers": [
+        "chrome",
+        "firefox"
+      ]
     },
     "sauce": {
       "disabled": true,
-      "browsers": [{
-        "browserName": "firefox",
-        "platform": "Windows 10",
-        "version": "latest"
-      }, {
-        "browserName": "chrome",
-        "platform": "Windows 10",
-        "version": "latest"
-      }]
+      "browsers": [
+        {
+          "browserName": "firefox",
+          "platform": "Windows 10",
+          "version": "latest"
+        },
+        {
+          "browserName": "chrome",
+          "platform": "Windows 10",
+          "version": "latest"
+        }
+      ]
     },
-    "istanbub": {
+    "@advanced-rest-client/wct-istanbub": {
       "dir": "./coverage",
-      "reporters": ["text-summary", "lcov"],
+      "reporters": [
+        "text-summary",
+        "lcov"
+      ],
       "include": [
-        "**/*.html"
+        "**/*.js"
       ],
       "exclude": [
         "**/test/**",
