@@ -1,19 +1,19 @@
 {
   "name": "@advanced-rest-client/arc-menu",
-  "version": "2.0.1",
+  "description": "Main navigation for Advanced REST Client",
+  "version": "3.0.0",
   "license": "Apache-2.0",
-  "description": "Side navigation for Advanced REST Client",
-  "devDependencies": {
-    "@polymer/gen-typescript-declarations": "^1.6.1"
-  },
-  "private": false,
-  "main": "arc-menu.html",
-  "scripts": {
-    "lint": "polymer lint arc-menu.html",
-    "test-sauce": "polymer test --plugin sauce --job-name \"arc-menu:local-test\"",
-    "test": "polymer test --plugin local",
-    "update-types": "gen-typescript-declarations --deleteExisting --outDir ."
-  },
+  "main": "arc-menu.js",
+  "keywords": [
+    "advanced-rest-client",
+    "app-menu"
+  ],
+  "authors": [
+    "Pawel Psztyc"
+  ],
+  "contributors": [
+    "The Advanced REST client authors <arc@mulesoft.com>"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/advanced-rest-client/arc-menu.git"
@@ -22,8 +22,72 @@
     "url": "https://github.com/advanced-rest-client/arc-menu/issues",
     "email": "arc@mulesoft.com"
   },
-  "authors": [
-    "Pawel Psztyc",
-    "The Advanced REST client authors <arc@mulesoft.com>"
-  ]
+  "dependencies": {
+    "@advanced-rest-client/arc-file-drop-mixin": "^3.0.0",
+    "@advanced-rest-client/arc-icons": "^3.0.0",
+    "@advanced-rest-client/history-list-mixin": "^3.0.0",
+    "@advanced-rest-client/projects-list-consumer-mixin": "^3.0.1",
+    "@advanced-rest-client/requests-list-mixin": "^3.0.1",
+    "@advanced-rest-client/saved-list-mixin": "^3.0.1",
+    "@advanced-rest-client/uuid-generator": "^3.0.1",
+    "@advanced-rest-client/arc-models": "^3.0.0-preview.11",
+    "@anypoint-web-components/anypoint-button": "^1.0.10",
+    "@anypoint-web-components/anypoint-item": "^1.0.3",
+    "@anypoint-web-components/anypoint-listbox": "^1.0.3",
+    "@anypoint-web-components/anypoint-menu-button": "^0.1.0",
+    "@anypoint-web-components/anypoint-menu-mixin": "^1.0.2",
+    "@anypoint-web-components/anypoint-tabs": "^0.1.0",
+    "@api-components/http-method-label": "^3.0.0",
+    "@polymer/iron-icon": "^3.0.0",
+    "@polymer/paper-progress": "^3.0.0",
+    "lit-element": "^2.2.1"
+  },
+  "devDependencies": {
+    "@advanced-rest-client/arc-data-generator": "^3.0.4",
+    "@advanced-rest-client/arc-demo-helper": "^1.0.14",
+    "@advanced-rest-client/eslint-config": "^1.1.2",
+    "@advanced-rest-client/http-method-selector": "^3.0.0",
+    "@advanced-rest-client/prettier-config": "^0.1.0",
+    "@advanced-rest-client/testing-karma-sl": "^1.0.4",
+    "@anypoint-web-components/anypoint-checkbox": "^1.0.1",
+    "@anypoint-web-components/anypoint-dropdown-menu": "^0.1.10",
+    "@anypoint-web-components/anypoint-input": "^0.2.4",
+    "@anypoint-web-components/anypoint-radio-button": "^0.1.2",
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^7.0.0",
+    "@open-wc/testing": "^2.3.3",
+    "@open-wc/testing-karma": "^3.1.29",
+    "@polymer/gen-typescript-declarations": "^1.6.2",
+    "@polymer/iron-test-helpers": "^3.0.1",
+    "@polymer/paper-toast": "^3.0.0",
+    "@polymer/paper-toggle-button": "^3.0.1",
+    "deepmerge": "^4.0.0",
+    "es-dev-server": "^1.17.2",
+    "husky": "^1.0.0",
+    "lint-staged": "^8.0.0",
+    "sinon": "^7.4.2",
+    "web-animations-js": "^2.3.1"
+  },
+  "scripts": {
+    "test": "karma start --coverage",
+    "update-types": "gen-typescript-declarations --deleteExisting --outDir .",
+    "start": "es-dev-server --app-index demo/index.html --node-resolve --open --watch",
+    "start:compatibility": "es-dev-server --app-index demo/index.html --compatibility all --node-resolve --open --watch",
+    "lint:eslint": "eslint --ext .js,.html .",
+    "format:eslint": "eslint --ext .js,.html . --fix",
+    "lint:prettier": "prettier \"**/*.js\" --list-different || (echo '↑↑ these files are not prettier formatted ↑↑' && exit 1)",
+    "format:prettier": "prettier \"**/*.js\" --write",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "format": "npm run format:eslint && npm run format:prettier",
+    "test:watch": "karma start --auto-watch=true --single-run=false",
+    "test:legacy": "karma start --compatibility all --coverage",
+    "test:legacy:watch": "karma start --compatibility all --auto-watch=true --single-run=false",
+    "test:sl": "karma start karma.sl.config.js --compatibility all --coverage"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  }
 }

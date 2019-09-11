@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
-  <title>ARC menu demo</title>
+  <title>ARC saved menu demo</title>
   <script src="../node_modules/web-animations-js/web-animations.min.js"></script>
 
   <style>
@@ -12,13 +12,14 @@
     max-width: 1400px;
   }
 
-  arc-menu {
+  saved-menu,
+  history-menu {
     height: 500px;
-    width: 320px;
+    width: 300px;
   }
 
-  body.styled {
-    --anypoiont-dropdown-shaddow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  .menu-item {
+    margin: 0 20px;
   }
 
   #dragOutput {
@@ -35,7 +36,6 @@
     text-align: center;
     padding: 20px;
     border: 1px #e5e5e5 solid;
-    margin-bottom: 20px;
   }
 
   .drop-target.drag-over {
@@ -47,12 +47,28 @@
     text-align: left;
     white-space: pre-wrap;
   }
+
+  .data-options,
+  .form {
+    padding: 20px;
+    border: 1px #e5e5e5 solid;
+    margin-bottom: 20px;
+  }
+
+  .form anypoint-input {
+    width: 260px;
+  }
+
+  .menus-wrapper {
+    display: flex;
+    flex-direction: row;
+  }
   </style>
 </head>
 
 <body>
   <div id="demo"></div>
-  <script type="module" src="index.js"></script>
+  <script type="module" src="saved.js"></script>
 </body>
 
 </html>
