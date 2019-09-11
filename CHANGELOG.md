@@ -173,3 +173,7 @@
 
 
 
+# [3.0.0](https://github.com/advanced-rest-client/arc-menu/compare/0.5.5...3.0.0) (2019-09-11)
+
+
+
