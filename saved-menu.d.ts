@@ -5,10 +5,10 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   arc-menu.js
+ *   saved-menu.js
  */
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 
-import {ArcMenu} from './src/ArcMenu.js';
+import {SavedMenu, SavedMenuWrapper} from './src/SavedMenu.js';

@@ -1,0 +1,206 @@
+<!DOCTYPE html><html><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <title>arc-menu demo</title>
+  <script src="../../../@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+  <script src="../../../web-animations-js/web-animations-next.min.js"></script>
+
+  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+  <script type="module" src="../../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+  <script type="module" src="../../../@polymer/paper-toast/paper-toast.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/arc-models/rest-api-model.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/arc-models/project-model.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/arc-models/request-model.js"></script>
+  <script type="module" src="../../../@polymer/paper-dropdown-menu/paper-dropdown-menu.js"></script>
+  <script type="module" src="../../../@polymer/paper-listbox/paper-listbox.js"></script>
+  <script type="module" src="../../../@polymer/paper-item/paper-item.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/arc-data-generator/arc-data-generator.js"></script>
+  <script type="module" src="../../../@polymer/paper-toggle-button/paper-toggle-button.js"></script>
+  <script type="module" src="../../../@advanced-rest-client/arc-electron-default-theme/arc-electron-default-theme.js"></script>
+  <script type="module" src="../arc-menu.js"></script>
+
+  <custom-style>
+    <style is="custom-style" include="demo-pages-shared-styles">
+    html,
+    body {
+      background-color: #e5e5e5;
+      margin: 0;
+      padding: 0;
+    }
+
+    arc-menu {
+      height: calc(100vh - 90px);
+    }
+
+    .card {
+      @apply --shadow-elevation-4dp;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #fff;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .draggable-toggle {
+      margin: 12px 0;
+    }
+
+    #dragOutput {
+      display: block;
+      padding: 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      background-color: #FFF8E1;
+    }
+
+    .drop-target {
+      border: 2px transparent dashed;
+      box-sizing: border-box;
+    }
+
+    .drop-target.drag-over {
+      border-color: #8BC34A;
+    }
+    </style>
+  </custom-style>
+</head>
+<body unresolved="">
+  <rest-api-model></rest-api-model>
+  <project-model></project-model>
+  <request-model></request-model>
+
+  <dom-bind id="app">
+    <template is="dom-bind">
+      <section class="centered card" role="main">
+        <arc-menu rest-api="" list-type="[[listType]]" history-enabled="[[historyEnabled]]" hide-history="[[hideHistory]]" hide-saved="[[hideSaved]]" hide-projects="[[hideProjects]]" hide-apis="[[hideApis]]" allow-popup="[[allowPopup]]" draggable-enabled="[[draggableEnabled]]"></arc-menu>
+      </section>
+
+      <section class="centered card drop-target" on-dragover="_dragoverHandler" on-dragleave="_dragleaveHandler" on-drop="_dropHandler">
+        Drop object here
+        <output id="dragOutput" hidden=""></output>
+      </section>
+
+      <section class="centered card">
+        <button on-tap="generate">Generate 100 requests items</button>
+        <button on-tap="delete">Clear data</button>
+
+        <div class="draggable-toggle">
+          <paper-toggle-button checked="{{draggableEnabled}}">Enable experimental item draggable</paper-toggle-button>
+        </div>
+
+        <paper-dropdown-menu label="Select list type">
+          <paper-listbox slot="dropdown-content" attr-for-selected="data-value" selected="{{listType}}">
+            <paper-item data-value="default">Default</paper-item>
+            <paper-item data-value="comfortable">Comfortable</paper-item>
+            <paper-item data-value="compact">Compact</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </section>
+
+      <section class="centered card">
+        <paper-toggle-button checked="{{historyEnabled}}">History enabled</paper-toggle-button>
+        <paper-toggle-button checked="{{hideHistory}}">Hide history</paper-toggle-button>
+        <paper-toggle-button checked="{{hideSaved}}">Hide saved</paper-toggle-button>
+        <paper-toggle-button checked="{{hideProjects}}">Hide projects</paper-toggle-button>
+        <paper-toggle-button checked="{{hideApis}}">Hide APIs</paper-toggle-button>
+        <paper-toggle-button checked="{{allowPopup}}">Allow popup menu</paper-toggle-button>
+      </section>
+      <paper-toast id="genToast" text="The request data has been generated"></paper-toast>
+      <paper-toast id="delToast" text="The request data has been removed"></paper-toast>
+      <paper-toast id="navToast" text="" duration="5000"></paper-toast>
+    </template>
+  </dom-bind>
+  <script type="module">
+  import {DataGenerator} from '../../arc-data-generator/arc-data-generator.js';
+  window.addEventListener('navigate', function(e) {
+    const toast = document.getElementById('navToast');
+    const d = e.detail;
+    toast.text = 'Navigation ocurred to: ' + d.base;
+    if (d.id) {
+      toast.text += ', and id: ' + d.id;
+    }
+    toast.opened = true;
+  });
+  window.addEventListener('rest-api-index-list', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.detail.result = Promise.resolve([]);
+  });
+  window.addEventListener('workspace-open-project-requests', function(e) {
+    const toast = document.getElementById('navToast');
+    const {project, replace} = e.detail;
+    const id = project._id || project;
+    toast.text = (replace ? 'Replacing' : 'Opening') + ` project ${id}`;
+    toast.opened = true;
+  });
+  (function(scope) {
+    scope.historyEnabled = true;
+    scope.draggableEnabled = true;
+    scope.generate = function() {
+      DataGenerator.insertSavedRequestData({
+        requestsSize: 100,
+        projectsSize: 15
+      })
+      .then(() => {
+        return DataGenerator.insertHistoryRequestData({
+          requestsSize: 500
+        });
+      })
+      .then(() => {
+        document.getElementById('genToast').opened = true;
+        const e = new CustomEvent('data-imported', {
+          bubbles: true
+        });
+        document.body.dispatchEvent(e);
+      });
+    };
+    scope.delete = function() {
+      DataGenerator.destroyData()
+      .then(() => {
+        document.getElementById('delToast').opened = true;
+        const e = new CustomEvent('datastore-destroyed', {
+          bubbles: true,
+          detail: {
+            datastore: 'all'
+          }
+        });
+        document.body.dispatchEvent(e);
+      });
+    };
+
+    scope._dragoverHandler = function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      e.currentTarget.classList.add('drag-over');
+    };
+
+    scope._dragleaveHandler = function(e) {
+      e.currentTarget.classList.remove('drag-over');
+    };
+
+    scope._dropHandler = function(e) {
+      e.preventDefault();
+      let data;
+      if (e.dataTransfer.types.indexOf('arc/request-object') !== -1) {
+        data = e.dataTransfer.getData('arc/request-object');
+      } else if (e.dataTransfer.types.indexOf('arc/project-object') !== -1) {
+        data = e.dataTransfer.getData('arc/project-object');
+      }
+      e.currentTarget.classList.remove('drag-over');
+      if (data) {
+        data = JSON.parse(data);
+        console.log(data);
+      } else {
+        data = '';
+      }
+      const out = document.getElementById('dragOutput');
+      out.innerText = JSON.stringify(data, null, 2);
+      if (out.hasAttribute('hidden')) {
+        out.removeAttribute('hidden');
+      }
+    };
+  })(document.getElementById('app'));
+  </script>
+</body>
+</html>
