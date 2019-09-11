@@ -64,7 +64,7 @@
     "deepmerge": "^4.0.0",
     "es-dev-server": "^1.17.2",
     "husky": "^1.0.0",
-    "lint-staged": "^8.0.0",
+    "lint-staged": "^9.2.5",
     "sinon": "^7.4.2",
     "web-animations-js": "^2.3.1"
   },
