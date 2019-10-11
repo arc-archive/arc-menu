@@ -16,7 +16,7 @@ import '@anypoint-web-components/anypoint-tabs/anypoint-tabs.js';
 import '@anypoint-web-components/anypoint-tabs/anypoint-tab.js';
 import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
-import '@polymer/iron-icon/iron-icon.js';
+import { openInNew } from '@advanced-rest-client/arc-icons/ArcIcons.js';
 import '../saved-menu.js';
 import '../history-menu.js';
 import '../rest-api-menu.js';
@@ -65,28 +65,6 @@ export class ArcMenu extends LitElement {
       color: var(--arc-menu-tabs-color);
     }
 
-    .warning-message {
-      display: flex;
-      flex-direction: row;
-      background-color: var(--arc-menu-warning-gb-color, #FFB74D);
-      color: var(--arc-menu-warning-color, black);
-      font-size: 16px;
-      border-radius: 3px;
-      padding-right: 12px;
-    }
-
-    .warning-message h3 {
-      font-size: 1.25rem;
-      font-weight: 200;
-    }
-
-    .warning-message .info-icon {
-      margin-left: 24px;
-      margin-right: 12px;
-      margin-top: 24px;
-      color: var(--arc-menu-warning-icon-color, #ffffff);
-    }
-
     .warning-toggle {
       color: var(--arc-menu-warning-toggle-color, #FF5722);
     }
@@ -100,6 +78,13 @@ export class ArcMenu extends LitElement {
       margin-left: 0;
       margin-right: 0;
       padding: 0.7em 0.4em;
+    }
+
+    .icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
     }
     `;
   }
@@ -423,7 +408,7 @@ export class ArcMenu extends LitElement {
     }
   }
   /**
-   * Finds paper-tab element in event path.
+   * Finds anypoint-tab element in event path.
    * @param {Event} e Event with `path` or `composedPath()`
    * @return {Element|undefined}
    */
@@ -437,7 +422,7 @@ export class ArcMenu extends LitElement {
     }
   }
   /**
-   * Handler for `dragover` event on paper tabs.
+   * Handler for `dragover` event on anypoint tabs.
    * Opens the tab if the dragged element can be dropped in corresponding menu.
    * @param {DragEvent} e
    */
@@ -527,10 +512,26 @@ export class ArcMenu extends LitElement {
       @dragleave="${this._dragleaveHandler}"
       @selected-changed="${this._tabsHandler}"
       ?compatibility="${compatibility}">
-      ${historyEnabled ? html`<anypoint-tab data-type="history" ?hidden="${hideHistory}">History</anypoint-tab>` : ''}
-      <anypoint-tab data-type="saved" ?hidden="${hideSaved}">Saved</anypoint-tab>
-      <anypoint-tab data-type="projects" ?hidden="${hideProjects}">Projects</anypoint-tab>
-      <anypoint-tab data-type="rest-apis" ?hidden="${hideApis}">APIs</anypoint-tab>
+      ${historyEnabled ? html`<anypoint-tab
+        data-type="history"
+        ?hidden="${hideHistory}"
+        ?compatibility="${compatibility}"
+      >History</anypoint-tab>` : ''}
+      <anypoint-tab
+        ?compatibility="${compatibility}"
+        data-type="saved"
+        ?hidden="${hideSaved}"
+      >Saved</anypoint-tab>
+      <anypoint-tab
+        ?compatibility="${compatibility}"
+        data-type="projects"
+        ?hidden="${hideProjects}"
+      >Projects</anypoint-tab>
+      <anypoint-tab
+        ?compatibility="${compatibility}"
+        data-type="rest-apis"
+        ?hidden="${hideApis}"
+      >APIs</anypoint-tab>
     </anypoint-tabs>`;
   }
 
@@ -557,7 +558,7 @@ export class ArcMenu extends LitElement {
         title="Opens history menu in new window"
         ?compatibility="${compatibility}"
       >
-        <iron-icon icon="arc:open-in-new" alt="Popup history menu"></iron-icon>
+        <span class="icon">${openInNew}</span>
       </anypoint-icon-button>` : ''}
     </div>
     <history-menu
@@ -573,11 +574,13 @@ export class ArcMenu extends LitElement {
         @click="${this._openSavedList}"
         data-action="open-saved"
         title="Opens saved requests list in full screen"
+        ?compatibility="${compatibility}"
       >All saved</anypoint-button>
       <anypoint-button
         @click="${this.refreshSavedList}"
         data-action="refresh-saved"
         title="Refresh data from the datastore"
+        ?compatibility="${compatibility}"
       >Refresh</anypoint-button>
       <span class="spacer"></span>
       ${allowPopup ? html`<anypoint-icon-button
@@ -586,7 +589,7 @@ export class ArcMenu extends LitElement {
         aria-saved="Popup saved menu"
         title="Opens saved requests menu in new window"
       >
-        <iron-icon icon="arc:open-in-new" alt="Popup saved menu"></iron-icon>
+        <span class="icon">${openInNew}</span>
       </anypoint-icon-button>` : '' }
     </div>
     <saved-menu
@@ -598,10 +601,12 @@ export class ArcMenu extends LitElement {
   _projectsTemplate() {
     const { allowPopup, listType, draggableEnabled, compatibility } = this;
     return html`<div class="menu-actions">
-      <paper-button
+      <anypoint-button
         @click="${this.refreshProjectsList}"
         data-action="refresh-projects"
-        title="Forces refresh data from datastore">Refresh</paper-button>
+        title="Forces refresh data from datastore"
+        ?compatibility="${compatibility}"
+      >Refresh</anypoint-button>
       <span class="spacer"></span>
       ${allowPopup ? html`<anypoint-icon-button
         @click="${this.popupProjects}"
@@ -609,7 +614,7 @@ export class ArcMenu extends LitElement {
         aria-label="Popup projects menu"
         title="Opens projects menu in new window"
       >
-        <iron-icon icon="arc:open-in-new" alt="Popup projects menu"></iron-icon>
+        <span class="icon">${openInNew}</span>
       </anypoint-icon-button>` : ''}
     </div>
     <projects-menu
@@ -624,24 +629,30 @@ export class ArcMenu extends LitElement {
       <anypoint-button
         @click="${this._openApisList}"
         data-action="open-rest-apis"
-        title="Opens saved requests list in full screen">All APIs</anypoint-button>
+        title="Opens saved requests list in full screen"
+        ?compatibility="${compatibility}"
+      >All APIs</anypoint-button>
       <anypoint-button
         @click="${this.refreshApisList}"
         data-action="refresh-rest-apis"
-        title="Forces refresh data from datastore">Refresh</anypoint-button>
+        title="Forces refresh data from datastore"
+        ?compatibility="${compatibility}"
+      >Refresh</anypoint-button>
       <anypoint-button
         @click="${this._exporeApis}"
         data-action="explore-rest-apis"
-        title="Opens APIs expore screen">Explore</anypoint-button>
+        title="Opens APIs expore screen"
+        ?compatibility="${compatibility}"
+      >Explore</anypoint-button>
       <span class="spacer"></span>
       ${allowPopup ? html`<anypoint-icon-button
         @click="${this.popupApis}"
         data-action="popup-rest-apis"
-        icon="arc:open-in-new"
         aria-label="Popup APIs menu"
         title="Opens APIs menu in new window"
+        ?compatibility="${compatibility}"
       >
-        <iron-icon icon="arc:open-in-new" alt="Popup APIs menu"></iron-icon>
+        <span class="icon">${openInNew}</span>
       </anypoint-icon-button>` : ''}
     </div>
     <rest-api-menu

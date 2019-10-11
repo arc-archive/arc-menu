@@ -38,7 +38,6 @@
     "@anypoint-web-components/anypoint-menu-mixin": "^1.0.2",
     "@anypoint-web-components/anypoint-tabs": "^0.1.7",
     "@api-components/http-method-label": "^3.0.0",
-    "@polymer/iron-icon": "^3.0.0",
     "@polymer/paper-progress": "^3.0.0",
     "lit-element": "^2.2.1"
   },

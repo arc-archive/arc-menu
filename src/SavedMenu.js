@@ -20,8 +20,7 @@ import '@anypoint-web-components/anypoint-item/anypoint-icon-item.js';
 import '@anypoint-web-components/anypoint-item/anypoint-item-body.js';
 import '@polymer/paper-progress/paper-progress.js';
 import '@api-components/http-method-label/http-method-label.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@advanced-rest-client/arc-icons/arc-icons.js';
+import { saveAlt } from '@advanced-rest-client/arc-icons/ArcIcons.js';
 import { AnypointMenuMixin } from '@anypoint-web-components/anypoint-menu-mixin/anypoint-menu-mixin.js';
 
 export class SavedMenuWrapper extends AnypointMenuMixin(LitElement) {
@@ -187,6 +186,8 @@ export class SavedMenu extends SavedListMixin(RequestsListMixin(ArcMenuBase)) {
       .drop-icon {
         width: 72px;
         height: 72px;
+        display: inline-block;
+        fill: currentColor;
       }
 
       :host(.drop-target) .drop-message {
@@ -198,7 +199,7 @@ export class SavedMenu extends SavedListMixin(RequestsListMixin(ArcMenuBase)) {
 
   _dropTargetTemplate() {
     return html`<div class="drop-message">
-      <iron-icon icon="arc:save-alt" class="drop-icon"></iron-icon>
+      <span class="drop-icon">${saveAlt}</span>
       <p>Drop request here</p>
     </div>`;
   }

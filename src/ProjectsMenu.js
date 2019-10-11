@@ -18,8 +18,7 @@ import { ProjectsListConsumerMixin } from
 import { AnypointMenuMixin } from '@anypoint-web-components/anypoint-menu-mixin/anypoint-menu-mixin.js';
 import '@anypoint-web-components/anypoint-item/anypoint-icon-item.js';
 import '@anypoint-web-components/anypoint-item/anypoint-item-body.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@advanced-rest-client/arc-icons/arc-icons.js';
+import { moreVert, collectionsBookmark } from '@advanced-rest-client/arc-icons/ArcIcons.js';
 import '@anypoint-web-components/anypoint-menu-button/anypoint-menu-button.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import '@anypoint-web-components/anypoint-listbox/anypoint-listbox.js';
@@ -161,6 +160,13 @@ export class ProjectsMenu extends ProjectsListConsumerMixin(ArcMenuBase) {
 
     .drop-target {
       background-color: var(--projects-menu-drop-background-color, var(--primary-color));
+    }
+
+    .icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
     }`;
   }
 
@@ -496,8 +502,9 @@ export class ProjectsMenu extends ProjectsListConsumerMixin(ArcMenuBase) {
         class="menu-icon"
         aria-label="Activate to open context menu"
         slot="dropdown-trigger"
-        ?compatibility="${compatibility}">
-        <iron-icon icon="arc:more-vert"></iron-icon>
+        ?compatibility="${compatibility}"
+      >
+        <span class="icon">${moreVert}</span>
       </anypoint-icon-button>
       <anypoint-listbox
         slot="dropdown-content"
@@ -556,10 +563,12 @@ export class ProjectsMenu extends ProjectsListConsumerMixin(ArcMenuBase) {
         @dragstart="${this._dragStart}"
         tabindex="-1"
         role="menuitem"
-        ?compatibility="${compatibility}">
-        <iron-icon icon="arc:collections-bookmark" class="project-icon" slot="item-icon"></iron-icon>
+        ?compatibility="${compatibility}"
+      >
+        <span class="icon" class="project-icon" slot="item-icon">${collectionsBookmark}</span>
         <anypoint-item-body
-          ?compatibility="${compatibility}">
+          ?compatibility="${compatibility}"
+        >
           <div class="project-name">${item.name}</div>
         </anypoint-item-body>
         ${this._projectMenuTemplate(index, compatibility)}

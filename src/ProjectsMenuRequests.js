@@ -19,8 +19,6 @@ import '@anypoint-web-components/anypoint-item/anypoint-icon-item.js';
 import '@anypoint-web-components/anypoint-item/anypoint-item-body.js';
 import '@polymer/paper-progress/paper-progress.js';
 import '@api-components/http-method-label/http-method-label.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@advanced-rest-client/arc-icons/arc-icons.js';
 import { AnypointMenuMixin } from '@anypoint-web-components/anypoint-menu-mixin/anypoint-menu-mixin.js';
 
 export class ProjectsMenuRequestsWrapper extends AnypointMenuMixin(LitElement) {
@@ -397,13 +395,6 @@ export class ProjectsMenuRequests extends RequestsListMixin(ArcMenuBase) {
     e.dataTransfer.setData('arc-source/project-menu', this.projectId);
     e.dataTransfer.effectAllowed = 'copyMove';
     e.dataTransfer.setDragImage(e.currentTarget, 0, 0);
-  }
-
-  _dropTargetTemplate() {
-    return html`<div class="drop-message">
-      <iron-icon icon="arc:save-alt" class="drop-icon"></iron-icon>
-      <p>Drop request here</p>
-    </div>`;
   }
 
   _unavailableTemplate() {
