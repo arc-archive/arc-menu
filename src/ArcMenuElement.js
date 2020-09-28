@@ -11,134 +11,127 @@ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 License for the specific language governing permissions and limitations under
 the License.
 */
-import { LitElement, html, css } from 'lit-element';
+/* eslint-disable no-plusplus */
+import { LitElement, html } from 'lit-element';
 import '@anypoint-web-components/anypoint-tabs/anypoint-tabs.js';
 import '@anypoint-web-components/anypoint-tabs/anypoint-tab.js';
 import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import { openInNew } from '@advanced-rest-client/arc-icons/ArcIcons.js';
+import { ArcNavigationEvents } from '@advanced-rest-client/arc-events';
 import '../saved-menu.js';
 import '../history-menu.js';
 import '../rest-api-menu.js';
 import '../projects-menu.js';
+import menuStyles from './styles/ArcMenu.js';
 
-export class ArcMenu extends LitElement {
+/** @typedef {import('@anypoint-web-components/anypoint-tabs').AnypointTab} AnypointTab */
+/** @typedef {import('lit-element').TemplateResult} TemplateResult */
+
+export const historyValue = Symbol('historyValue');
+export const historyChanged = Symbol('historyChanged');
+export const hideHistoryValue = Symbol('hideHistoryValue');
+export const hideHistoryChanged = Symbol('hideHistoryChanged');
+export const hideSavedValue = Symbol('hideSavedValue');
+export const hideSavedChanged = Symbol('hideSavedChanged');
+export const hideProjectsValue = Symbol('hideProjectsValue');
+export const hideProjectsChanged = Symbol('hideProjectsChanged');
+export const hideApisValue = Symbol('hideApisValue');
+export const hideApisChanged = Symbol('hideApisChanged');
+export const openHistoryHandler = Symbol('openHistoryHandler');
+export const openSavedHandler = Symbol('openSavedHandler');
+export const openApisHandler = Symbol('openApisHandler');
+export const openExchangeHandler = Symbol('openExchangeHandler');
+export const refreshList = Symbol('refreshList');
+export const selectFirstAvailable = Symbol('selectFirstAvailable');
+export const updateSelectionIfNeeded = Symbol('updateSelectionIfNeeded');
+export const dragoverHandler = Symbol('dragoverHandler');
+export const dragleaveHandler = Symbol('dragleaveHandler');
+export const dragTypeCallbackValue = Symbol('dragTypeCallbackValue');
+export const dragOverTimeoutValue = Symbol('dragOverTimeoutValue');
+export const cancelDragTimeout = Symbol('cancelDragTimeout');
+export const openMenuDragOver = Symbol('openMenuDragOver');
+export const tabsHandler = Symbol('tabsHandler');
+export const menuTemplate = Symbol('menuTemplate');
+export const tabsTemplate = Symbol('tabsTemplate');
+export const historyTemplate = Symbol('historyTemplate');
+export const savedTemplate = Symbol('savedTemplate');
+export const projectsTemplate = Symbol('projectsTemplate');
+export const apisTemplate = Symbol('apisTemplate');
+
+/**
+ * Finds anypoint-tab element in event path.
+ * @param {Event} e Event with `path` or `composedPath()`
+ * @return {AnypointTab|undefined}
+ */
+export function findTab(e) {
+  const path = e.composedPath();
+  for (let i = 0, len = path.length; i < len; i++) {
+    const target = /** @type HTMLElement */ (path[i]);
+    if (target.localName === 'anypoint-tab') {
+      return /** @type AnypointTab */ (target);
+    }
+  }
+  return undefined;
+}
+
+export class ArcMenuElement extends LitElement {
   static get styles() {
-    return css`
-    :host {
-      display: block;
-      height: var(--arc-menu-height, 100vh);
-      background-color: var(--arc-menu-background-color, inherit);
-    }
-
-    .menu {
-      display: flex;
-      flex-direction: column;
-      height: inherit;
-      overflow: hidden;
-    }
-
-    history-menu,
-    saved-menu,
-    rest-api-menu,
-    projects-menu {
-      flex: 1;
-      height: calc(100% - 96px);
-    }
-
-    .menu-actions {
-      padding: 4px 0;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
-    .spacer {
-      flex: 1;
-    }
-
-    [hidden] {
-      display: none !important;
-    }
-
-    anypoint-tab {
-      color: var(--arc-menu-tabs-color);
-    }
-
-    .warning-toggle {
-      color: var(--arc-menu-warning-toggle-color, #FF5722);
-    }
-
-    .ticket-button {
-      background-color: var(--arc-menu-warning-button-gb-color, #fff);
-      margin-top: 12px;
-    }
-
-    anypoint-tab {
-      margin-left: 0;
-      margin-right: 0;
-      padding: 0.7em 0.4em;
-    }
-
-    .icon {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-    }
-    `;
+    return menuStyles;
   }
 
   static get properties() {
     return {
-      // Currently selected menu tab
-      selected: { type: Number },
+      /**
+       * Currently selected menu tab
+       */
+      selected: { type: Number, reflect: true },
       /**
        * Changes information density of list items.
-       * By default it uses material's peper item with two lines (72px heigth)
+       * By default it uses material's list item with two lines (72px height)
        * Possible values are:
        *
        * - `default` or empty - regular list view
-       * - `comfortable` - enables MD single line list item vie (52px heigth)
-       * - `compact` - enables list that has 40px heigth (touch recommended)
+       * - `comfortable` - enables MD single line list item vie (52px height)
+       * - `compact` - enables list that has 40px height (touch recommended)
        */
-      listType: { type: String },
+      listType: { type: String, reflect: true },
       /**
        * Enables compatibility with Anypoint platform
        */
-      compatibility: { type: Boolean },
+      compatibility: { type: Boolean, reflect: true },
       /**
-       * If set the history menu is rendered. This cames from application
+       * If set the history menu is rendered. This comes from the application
        * settings and is different from `noHistory` which is intended to
-       * temporaily remove the history from the view (for menu popup option)
+       * temporarily remove the history from the view (for menu popup option)
        */
-      historyEnabled: { type: Boolean },
+      history: { type: Boolean, reflect: true },
       /**
-       * When set it hiddes history from the view
+       * When set it hides history from the view
        */
-      hideHistory: { type: Boolean },
+      hideHistory: { type: Boolean, reflect: true },
       /**
-       * When set it hiddes saved list from the view
+       * When set it hides saved list from the view
        */
-      hideSaved: { type: Boolean },
+      hideSaved: { type: Boolean, reflect: true },
       /**
-       * When set it hiddes projects from the view
+       * When set it hides projects from the view
        */
-      hideProjects: { type: Boolean },
+      hideProjects: { type: Boolean, reflect: true },
       /**
-       * When set it hiddes APIs list from the view
+       * When set it hides APIs list from the view
        */
-      hideApis: { type: Boolean },
+      hideApis: { type: Boolean, reflect: true },
       /**
        * Renders popup menu buttons when this property is set.
        */
-      allowPopup: { type: Boolean },
+      popup: { type: Boolean, reflect: true },
       /**
        * Adds draggable property to the request list item element.
        * The `dataTransfer` object has `arc/request-object` mime type with
        * serialized JSON with request model.
        */
-      draggableEnabled: { type: Boolean },
+      dataTransfer: { type: Boolean, reflect: true },
       /**
        * A timeout after which the project item is opened when dragging a
        * request over.
@@ -147,117 +140,121 @@ export class ArcMenu extends LitElement {
     };
   }
 
-  get historyEnabled() {
-    return this._historyEnabled;
+  get history() {
+    return this[historyValue];
   }
 
-  set historyEnabled(value) {
-    const old = this._historyEnabled;
+  set history(value) {
+    const old = this[historyValue];
     /* istanbul ignore if */
     if (old === value) {
       return;
     }
-    this._historyEnabled = value;
-    this.requestUpdate('historyEnabled', old);
-    this._historyEnabledChanegd(value, old);
+    this[historyValue] = value;
+    this.requestUpdate('history', old);
+    this[historyChanged](value, old);
   }
 
   get hideHistory() {
-    return this._hideHistory;
+    return this[hideHistoryValue];
   }
 
   set hideHistory(value) {
-    const old = this._hideHistory;
+    const old = this[hideHistoryValue];
     /* istanbul ignore if */
     if (old === value) {
       return;
     }
-    this._hideHistory = value;
+    this[hideHistoryValue] = value;
     this.requestUpdate('hideHistory', old);
-    this._hideHistoryChanegd(value);
+    this[hideHistoryChanged](value);
   }
 
   get hideSaved() {
-    return this._hideSaved;
+    return this[hideSavedValue];
   }
 
   set hideSaved(value) {
-    const old = this._hideSaved;
+    const old = this[hideSavedValue];
     /* istanbul ignore if */
     if (old === value) {
       return;
     }
-    this._hideSaved = value;
+    this[hideSavedValue] = value;
     this.requestUpdate('hideSaved', old);
-    this._hideSavedChanegd(value);
+    this[hideSavedChanged](value);
   }
 
   get hideProjects() {
-    return this._hideProjects;
+    return this[hideProjectsValue];
   }
 
   set hideProjects(value) {
-    const old = this._hideProjects;
+    const old = this[hideProjectsValue];
     /* istanbul ignore if */
     if (old === value) {
       return;
     }
-    this._hideProjects = value;
+    this[hideProjectsValue] = value;
     this.requestUpdate('hideProjects', old);
-    this._hideProjectsChanegd(value);
+    this[hideProjectsChanged](value);
   }
 
   get hideApis() {
-    return this._hideApis;
+    return this[hideApisValue];
   }
 
   set hideApis(value) {
-    const old = this._hideApis;
+    const old = this[hideApisValue];
     /* istanbul ignore if */
     if (old === value) {
       return;
     }
-    this._hideApis = value;
+    this[hideApisValue] = value;
     this.requestUpdate('hideApis', old);
-    this._hideApisChanegd(value);
+    this[hideApisChanged](value);
   }
 
   constructor() {
     super();
     this.selected = 0;
     this.dragOpenTimeout = 700;
+    this.popup = false;
+    this.compatibility = false;
+    this.history = false;
+    this.hideHistory = false;
+    this.hideSaved = false;
+    this.hideProjects = false;
+    this.hideApis = false;
+    this.dataTransfer = false;
+    this.listType = undefined;
   }
 
-  _navigateScreen(base) {
-    this.dispatchEvent(new CustomEvent('navigate', {
-      composed: true,
-      bubbles: true,
-      cancelable: true,
-      detail: {
-        base
-      }
-    }));
+  [openHistoryHandler]() {
+    ArcNavigationEvents.navigate(this, 'history');
   }
 
-  _openHistoryList() {
-    this._navigateScreen('history');
+  [openSavedHandler]() {
+    ArcNavigationEvents.navigate(this, 'saved');
   }
 
-  _openSavedList() {
-    this._navigateScreen('saved');
+  [openApisHandler]() {
+    ArcNavigationEvents.navigate(this, 'rest-projects');
   }
 
-  _openApisList() {
-    this._navigateScreen('rest-projects');
+  [openExchangeHandler]() {
+    ArcNavigationEvents.navigate(this, 'exchange-search');
   }
 
-  _exporeApis() {
-    this._navigateScreen('exchange-search');
-  }
-
-  _refreshList(type) {
+  /**
+   * Refreshes a list by it's type
+   * @param {string} type
+   */
+  [refreshList](type) {
     const node = this.shadowRoot.querySelector(type);
+    // @ts-ignore
     if (node && node.refresh) {
+      // @ts-ignore
       node.refresh();
     }
   }
@@ -266,78 +263,79 @@ export class ArcMenu extends LitElement {
    * Forces to refresh history list
    */
   refreshHistoryList() {
-    this._refreshList('history-menu');
+    this[refreshList]('history-menu');
   }
+
   /**
    * Forces to refresh saved list
    */
   refreshSavedList() {
-    this._refreshList('saved-menu');
+    this[refreshList]('saved-menu');
   }
+
   /**
    * Forces to refresh projects list
    */
   refreshProjectsList() {
-    this._refreshList('projects-menu');
+    this[refreshList]('projects-menu');
   }
+
   /**
    * Forces to refresh apis list
    */
   refreshApisList() {
-    this._refreshList('rest-api-menu');
+    this[refreshList]('rest-api-menu');
   }
 
-  /**
-   * Dispatches `popup-menu` custom event
-   * @param {String} type Panel name
-   */
-  _popupMenu(type) {
-    if (!this.allowPopup) {
-      return;
-    }
-    this.dispatchEvent(new CustomEvent('popup-menu', {
-      composed: true,
-      bubbles: true,
-      cancelable: true,
-      detail: {
-        type
-      }
-    }));
-  }
   /**
    * Requests to popup history menu.
    */
   popupHistory() {
-    this._popupMenu('history-menu');
+    if (!this.popup) {
+      return;
+    }
+    ArcNavigationEvents.popupMenu(this, 'history-menu');
   }
+
   /**
    * Requests to popup saved menu.
    */
   popupSaved() {
-    this._popupMenu('saved-menu');
+    if (!this.popup) {
+      return;
+    }
+    ArcNavigationEvents.popupMenu(this, 'saved-menu');
   }
+
   /**
    * Requests to popup projects menu.
    */
   popupProjects() {
-    this._popupMenu('projects-menu');
+    if (!this.popup) {
+      return;
+    }
+    ArcNavigationEvents.popupMenu(this, 'projects-menu');
   }
+
   /**
    * Requests to popup apis menu.
    */
   popupApis() {
-    this._popupMenu('rest-api-menu');
+    if (!this.popup) {
+      return;
+    }
+    ArcNavigationEvents.popupMenu(this, 'rest-api-menu');
   }
 
   /**
    * Selects first panel that is not hidden
    */
-  async _selectFirstAvailable() {
-    const { historyEnabled } = this;
-    const padding = historyEnabled ? 0 : -1;
+  async [selectFirstAvailable]() {
+    const { history } = this;
+    const padding = history ? 0 : -1;
     let value;
     this.selected = undefined;
-    if (!this.hideHistory && historyEnabled) {
+    if (!this.hideHistory && history) {
       value = 0;
     } else if (!this.hideSaved) {
       value = 1 + padding;
@@ -351,146 +349,143 @@ export class ArcMenu extends LitElement {
   }
 
   /**
-   * Calls `_selectFirstAvailable()` if `panelId` is current selection.
-   * @param {Number} panelId
+   * Calls `[selectFirstAvailable]()` if `panelId` is current selection.
+   * @param {number} panelId
    */
-  _updateSelectionIfNeeded(panelId) {
+  [updateSelectionIfNeeded](panelId) {
     if (panelId === this.selected) {
-      this._selectFirstAvailable();
+      this[selectFirstAvailable]();
     }
   }
+
   /**
    * Updates selection when history panel is removed
    * @param {Boolean} val
    */
-  _hideHistoryChanegd(val) {
+  [hideHistoryChanged](val) {
     if (val) {
-      this._updateSelectionIfNeeded(0);
+      this[updateSelectionIfNeeded](0);
     }
   }
+
   /**
    * Updates selection when saved panel is removed
    * @param {Boolean} val
    */
-  _hideSavedChanegd(val) {
+  [hideSavedChanged](val) {
     if (val) {
-      this._updateSelectionIfNeeded(1);
+      this[updateSelectionIfNeeded](1);
     }
   }
+
   /**
    * Updates selection when saved panel is removed
    * @param {Boolean} val
    */
-  _hideProjectsChanegd(val) {
+  [hideProjectsChanged](val) {
     if (val) {
-      this._updateSelectionIfNeeded(2);
+      this[updateSelectionIfNeeded](2);
     }
   }
+
   /**
    * Updates selection when saved panel is removed
    * @param {Boolean} val
    */
-  _hideApisChanegd(val) {
+  [hideApisChanged](val) {
     if (val) {
-      this._updateSelectionIfNeeded(3);
+      this[updateSelectionIfNeeded](3);
     }
   }
+
   /**
    * Updates selection when history is disabled/enabled
-   * @param {Boolean} val
-   * @param {?Boolean} old
+   * @param {boolean} val
+   * @param {boolean=} old
    */
-  _historyEnabledChanegd(val, old) {
+  [historyChanged](val, old) {
     if (!val && old !== undefined) {
-      this._updateSelectionIfNeeded(0);
+      this[updateSelectionIfNeeded](0);
     } else if (val && this.selected !== 0) {
       this.selected = 0;
     }
   }
-  /**
-   * Finds anypoint-tab element in event path.
-   * @param {Event} e Event with `path` or `composedPath()`
-   * @return {Element|undefined}
-   */
-  _findTab(e) {
-    const path = e.path || e.composedPath();
-    for (let i = 0, len = path.length; i < len; i++) {
-      const target = path[i];
-      if (target.localName === 'anypoint-tab') {
-        return target;
-      }
-    }
-  }
+
   /**
    * Handler for `dragover` event on anypoint tabs.
    * Opens the tab if the dragged element can be dropped in corresponding menu.
    * @param {DragEvent} e
    */
-  _dragoverHandler(e) {
-    if (!this.draggableEnabled) {
+  [dragoverHandler](e) {
+    if (!this.dataTransfer) {
       return;
     }
-    if (e.dataTransfer.types.indexOf('arc/request-object') === -1) {
+    const types = [...e.dataTransfer.types];
+    if (!types.includes('arc/request')) {
       return;
     }
-    const tab = this._findTab(e);
+    const tab = findTab(e);
     if (!tab) {
       return;
     }
-    const type = tab.dataset.type;
+    const { type } = tab.dataset;
     if (['saved', 'projects'].indexOf(type) === -1) {
       return;
     }
     e.preventDefault();
-    if (this.__dragTypeCallback === type) {
+    if (this[dragTypeCallbackValue] === type) {
       return;
     }
-    this._cancelDragTimeout();
-    const selected = this.selected;
+    this[cancelDragTimeout]();
+    const {selected} = this;
     if (type === 'saved' && selected === 1) {
       return;
     }
     if (type === 'projects' && selected === 2) {
       return;
     }
-    this.__dragTypeCallback = type;
-    this.__dragOverTimeout = setTimeout(() => this._openMenuDragOver(), this.dragOpenTimeout);
+    this[dragTypeCallbackValue] = type;
+    this[dragOverTimeoutValue] = setTimeout(() => this[openMenuDragOver](), this.dragOpenTimeout);
   }
+
   /**
    * Handler for `dragleave` event on project node.
    * @param {DragEvent} e
    */
-  _dragleaveHandler(e) {
-    if (!this.draggableEnabled) {
+  [dragleaveHandler](e) {
+    if (!this.dataTransfer) {
       return;
     }
-    if (e.dataTransfer.types.indexOf('arc/request-object') === -1) {
+    const types = [...e.dataTransfer.types];
+    if (!types.includes('arc/request')) {
       return;
     }
     e.preventDefault();
-    this._cancelDragTimeout();
+    this[cancelDragTimeout]();
   }
+
   /**
    * Cancels the timer set in the dragover event
    */
-  _cancelDragTimeout() {
-    if (this.__dragOverTimeout) {
-      clearTimeout(this.__dragOverTimeout);
-      this.__dragOverTimeout = undefined;
+  [cancelDragTimeout]() {
+    if (this[dragOverTimeoutValue]) {
+      clearTimeout(this[dragOverTimeoutValue]);
+      this[dragOverTimeoutValue] = undefined;
     }
-    this.__dragTypeCallback = undefined;
+    this[dragTypeCallbackValue] = undefined;
   }
 
-  _openMenuDragOver() {
-    if (!this.draggableEnabled) {
+  [openMenuDragOver]() {
+    if (!this.dataTransfer) {
       return;
     }
-    const type = this.__dragTypeCallback;
-    this._cancelDragTimeout();
+    const type = this[dragTypeCallbackValue];
+    this[cancelDragTimeout]();
     let selection;
     switch (type) {
       case 'saved': selection = 1; break;
       case 'projects': selection = 2; break;
+      default:
     }
     if (selection === undefined) {
       return;
@@ -498,21 +493,27 @@ export class ArcMenu extends LitElement {
     this.selected = selection;
   }
 
-  _tabsHandler(e) {
+  /**
+   * @param {CustomEvent} e
+   */
+  [tabsHandler](e) {
     this.selected = e.detail.value;
   }
 
-  _tabsTemplate() {
-    const { selected, historyEnabled, hideHistory, hideSaved, hideProjects, hideApis, compatibility } = this;
+  /**
+   * @returns {TemplateResult} Template for the tabs
+   */
+  [tabsTemplate]() {
+    const { selected, history, hideHistory, hideSaved, hideProjects, hideApis, compatibility } = this;
     return html`
     <anypoint-tabs
       .selected="${selected}"
       id="tabs"
-      @dragover="${this._dragoverHandler}"
-      @dragleave="${this._dragleaveHandler}"
-      @selected-changed="${this._tabsHandler}"
+      @dragover="${this[dragoverHandler]}"
+      @dragleave="${this[dragleaveHandler]}"
+      @selected-changed="${this[tabsHandler]}"
       ?compatibility="${compatibility}">
-      ${historyEnabled ? html`<anypoint-tab
+      ${history ? html`<anypoint-tab
         data-type="history"
         ?hidden="${hideHistory}"
         ?compatibility="${compatibility}"
@@ -535,11 +536,14 @@ export class ArcMenu extends LitElement {
     </anypoint-tabs>`;
   }
 
-  _historyTemplate() {
-    const { allowPopup, listType, draggableEnabled, compatibility } = this;
+  /**
+   * @returns {TemplateResult} Template for the history menu
+   */
+  [historyTemplate]() {
+    const { popup, listType, dataTransfer, compatibility } = this;
     return html`<div class="menu-actions">
       <anypoint-button
-        @click="${this._openHistoryList}"
+        @click="${this[openHistoryHandler]}"
         data-action="open-history"
         title="Opens history in full screen"
         ?compatibility="${compatibility}"
@@ -551,7 +555,7 @@ export class ArcMenu extends LitElement {
         ?compatibility="${compatibility}"
       >Refresh</anypoint-button>
       <span class="spacer"></span>
-      ${allowPopup ? html`<anypoint-icon-button
+      ${popup ? html`<anypoint-icon-button
         @click="${this.popupHistory}"
         data-action="popup-history"
         aria-label="Popup history menu"
@@ -563,15 +567,18 @@ export class ArcMenu extends LitElement {
     </div>
     <history-menu
       .listType="${listType}"
-      ?draggableenabled="${draggableEnabled}"
+      ?draggableEnabled="${dataTransfer}"
       ?compatibility="${compatibility}"></history-menu>`;
   }
 
-  _savedTemplate() {
-    const { allowPopup, listType, draggableEnabled, compatibility } = this;
+  /**
+   * @returns {TemplateResult} Template for the saved menu
+   */
+  [savedTemplate]() {
+    const { popup, listType, dataTransfer, compatibility } = this;
     return html`<div class="menu-actions">
       <anypoint-button
-        @click="${this._openSavedList}"
+        @click="${this[openSavedHandler]}"
         data-action="open-saved"
         title="Opens saved requests list in full screen"
         ?compatibility="${compatibility}"
@@ -583,10 +590,10 @@ export class ArcMenu extends LitElement {
         ?compatibility="${compatibility}"
       >Refresh</anypoint-button>
       <span class="spacer"></span>
-      ${allowPopup ? html`<anypoint-icon-button
+      ${popup ? html`<anypoint-icon-button
         @click="${this.popupSaved}"
         data-action="popup-saved"
-        aria-saved="Popup saved menu"
+        aria-label="Popup saved menu"
         title="Opens saved requests menu in new window"
       >
         <span class="icon">${openInNew}</span>
@@ -594,12 +601,15 @@ export class ArcMenu extends LitElement {
     </div>
     <saved-menu
       .listType="${listType}"
-      ?draggableenabled="${draggableEnabled}"
+      ?draggableEnabled="${dataTransfer}"
       ?compatibility="${compatibility}"></saved-menu>`;
   }
 
-  _projectsTemplate() {
-    const { allowPopup, listType, draggableEnabled, compatibility } = this;
+  /**
+   * @returns {TemplateResult} Template for the projects menu
+   */
+  [projectsTemplate]() {
+    const { popup, listType, dataTransfer, compatibility } = this;
     return html`<div class="menu-actions">
       <anypoint-button
         @click="${this.refreshProjectsList}"
@@ -608,7 +618,7 @@ export class ArcMenu extends LitElement {
         ?compatibility="${compatibility}"
       >Refresh</anypoint-button>
       <span class="spacer"></span>
-      ${allowPopup ? html`<anypoint-icon-button
+      ${popup ? html`<anypoint-icon-button
         @click="${this.popupProjects}"
         data-action="popup-projects"
         aria-label="Popup projects menu"
@@ -619,15 +629,18 @@ export class ArcMenu extends LitElement {
     </div>
     <projects-menu
       .listType="${listType}"
-      ?draggableenabled="${draggableEnabled}"
+      ?draggableEnabled="${dataTransfer}"
       ?compatibility="${compatibility}"></projects-menu>`;
   }
 
-  _apisTemplate() {
-    const { allowPopup, listType, draggableEnabled, compatibility } = this;
+  /**
+   * @returns {TemplateResult} Template for the REST APIs menu
+   */
+  [apisTemplate]() {
+    const { popup, listType, compatibility } = this;
     return html`<div class="menu-actions">
       <anypoint-button
-        @click="${this._openApisList}"
+        @click="${this[openApisHandler]}"
         data-action="open-rest-apis"
         title="Opens saved requests list in full screen"
         ?compatibility="${compatibility}"
@@ -639,13 +652,13 @@ export class ArcMenu extends LitElement {
         ?compatibility="${compatibility}"
       >Refresh</anypoint-button>
       <anypoint-button
-        @click="${this._exporeApis}"
+        @click="${this[openExchangeHandler]}"
         data-action="explore-rest-apis"
-        title="Opens APIs expore screen"
+        title="Opens APIs explorer screen"
         ?compatibility="${compatibility}"
       >Explore</anypoint-button>
       <span class="spacer"></span>
-      ${allowPopup ? html`<anypoint-icon-button
+      ${popup ? html`<anypoint-icon-button
         @click="${this.popupApis}"
         data-action="popup-rest-apis"
         aria-label="Popup APIs menu"
@@ -657,56 +670,36 @@ export class ArcMenu extends LitElement {
     </div>
     <rest-api-menu
       .listType="${listType}"
-      ?draggableenabled="${draggableEnabled}"
-      ?compatibility="${compatibility}"></rest-api-menu>`;
+      ?compatibility="${compatibility}"
+    ></rest-api-menu>`;
   }
 
-  _menuTemplate() {
-    const { selected, historyEnabled, hideHistory, hideSaved, hideProjects, hideApis } = this;
-    const effective = historyEnabled ? selected : selected + 1;
-    if (!effective && historyEnabled && !hideHistory) {
-      return this._historyTemplate();
+  [menuTemplate]() {
+    const { selected, history, hideHistory, hideSaved, hideProjects, hideApis } = this;
+    const effective = history ? selected : selected + 1;
+    if (!effective && history && !hideHistory) {
+      return this[historyTemplate]();
     }
     if (effective === 1 && !hideSaved) {
-      return this._savedTemplate();
+      return this[savedTemplate]();
     }
     if (effective === 2 && !hideProjects) {
-      return this._projectsTemplate();
+      return this[projectsTemplate]();
     }
     if (effective === 3 && !hideApis) {
-      return this._apisTemplate();
+      return this[apisTemplate]();
     }
+    return '';
   }
 
   render() {
-    return html`<div class="menu">
+    return html`
+    <div class="menu">
       <div class="tabs">
-        ${this._tabsTemplate()}
+        ${this[tabsTemplate]()}
       </div>
-      ${this._menuTemplate()}
+      ${this[menuTemplate]()}
     </div>
     `;
   }
-  /**
-   * Fired when the user performed a navigation action.
-   *
-   * It uses ARC's standard navigation event:
-   * https://github.com/advanced-rest-client/arc-electron/wiki/Navigation-events---dev-guide
-   *
-   * @event navigate
-   */
-
-  /**
-   * Dispatched when  the user requested to popup a panel.
-   * @event popup-menu
-   * @param {String} type
-   */
-  /**
-   * Dispatched when requested to open an URL.
-   * If this event is not handled then it uses `window.open()` instead.
-   * To handle the event cancel it by calling `e.preventDefault()`.
-   *
-   * @event open-external-url
-   * @param {String} url The URL to open.
-   */
 }

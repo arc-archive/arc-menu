@@ -1,21 +1,29 @@
 import { html } from 'lit-html';
-import { ArcDemoPage } from '@advanced-rest-client/arc-demo-helper/ArcDemoPage.js';
+import { DemoPage } from '@advanced-rest-client/arc-demo-helper';
 import '@anypoint-web-components/anypoint-checkbox/anypoint-checkbox.js';
 import '@anypoint-web-components/anypoint-radio-button/anypoint-radio-button.js';
 import '@anypoint-web-components/anypoint-radio-button/anypoint-radio-group.js';
 import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@advanced-rest-client/arc-demo-helper/arc-interactive-demo.js';
-import '@advanced-rest-client/http-method-selector/http-method-selector-mini.js';
-import '@anypoint-web-components/anypoint-input/anypoint-input.js';
-import '@polymer/paper-toast/paper-toast.js';
+import '@advanced-rest-client/arc-models/request-model.js';
+import '@advanced-rest-client/arc-models/url-indexer.js';
+import '@advanced-rest-client/arc-models/project-model.js';
+import '@advanced-rest-client/arc-models/rest-api-model.js';
 import { DataGenerator } from '@advanced-rest-client/arc-data-generator/arc-data-generator.js';
+import { ArcNavigationEventTypes, ImportEvents } from '@advanced-rest-client/arc-events';
 import '../arc-menu.js';
+import { ArcModelEvents } from '@advanced-rest-client/arc-models';
 
-class DemoPage extends ArcDemoPage {
+/** @typedef {import('@advanced-rest-client/arc-events').ARCProjectNavigationEvent} ARCProjectNavigationEvent */
+/** @typedef {import('@advanced-rest-client/arc-events').ARCRequestNavigationEvent} ARCRequestNavigationEvent */
+/** @typedef {import('@advanced-rest-client/arc-events').ARCRestApiNavigationEvent} ARCRestApiNavigationEvent */
+/** @typedef {import('@advanced-rest-client/arc-events').ARCNavigationEvent} ARCNavigationEvent */
+/** @typedef {import('@advanced-rest-client/arc-events').ARCMenuPopupEvent} ARCMenuPopupEvent */
+
+class ComponentDemoPage extends DemoPage {
   constructor() {
     super();
     this.initObservableProperties([
-      'compatibility',
       'listType',
       'historyEnabled',
       'hideHistory',
@@ -26,36 +34,65 @@ class DemoPage extends ArcDemoPage {
       'draggableEnabled',
       'dropValue'
     ]);
-    this._componentName = 'arc-menu';
+    this.componentName = 'arc-menu';
     this.demoStates = ['Material', 'Anypoint'];
     this.historyEnabled = true;
+    this.compatibility = false;
+    this.hideHistory = false;
+    this.hideSaved = false;
+    this.hideProjects = false;
+    this.hideApis = false;
+    this.allowPopup = false;
+    this.draggableEnabled = false;
 
-    this._demoStateHandler = this._demoStateHandler.bind(this);
-    this._toggleMainOption = this._toggleMainOption.bind(this);
     this._listTypeHandler = this._listTypeHandler.bind(this);
     this.generateData = this.generateData.bind(this);
     this.deleteData = this.deleteData.bind(this);
-    this.refreshList = this.refreshList.bind(this);
     this._dragoverHandler = this._dragoverHandler.bind(this);
     this._dragleaveHandler = this._dragleaveHandler.bind(this);
     this._dropHandler = this._dropHandler.bind(this);
+
+    window.addEventListener(ArcNavigationEventTypes.navigateProject, this.navigateProjectHandler.bind(this));
+    window.addEventListener(ArcNavigationEventTypes.navigateRequest, this.navigateRequestHandler.bind(this));
+    window.addEventListener(ArcNavigationEventTypes.navigateRestApi, this.navigateRestApiHandler.bind(this));
+    window.addEventListener(ArcNavigationEventTypes.navigate, this.navigateHandler.bind(this));
+    window.addEventListener(ArcNavigationEventTypes.popupMenu, this.popupHandler.bind(this));
   }
 
-  _toggleMainOption(e) {
-    const { name, checked } = e.target;
-    this[name] = checked;
+  /**
+   * @param {ARCRequestNavigationEvent} e 
+   */
+  navigateRequestHandler(e) {
+    console.log('Navigate request', e.requestId, e.requestType, e.route, e.action);
+  }
+  
+  /**
+   * @param {ARCProjectNavigationEvent} e 
+   */
+  navigateProjectHandler(e) {
+    console.log('Navigate project', e.id, e.route, e.action);
+  } 
+
+  /**
+   * @param {ARCRestApiNavigationEvent} e 
+   */
+  navigateRestApiHandler(e) {
+    console.log('Navigate requested', 'Version', e.version, 'id', e.api, 'Action', e.action);
   }
 
-  _demoStateHandler(e) {
-    const state = e.detail.value;
-    switch (state) {
-      case 0:
-        this.compatibility = false;
-        break;
-      case 1:
-        this.compatibility = true;
-        break;
-    }
+  /**
+   * @param {ARCNavigationEvent} e 
+   */
+  navigateHandler(e) {
+    // @ts-ignore
+    console.log('Navigate requested', 'Route', e.route, 'base', e.base, 'opts', e.opts);
+  }  
+  
+  /**
+   * @param {ARCMenuPopupEvent} e 
+   */
+  popupHandler(e) {
+    console.log('Navigate requested', 'menu', e.menu);
   }
 
   _listTypeHandler(e) {
@@ -68,7 +105,9 @@ class DemoPage extends ArcDemoPage {
 
   async generateData() {
     await DataGenerator.insertApiData({
-      size: 100
+      size: 100,
+      versionSize: 4,
+      order: 0,
     });
     await DataGenerator.insertSavedRequestData({
       requestsSize: 100,
@@ -77,23 +116,13 @@ class DemoPage extends ArcDemoPage {
     await DataGenerator.insertHistoryRequestData({
       requestsSize: 500
     });
-    document.getElementById('genToast').opened = true;
-    const e = new CustomEvent('data-imported', {
-      bubbles: true
-    });
-    document.body.dispatchEvent(e);
+
+    ImportEvents.dataimported(document.body);
   }
 
   async deleteData() {
     await DataGenerator.destroyAll();
-    document.getElementById('delToast').opened = true;
-    const e = new CustomEvent('datastore-destroyed', {
-      detail: {
-        datastore: 'all'
-      },
-      bubbles: true
-    });
-    document.body.dispatchEvent(e);
+    ArcModelEvents.destroyed(document.body, 'all');
   }
 
   _dragoverHandler(e) {
@@ -130,10 +159,6 @@ class DemoPage extends ArcDemoPage {
     e.currentTarget.classList.remove('drag-over');
   }
 
-  refreshList() {
-    document.querySelector('arc-menu').refresh();
-  }
-
   _demoTemplate() {
     const {
       demoStates,
@@ -147,7 +172,6 @@ class DemoPage extends ArcDemoPage {
       hideApis,
       allowPopup,
       draggableEnabled,
-      dropValue
     } = this;
     return html`
       <section class="documentation-section">
@@ -159,19 +183,19 @@ class DemoPage extends ArcDemoPage {
 
         <arc-interactive-demo
           .states="${demoStates}"
-          @state-chanegd="${this._demoStateHandler}"
+          @state-changed="${this._demoStateHandler}"
           ?dark="${darkThemeActive}"
         >
           <arc-menu
             ?compatibility="${compatibility}"
             .listType="${listType}"
-            ?historyEnabled="${historyEnabled}"
+            ?history="${historyEnabled}"
             ?hideHistory="${hideHistory}"
             ?hideSaved="${hideSaved}"
             ?hideProjects="${hideProjects}"
             ?hideApis="${hideApis}"
-            ?allowPopup="${allowPopup}"
-            ?draggableEnabled="${draggableEnabled}"
+            ?popup="${allowPopup}"
+            ?dataTransfer="${draggableEnabled}"
             slot="content"
           ></arc-menu>
 
@@ -258,29 +282,38 @@ class DemoPage extends ArcDemoPage {
             >
           </anypoint-radio-group>
         </arc-interactive-demo>
-
-        ${draggableEnabled ? html`<section
-          class="drop-target"
-          @dragover="${this._dragoverHandler}"
-          @dragleave="${this._dragleaveHandler}"
-          @dragenter="${this._dragEnterHandler}"
-          @drop="${this._dropHandler}">
-          Drop request here
-          ${dropValue ? html`<output>${dropValue}</output>` : ''}
-        </section>` : ''}
-
-        <div class="data-options">
-          <h3>Data options</h3>
-          <anypoint-button @click="${this.generateData}">Generate 100 projects</anypoint-button>
-          <anypoint-button @click="${this.deleteData}">Clear list</anypoint-button>
-          <anypoint-button @click="${this.refreshList}">Refresh list</anypoint-button>
-        </div>
+        ${this._dropTargetTemplate()}
       </section>
-
-      <paper-toast id="genToast" text="The request data has been generated"></paper-toast>
-      <paper-toast id="delToast" text="The request data has been removed"></paper-toast>
-      <paper-toast id="navToast" text="Navigation ocurred"></paper-toast>
     `;
+  }
+
+  _dropTargetTemplate() {
+    if (!this.draggableEnabled) {
+      return '';
+    }
+    const { dropValue } = this;
+    return html`
+    <section
+      class="drop-target"
+      @dragover="${this._dragoverHandler}"
+      @dragleave="${this._dragleaveHandler}"
+      @dragenter="${this._dragEnterHandler}"
+      @drop="${this._dropHandler}">
+      Drop request here
+      ${dropValue ? html`<output>${dropValue}</output>` : ''}
+    </section>`;
+  }
+
+  _controlsTemplate() {
+    return html`
+    <section class="documentation-section">
+      <h3>Data control</h3>
+      <p>
+        This section allows you to control demo data
+      </p>
+      <anypoint-button @click="${this.generateData}">Generate 100 projects</anypoint-button>
+      <anypoint-button @click="${this.deleteData}">Clear list</anypoint-button>
+    </section>`;
   }
 
   _introductionTemplate() {
@@ -300,7 +333,7 @@ class DemoPage extends ArcDemoPage {
     return html`
       <section class="documentation-section">
         <h2>Usage</h2>
-        <p>REST APIs menu comes with 2 predefied styles:</p>
+        <p>REST APIs menu comes with 2 predefined styles:</p>
         <ul>
           <li><b>Material</b> - Normal state</li>
           <li>
@@ -313,18 +346,18 @@ class DemoPage extends ArcDemoPage {
 
   contentTemplate() {
     return html`
-      <h2>ARC REST APIs menu</h2>
-      ${this._demoTemplate()}
-      ${this._introductionTemplate()}
-      ${this._usageTemplate()}
+    <request-model></request-model>
+    <url-indexer></url-indexer>
+    <project-model></project-model>
+    <rest-api-model></rest-api-model>
+    <h2>ARC menu element</h2>
+    ${this._demoTemplate()}
+    ${this._controlsTemplate()}
+    ${this._introductionTemplate()}
+    ${this._usageTemplate()}
     `;
   }
 }
 
-window.addEventListener('navigate', function() {
-  document.getElementById('navToast').opened = true;
-});
-
-const instance = new DemoPage();
+const instance = new ComponentDemoPage();
 instance.render();
-window._demo = instance;

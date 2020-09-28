@@ -1,3 +1,3 @@
-import { ProjectsMenu, ProjectsMenuWrapper } from './src/ProjectsMenu.js';
-window.customElements.define('projects-menu', ProjectsMenu);
-window.customElements.define('projects-menu-wrapper', ProjectsMenuWrapper);
+import { ProjectsMenuElement } from './src/ProjectsMenuElement.js';
+
+window.customElements.define('projects-menu', ProjectsMenuElement);
