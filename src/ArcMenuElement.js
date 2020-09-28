@@ -437,7 +437,7 @@ export class ArcMenuElement extends LitElement {
       return;
     }
     this[cancelDragTimeout]();
-    const {selected} = this;
+    const { selected } = this;
     if (type === 'saved' && selected === 1) {
       return;
     }
@@ -512,7 +512,8 @@ export class ArcMenuElement extends LitElement {
       @dragover="${this[dragoverHandler]}"
       @dragleave="${this[dragleaveHandler]}"
       @selected-changed="${this[tabsHandler]}"
-      ?compatibility="${compatibility}">
+      ?compatibility="${compatibility}"
+    >
       ${history ? html`<anypoint-tab
         data-type="history"
         ?hidden="${hideHistory}"
@@ -568,7 +569,8 @@ export class ArcMenuElement extends LitElement {
     <history-menu
       .listType="${listType}"
       ?draggableEnabled="${dataTransfer}"
-      ?compatibility="${compatibility}"></history-menu>`;
+      ?compatibility="${compatibility}"
+    ></history-menu>`;
   }
 
   /**

@@ -19,6 +19,9 @@ import '@anypoint-web-components/anypoint-menu-button/anypoint-menu-button.js';
 import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import '@anypoint-web-components/anypoint-listbox/anypoint-listbox.js';
+import '@anypoint-web-components/anypoint-item/anypoint-icon-item.js';
+import '@anypoint-web-components/anypoint-item/anypoint-item.js';
+import '@anypoint-web-components/anypoint-item/anypoint-item-body.js';
 import '@advanced-rest-client/arc-icons/arc-icon.js'
 import '@api-components/http-method-label/http-method-label.js';
 import { ArcNavigationEvents, ProjectActions } from '@advanced-rest-client/arc-events';
@@ -163,38 +166,8 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
       return;
     }
     const project = this.projects[index];
-    const { requests, _id } = project;
-    if (Array.isArray(requests) && requests.length) {
-      const items = /** @type ARCSavedRequest[] */ (await ArcModelEvents.Request.readBulk(this, 'saved', requests));
-      const remove = [];
-      const update = [];
-      items.forEach((request) => {
-        if (!request) {
-          return;
-        }
-        const { projects } = request;
-        if (!Array.isArray(projects) || !projects.length) {
-          return;
-        }
-        if (!projects.includes(_id)) {
-          return;
-        }
-        if (projects.length > 1) {
-          const rIndex = projects.indexOf(_id);
-          projects.splice(rIndex, 1);
-          update.push(request);
-        } else {
-          remove.push(request._id);
-        }
-      });
-      if (remove.length) {
-        await ArcModelEvents.Request.deleteBulk(this, 'saved', remove);
-      }
-      if (update.length) {
-        await ArcModelEvents.Request.updateBulk(this, 'saved', update);
-      }
-    }
-    await ArcModelEvents.Project.delete(this, project._id);
+    const { _id } = project;
+    await ArcModelEvents.Project.delete(this, _id);
   }
 
   /**
@@ -333,15 +306,15 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
     }
     await this[openProject](pid);
   }
-
+  
   /**
    * Opens a project and reads its requests
    * @param {string} id Project id to open
    * @returns {Promise<void>}
    */
   async [openProject](id) {
-    const opened = this[openedProjectsValue];
     await this[readProjectRequests](id);
+    const opened = this[openedProjectsValue];
     opened.push(id);
     await this.requestUpdate();
   }
@@ -655,6 +628,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
       ?compatibility="${compatibility}"
       emphasis="high"
       @click="${this[addProjectHandler]}"
+      data-action="add-project"
     >
       <arc-icon icon="add"></arc-icon>
       Add a project
@@ -692,6 +666,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
         <anypoint-item
           data-index="${index}"
           class="menu-item"
+          data-action="open-project"
           title="Open project details"
           @click="${this[openProjectHandler]}"
           tabindex="-1"
@@ -704,6 +679,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
           title="Open all requests in the workspace"
           @click="${this[openAllRequestsHandler]}"
           tabindex="-1"
+          data-action="open-all-workspace"
         >
           Open all in workspace
         </anypoint-item>
@@ -713,6 +689,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
           title="Replace current workspace with project request"
           @click="${this[replaceAllRequestsHandler]}"
           tabindex="-1"
+          data-action="replace-all-workspace"
         >
             Replace all in workspace
         </anypoint-item>
@@ -722,6 +699,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
           title="Delete project"
           @click="${this[deleteHandler]}"
           tabindex="-1"
+          data-action="delete-project"
         >
           Delete project
         </anypoint-item>
