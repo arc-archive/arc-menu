@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 import { fixture, assert, aTimeout, html } from '@open-wc/testing';
 import sinon from 'sinon';
 import { DataGenerator } from '@advanced-rest-client/arc-data-generator';
@@ -842,6 +843,367 @@ describe('ProjectsMenuElement', () => {
       node.click();
 
       assert.isTrue(spy.called);
+    });
+  });
+
+  describe('invalid requests', () => {
+    let dbProject;
+    before(async () => {
+      const result = await generator.insertSavedRequestData({
+        projectsSize: 1,
+        forceProject: true,
+        requestsSize: 2,
+      });
+      dbProject = result.projects[0];
+      dbProject.requests.unshift('invalid');
+      await generator.updateObject('legacy-projects', dbProject);
+    });
+
+    after(async () => {
+      await generator.destroySavedRequestData();
+    });
+
+    let element = /** @type ProjectsMenuElement */ (null);
+    beforeEach(async () => {
+      element = await basicFixture();
+      element.draggableEnabled = true;
+      await element[internals.refreshProjectsList]();
+      await element.requestUpdate();
+      await element[openProject](dbProject._id);
+    });
+
+    it('renders invalid request item', () => {
+      const nodes = element.shadowRoot.querySelectorAll('.unknown-entry');
+      assert.lengthOf(nodes, 1);
+    });
+
+    it('invalid entry has data attributes', () => {
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.unknown-entry anypoint-button'));
+      assert.equal(node.dataset.id, 'invalid', 'has request id');
+      assert.equal(node.dataset.project, dbProject._id, 'has project id');
+    });
+
+    it('removes invalid entry from the project', async () => {
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.unknown-entry anypoint-button'));
+      const spy = sinon.spy();
+      element.addEventListener(ArcModelEventTypes.Project.update, spy);
+      node.click();
+      assert.isTrue(spy.calledOnce);
+      await spy.args[0][0].detail.result;
+      const project = await ArcModelEvents.Project.read(document.body, dbProject._id);
+      assert.notInclude(project.requests, 'invalid');
+    });
+  });
+
+  describe('[listDragOverHandler]()', () => {
+    let dbProject;
+    before(async () => {
+      const result = await generator.insertSavedRequestData({
+        projectsSize: 1,
+        forceProject: true,
+        requestsSize: 2,
+      });
+      dbProject = result.projects[0];
+    });
+
+    after(async () => {
+      await generator.destroySavedRequestData();
+    });
+
+    let element = /** @type ProjectsMenuElement */ (null);
+    beforeEach(async () => {
+      element = await basicFixture();
+      element.draggableEnabled = true;
+      await element[internals.refreshProjectsList]();
+      await element.requestUpdate();
+      await element[openProject](dbProject._id);
+    });
+
+    function dispatch(target, isAbove = true, id = 'some-id') {
+      const rect = target.getClientRects()[0];
+      const dt = new DataTransfer();
+      if (id) {
+        dt.setData('arc/request', id);
+      }
+      const e = new DragEvent('dragover', {
+        dataTransfer: dt,
+        cancelable: true,
+        bubbles: true,
+        clientX: rect.left,
+        clientY: isAbove ? rect.top + 5 : rect.bottom - 5,
+      });
+      target.dispatchEvent(e);
+      return target;
+    }
+
+    it('adds drop-above class to the over item', () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      dispatch(target);
+      assert.include(target.className, 'drop-above');
+    });
+
+    it('removes drop-below if present', () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-below');
+      dispatch(target);
+      assert.notInclude(target.className, 'drop-below');
+    });
+
+    it('adds drop-below class to the over item', () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      dispatch(target, false);
+      assert.include(target.className, 'drop-below');
+    });
+
+    it('removes drop-above if present', () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-above');
+      dispatch(target, false);
+      assert.notInclude(target.className, 'drop-above');
+    });
+
+    it('ignores when dragging not enabled', () => {
+      element.draggableEnabled = false;
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      dispatch(target);
+      assert.notInclude(target.className, 'drop-above');
+    });
+
+    it('ignores when no id', () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      dispatch(target, true, null);
+      assert.notInclude(target.className, 'drop-above');
+    });
+  });
+
+  describe('[listDragLeaveHandler]()', () => {
+    let dbProject;
+    before(async () => {
+      const result = await generator.insertSavedRequestData({
+        projectsSize: 1,
+        forceProject: true,
+        requestsSize: 2,
+      });
+      dbProject = result.projects[0];
+    });
+
+    after(async () => {
+      await generator.destroySavedRequestData();
+    });
+
+    let element = /** @type ProjectsMenuElement */ (null);
+    beforeEach(async () => {
+      element = await basicFixture();
+      element.draggableEnabled = true;
+      await element[internals.refreshProjectsList]();
+      await element.requestUpdate();
+      await element[openProject](dbProject._id);
+    });
+
+    function dispatch(target, id = 'some-id') {
+      const dt = new DataTransfer();
+      if (id) {
+        dt.setData('arc/request', id);
+      }
+      const e = new DragEvent('dragleave', {
+        dataTransfer: dt,
+        cancelable: true,
+        bubbles: true,
+      });
+      target.dispatchEvent(e);
+      return target;
+    }
+
+    it('removes "drop-above" class', () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-above');
+      dispatch(target);
+      assert.notInclude(target.className, 'drop-above');
+    });
+
+    it('removes "drop-below" class', () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-below');
+      dispatch(target);
+      assert.notInclude(target.className, 'drop-below');
+    });
+
+    it('ignores when dragging not enabled', () => {
+      element.draggableEnabled = false;
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-below');
+      dispatch(target);
+      assert.include(target.className, 'drop-below');
+    });
+
+    it('ignores when no id', () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-below');
+      dispatch(target, null);
+      assert.include(target.className, 'drop-below');
+    });
+  });
+
+  describe('[listDropHandler]()', () => {
+    let dbProject;
+    before(async () => {
+      const result = await generator.insertSavedRequestData({
+        projectsSize: 1,
+        forceProject: true,
+        requestsSize: 2,
+      });
+      dbProject = result.projects[0];
+    });
+
+    after(async () => {
+      await generator.destroySavedRequestData();
+    });
+
+    let element = /** @type ProjectsMenuElement */ (null);
+    let requestId;
+    beforeEach(async () => {
+      element = await basicFixture();
+      element.draggableEnabled = true;
+      await element[internals.refreshProjectsList]();
+      await element.requestUpdate();
+      await element[openProject](dbProject._id);
+      const request = /** @type ARCSavedRequest */ (generator.generateSavedItem());
+      requestId = (await ArcModelEvents.Request.update(document.body, 'saved', request)).id;
+    });
+
+    function dispatch(target, id, projectId) {
+      const dt = new DataTransfer();
+      if (id) {
+        dt.setData('arc/request', id);
+        dt.setData('arc/id', id);
+      }
+      dt.setData('arc/type', 'saved');
+      if (projectId) {
+        dt.setData('arc/project-request', projectId);
+      }
+      const e = new DragEvent('drop', {
+        dataTransfer: dt,
+        cancelable: true,
+        bubbles: true,
+      });
+      target.dispatchEvent(e);
+    }
+
+    it('adds non-project request above the drop target', async () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-above');
+      const spy = sinon.spy();
+      element.addEventListener(ArcModelEventTypes.Project.addTo, spy);
+      dispatch(target, requestId, '');
+      assert.isTrue(spy.calledOnce, 'project update event is dispatched');
+      await spy.args[0][0].detail.result;
+      const project = await ArcModelEvents.Project.read(document.body, dbProject._id);
+      assert.include(project.requests[0], requestId);
+    });
+
+    it('adds non-project request below the drop target', async () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-below');
+      const spy = sinon.spy();
+      element.addEventListener(ArcModelEventTypes.Project.addTo, spy);
+      dispatch(target, requestId, '');
+      assert.isTrue(spy.calledOnce, 'project update event is dispatched');
+      await spy.args[0][0].detail.result;
+      const project = await ArcModelEvents.Project.read(document.body, dbProject._id);
+      assert.include(project.requests[1], requestId);
+    });
+
+    it('rearranges items inside the project', async () => {
+      const targets = /** @type HTMLElement[] */ (Array.from(element.shadowRoot.querySelectorAll('.request-list-item')));
+      const [target] = targets;
+      const source = targets[1];
+      target.classList.add('drop-above');
+      const spy = sinon.spy();
+      element.addEventListener(ArcModelEventTypes.Project.update, spy);
+      const sid = source.dataset.id;
+      const tid = target.dataset.id;
+      dispatch(target, sid, dbProject._id);
+      assert.isTrue(spy.calledOnce, 'project update event is dispatched');
+      await spy.args[0][0].detail.result;
+      const project = await ArcModelEvents.Project.read(document.body, dbProject._id);
+      assert.equal(project.requests[0], sid, 'dragged item (source) is moved above');
+      assert.equal(project.requests[1], tid, 'drop target item is moved to the second place');
+    });
+
+    it('does nothing when draggable ios not enabled', async () => {
+      element.draggableEnabled = false;
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-above');
+      const spy = sinon.spy();
+      element.addEventListener(ArcModelEventTypes.Project.addTo, spy);
+      dispatch(target, requestId, '');
+      assert.isFalse(spy.calledOnce, 'event is not dispatched');
+    });
+
+    it('does nothing has no request', async () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      target.classList.add('drop-above');
+      const spy = sinon.spy();
+      element.addEventListener(ArcModelEventTypes.Project.addTo, spy);
+      const dt = new DataTransfer();
+      dt.setData('arc/id', requestId);
+      dt.setData('arc/type', 'saved');
+      const e = new DragEvent('drop', {
+        dataTransfer: dt,
+        cancelable: true,
+        bubbles: true,
+      });
+      target.dispatchEvent(e);
+      assert.isFalse(spy.calledOnce, 'event is not dispatched');
+    });
+  });
+
+  describe('[dragStartHandler]()', () => {
+    let dbProject;
+    before(async () => {
+      const result = await generator.insertSavedRequestData({
+        projectsSize: 1,
+        forceProject: true,
+        requestsSize: 2,
+      });
+      dbProject = result.projects[0];
+    });
+
+    after(async () => {
+      await generator.destroySavedRequestData();
+    });
+
+    let element = /** @type ProjectsMenuElement */ (null);
+    beforeEach(async () => {
+      element = await basicFixture();
+      element.draggableEnabled = true;
+      await element[internals.refreshProjectsList]();
+      await element.requestUpdate();
+      await element[openProject](dbProject._id);
+    });
+
+    function dispatch(target) {
+      const e = new DragEvent('dragstart', {
+        dataTransfer: new DataTransfer(),
+        cancelable: true,
+        bubbles: true,
+      });
+      target.dispatchEvent(e);
+      return e;
+    }
+
+    it('adds arc/project-request type', async () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      const e = dispatch(target);
+      const pid = e.dataTransfer.getData('arc/project-request');
+      assert.equal(pid, target.dataset.project);
+    });
+
+    it('adds parent types', async () => {
+      const target = /** @type HTMLElement */ (element.shadowRoot.querySelector('.request-list-item'));
+      const e = dispatch(target);
+      const type = e.dataTransfer.getData('arc/type');
+      assert.equal(type, 'saved');
     });
   });
 });

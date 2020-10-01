@@ -430,7 +430,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
       item.classList.add('drop-below');
     }
     if (!aboveHalf && item.classList.contains('drop-above')) {
-      item.classList.remove('drop-below');
+      item.classList.remove('drop-above');
     }
   }
 
@@ -492,10 +492,11 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
     if (!item) {
       return;
     }
+    const isAbove = item.classList.contains('drop-above');
     item.classList.remove('drop-above');
     item.classList.remove('drop-below');
     const itemIndex = Number(item.dataset.index);
-    const order = itemIndex;
+    const order = isAbove ? itemIndex : itemIndex + 1;
     const targetProject = item.dataset.project;
     const rid = dt.getData('arc/id');
     let requestProject = dt.getData('arc/project-request');

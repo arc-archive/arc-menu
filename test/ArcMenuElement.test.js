@@ -16,10 +16,13 @@ import {
   dragTypeCallbackValue,
   dragOverTimeoutValue,
   openMenuDragOver,
-  MenuTypes,
+	MenuTypes,
+	searchOpenedValue,
 } from '../src/ArcMenuElement.js';
 
 /** @typedef {import('..').ArcMenuElement} ArcMenuElement */
+/** @typedef {import('..').HistoryMenuElement} HistoryMenuElement */
+/** @typedef {import('@anypoint-web-components/anypoint-input').AnypointInput} AnypointInput */
 
 describe('ArcMenuElement', () => {
   /**
@@ -730,4 +733,67 @@ describe('ArcMenuElement', () => {
       assert.equal(element.selected, 0);
     });
   });
+
+	describe('[searchToggleHandler]()', () => {
+		let element = /** @type ArcMenuElement */ (null);
+		beforeEach(async () => {
+			element = await historyFixture();
+		});
+
+		it('toggles search item when icon click', () => {
+			const button = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="search-history"]'));
+			button.click();
+			assert.deepEqual(element[searchOpenedValue], ['history']);
+		});
+
+		it('toggles back search item when icon click', () => {
+			const button = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="search-history"]'));
+			button.click();
+			button.click();
+			assert.deepEqual(element[searchOpenedValue], []);
+		});
+
+		it('renders search input', async () => {
+			const button = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="search-history"]'));
+			button.click();
+			await nextFrame();
+			const input = /** @type HTMLElement */ (element.shadowRoot.querySelector('.list-search'));
+			assert.ok(input);
+		});
+	});
+
+	describe('[searchHandler]()', () => {
+		let element = /** @type ArcMenuElement */ (null);
+		let input = /** @type AnypointInput */ (null);
+		let menu = /** @type HistoryMenuElement */ (null);
+		beforeEach(async () => {
+			element = await historyFixture();
+			element[searchOpenedValue] = ['history'];
+			await element.requestUpdate();
+			input = element.shadowRoot.querySelector('.list-search');
+			menu = element.shadowRoot.querySelector('history-menu');
+		});
+
+		it('queries the menu when has data', () => {
+			const spy = sinon.spy(menu, 'query');
+			input.value = 'test';
+			input.dispatchEvent(new CustomEvent('search'));
+			assert.isTrue(spy.called, 'query function is called');
+			assert.equal(spy.args[0][0], 'test', 'passing query term');
+		});
+
+		it('queries the menu with empty value', () => {
+			const spy = sinon.spy(menu, 'query');
+			input.value = '';
+			input.dispatchEvent(new CustomEvent('search'));
+			assert.isTrue(spy.called, 'query function is called');
+			assert.equal(spy.args[0][0], '', 'passing query term');
+		});
+
+		it('clears menu from the opened search list', () => {
+			input.value = '';
+			input.dispatchEvent(new CustomEvent('search'));
+			assert.deepEqual(element[searchOpenedValue], []);
+		});
+	});
 });
