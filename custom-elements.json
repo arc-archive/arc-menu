@@ -1,0 +1,783 @@
+{
+  "version": "experimental",
+  "tags": [
+    {
+      "name": "arc-menu",
+      "path": "./arc-menu.js",
+      "attributes": [
+        {
+          "name": "selected",
+          "description": "Currently selected menu tab",
+          "type": "number"
+        },
+        {
+          "name": "listType",
+          "description": "Changes information density of list items.\r\nBy default it uses material's list item with two lines (72px height)\r\nPossible values are:\r\n\r\n- `default` or empty - regular list view\r\n- `comfortable` - enables MD single line list item vie (52px height)\r\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        },
+        {
+          "name": "history",
+          "description": "If set the history menu is rendered. This comes from the application\r\nsettings and is different from `noHistory` which is intended to\r\ntemporarily remove the history from the view (for menu popup option)",
+          "type": "boolean"
+        },
+        {
+          "name": "hideHistory",
+          "description": "When set it hides history from the view",
+          "type": "boolean"
+        },
+        {
+          "name": "hideSaved",
+          "description": "When set it hides saved list from the view",
+          "type": "boolean"
+        },
+        {
+          "name": "hideProjects",
+          "description": "When set it hides projects from the view",
+          "type": "boolean"
+        },
+        {
+          "name": "hideApis",
+          "description": "When set it hides APIs list from the view",
+          "type": "boolean"
+        },
+        {
+          "name": "popup",
+          "description": "Renders popup menu buttons when this property is set.",
+          "type": "boolean"
+        },
+        {
+          "name": "dataTransfer",
+          "description": "Adds draggable property to the request list item element.\r\nThe `dataTransfer` object has `arc/request-object` mime type with\r\nserialized JSON with request model.",
+          "type": "boolean"
+        },
+        {
+          "name": "dragOpenTimeout",
+          "description": "A timeout after which the project item is opened when dragging a\r\nrequest over.",
+          "type": "number"
+        }
+      ],
+      "properties": [
+        {
+          "name": "styles",
+          "type": "CSSResult"
+        },
+        {
+          "name": "selected",
+          "attribute": "selected",
+          "description": "Currently selected menu tab",
+          "type": "number"
+        },
+        {
+          "name": "listType",
+          "attribute": "listType",
+          "description": "Changes information density of list items.\r\nBy default it uses material's list item with two lines (72px height)\r\nPossible values are:\r\n\r\n- `default` or empty - regular list view\r\n- `comfortable` - enables MD single line list item vie (52px height)\r\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "compatibility",
+          "attribute": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        },
+        {
+          "name": "history",
+          "attribute": "history",
+          "description": "If set the history menu is rendered. This comes from the application\r\nsettings and is different from `noHistory` which is intended to\r\ntemporarily remove the history from the view (for menu popup option)",
+          "type": "boolean"
+        },
+        {
+          "name": "hideHistory",
+          "attribute": "hideHistory",
+          "description": "When set it hides history from the view",
+          "type": "boolean"
+        },
+        {
+          "name": "hideSaved",
+          "attribute": "hideSaved",
+          "description": "When set it hides saved list from the view",
+          "type": "boolean"
+        },
+        {
+          "name": "hideProjects",
+          "attribute": "hideProjects",
+          "description": "When set it hides projects from the view",
+          "type": "boolean"
+        },
+        {
+          "name": "hideApis",
+          "attribute": "hideApis",
+          "description": "When set it hides APIs list from the view",
+          "type": "boolean"
+        },
+        {
+          "name": "popup",
+          "attribute": "popup",
+          "description": "Renders popup menu buttons when this property is set.",
+          "type": "boolean"
+        },
+        {
+          "name": "dataTransfer",
+          "attribute": "dataTransfer",
+          "description": "Adds draggable property to the request list item element.\r\nThe `dataTransfer` object has `arc/request-object` mime type with\r\nserialized JSON with request model.",
+          "type": "boolean"
+        },
+        {
+          "name": "dragOpenTimeout",
+          "attribute": "dragOpenTimeout",
+          "description": "A timeout after which the project item is opened when dragging a\r\nrequest over.",
+          "type": "number"
+        }
+      ]
+    },
+    {
+      "name": "history-menu",
+      "path": "./history-menu.js",
+      "description": "Advanced REST Client's history menu element.",
+      "attributes": [
+        {
+          "name": "type",
+          "description": "Requests list type. Can be one of:\n- saved\n- history\n- project\n\nDepending on the the type request change event is handled differently.\nFor saved and history requests corresponding type is processed.\nFor project requests list only request that has project id in the\nprojects list is processed.\n\nThis property must be set.",
+          "type": "\"saved\" | \"history\" | \"project\""
+        },
+        {
+          "name": "projectId",
+          "description": "Project datastore ID to display.\nThis should be set only when type is `project`",
+          "type": "string | undefined"
+        },
+        {
+          "name": "isSearch",
+          "description": "When set this component is in search mode.\nThis means that the list won't be loaded automatically and\nsome operations not related to search are disabled.",
+          "type": "boolean"
+        },
+        {
+          "name": "noAuto",
+          "description": "When set it won't query for data automatically when attached to the DOM.",
+          "type": "boolean"
+        },
+        {
+          "name": "detailedSearch",
+          "description": "When set the datastore query is performed with `detailed` option",
+          "type": "boolean"
+        },
+        {
+          "name": "draggableEnabled",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
+          "type": "boolean"
+        },
+        {
+          "name": "selectable",
+          "description": "When set the selection controls are rendered",
+          "type": "boolean"
+        },
+        {
+          "name": "listType",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "listActions",
+          "description": "When set it adds action buttons into the list elements.",
+          "type": "boolean"
+        },
+        {
+          "name": "pageLimit",
+          "description": "Single page query limit.",
+          "type": "number"
+        },
+        {
+          "name": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        }
+      ],
+      "properties": [
+        {
+          "name": "requests",
+          "description": "The list of request to render.\nIt can be either saved, history or project items.",
+          "type": "HistoryGroup[]"
+        },
+        {
+          "name": "type",
+          "attribute": "type",
+          "description": "Requests list type. Can be one of:\n- saved\n- history\n- project\n\nDepending on the the type request change event is handled differently.\nFor saved and history requests corresponding type is processed.\nFor project requests list only request that has project id in the\nprojects list is processed.\n\nThis property must be set.",
+          "type": "\"saved\" | \"history\" | \"project\""
+        },
+        {
+          "name": "projectId",
+          "attribute": "projectId",
+          "description": "Project datastore ID to display.\nThis should be set only when type is `project`",
+          "type": "string | undefined"
+        },
+        {
+          "name": "project",
+          "description": "A project object associated with requests.\nThis is only valid when `type` is set to `project`. It is set automatically\nwhen `readProjectRequests()` is called.",
+          "type": "ARCProject | undefined"
+        },
+        {
+          "name": "isSearch",
+          "attribute": "isSearch",
+          "description": "When set this component is in search mode.\nThis means that the list won't be loaded automatically and\nsome operations not related to search are disabled.",
+          "type": "boolean"
+        },
+        {
+          "name": "noAuto",
+          "attribute": "noAuto",
+          "description": "When set it won't query for data automatically when attached to the DOM.",
+          "type": "boolean"
+        },
+        {
+          "name": "detailedSearch",
+          "attribute": "detailedSearch",
+          "description": "When set the datastore query is performed with `detailed` option",
+          "type": "boolean"
+        },
+        {
+          "name": "draggableEnabled",
+          "attribute": "draggableEnabled",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
+          "type": "boolean"
+        },
+        {
+          "name": "selectedItems",
+          "description": "List of selected requests' ids. It returns null when the `selectable` is not set.",
+          "type": "string[] | null"
+        },
+        {
+          "name": "selectable",
+          "attribute": "selectable",
+          "description": "When set the selection controls are rendered",
+          "type": "boolean"
+        },
+        {
+          "name": "hasRequests",
+          "description": "Computed value, true when the project has requests.",
+          "type": "boolean"
+        },
+        {
+          "name": "dataUnavailable",
+          "description": "True when there's no requests after refreshing the state.",
+          "type": "boolean"
+        },
+        {
+          "name": "searchListEmpty",
+          "description": "Computed value. True when the query has been performed and no items\nhas been returned. It is different from `listHidden` where less\nconditions has to be checked. It is set to true when it doesn't\nhave items, is not loading and is search.",
+          "type": "boolean"
+        },
+        {
+          "name": "listType",
+          "attribute": "listType",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "listActions",
+          "attribute": "listActions",
+          "description": "When set it adds action buttons into the list elements.",
+          "type": "boolean"
+        },
+        {
+          "name": "pageLimit",
+          "attribute": "pageLimit",
+          "description": "Single page query limit.",
+          "type": "number"
+        },
+        {
+          "name": "compatibility",
+          "attribute": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        },
+        {
+          "name": "hasTwoLines",
+          "description": "True if the list item should be consisted of two lines of description.",
+          "type": "boolean"
+        },
+        {
+          "name": "querying",
+          "description": "True when the element is querying the database for the data.",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "projects-menu",
+      "path": "./projects-menu.js",
+      "description": "A list of projects in the ARC main menu.",
+      "attributes": [
+        {
+          "name": "dragOpenTimeout",
+          "description": "A timeout after which the project item is opened when dragging a\r\nrequest over.",
+          "type": "number",
+          "default": "\"700\""
+        },
+        {
+          "name": "type",
+          "description": "Requests list type. Can be one of:\n- saved\n- history\n- project\n\nDepending on the the type request change event is handled differently.\nFor saved and history requests corresponding type is processed.\nFor project requests list only request that has project id in the\nprojects list is processed.\n\nThis property must be set.",
+          "type": "\"saved\" | \"history\" | \"project\""
+        },
+        {
+          "name": "projectId",
+          "description": "Project datastore ID to display.\nThis should be set only when type is `project`",
+          "type": "string | undefined"
+        },
+        {
+          "name": "isSearch",
+          "description": "When set this component is in search mode.\nThis means that the list won't be loaded automatically and\nsome operations not related to search are disabled.",
+          "type": "boolean"
+        },
+        {
+          "name": "noAuto",
+          "description": "When set it won't query for data automatically when attached to the DOM.",
+          "type": "boolean"
+        },
+        {
+          "name": "detailedSearch",
+          "description": "When set the datastore query is performed with `detailed` option",
+          "type": "boolean"
+        },
+        {
+          "name": "draggableEnabled",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
+          "type": "boolean"
+        },
+        {
+          "name": "selectable",
+          "description": "When set the selection controls are rendered",
+          "type": "boolean"
+        },
+        {
+          "name": "listType",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "listActions",
+          "description": "When set it adds action buttons into the list elements.",
+          "type": "boolean"
+        },
+        {
+          "name": "pageLimit",
+          "description": "Single page query limit.",
+          "type": "number"
+        },
+        {
+          "name": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        },
+        {
+          "name": "noAutoProjects",
+          "description": "When set the element won't request projects list when attached to the dom.\nWhen set `refreshProjects()` has to be called manually.",
+          "type": "boolean"
+        }
+      ],
+      "properties": [
+        {
+          "name": "styles",
+          "type": "CSSResult[]"
+        },
+        {
+          "name": "dragOpenTimeout",
+          "attribute": "dragOpenTimeout",
+          "description": "A timeout after which the project item is opened when dragging a\r\nrequest over.",
+          "type": "number",
+          "default": "\"700\""
+        },
+        {
+          "name": "requests",
+          "description": "The list of request to render.\nIt can be either saved, history or project items.",
+          "type": "ARCSavedRequest[]"
+        },
+        {
+          "name": "type",
+          "attribute": "type",
+          "description": "Requests list type. Can be one of:\n- saved\n- history\n- project\n\nDepending on the the type request change event is handled differently.\nFor saved and history requests corresponding type is processed.\nFor project requests list only request that has project id in the\nprojects list is processed.\n\nThis property must be set.",
+          "type": "\"saved\" | \"history\" | \"project\""
+        },
+        {
+          "name": "projectId",
+          "attribute": "projectId",
+          "description": "Project datastore ID to display.\nThis should be set only when type is `project`",
+          "type": "string | undefined"
+        },
+        {
+          "name": "project",
+          "description": "A project object associated with requests.\nThis is only valid when `type` is set to `project`. It is set automatically\nwhen `readProjectRequests()` is called.",
+          "type": "ARCProject | undefined"
+        },
+        {
+          "name": "isSearch",
+          "attribute": "isSearch",
+          "description": "When set this component is in search mode.\nThis means that the list won't be loaded automatically and\nsome operations not related to search are disabled.",
+          "type": "boolean"
+        },
+        {
+          "name": "noAuto",
+          "attribute": "noAuto",
+          "description": "When set it won't query for data automatically when attached to the DOM.",
+          "type": "boolean"
+        },
+        {
+          "name": "detailedSearch",
+          "attribute": "detailedSearch",
+          "description": "When set the datastore query is performed with `detailed` option",
+          "type": "boolean"
+        },
+        {
+          "name": "draggableEnabled",
+          "attribute": "draggableEnabled",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
+          "type": "boolean"
+        },
+        {
+          "name": "selectedItems",
+          "description": "List of selected requests' ids. It returns null when the `selectable` is not set.",
+          "type": "string[] | null"
+        },
+        {
+          "name": "selectable",
+          "attribute": "selectable",
+          "description": "When set the selection controls are rendered",
+          "type": "boolean"
+        },
+        {
+          "name": "hasRequests",
+          "description": "Computed value, true when the project has requests.",
+          "type": "boolean"
+        },
+        {
+          "name": "dataUnavailable",
+          "description": "True when there's no requests after refreshing the state.",
+          "type": "boolean"
+        },
+        {
+          "name": "searchListEmpty",
+          "description": "Computed value. True when the query has been performed and no items\nhas been returned. It is different from `listHidden` where less\nconditions has to be checked. It is set to true when it doesn't\nhave items, is not loading and is search.",
+          "type": "boolean"
+        },
+        {
+          "name": "listType",
+          "attribute": "listType",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "listActions",
+          "attribute": "listActions",
+          "description": "When set it adds action buttons into the list elements.",
+          "type": "boolean"
+        },
+        {
+          "name": "pageLimit",
+          "attribute": "pageLimit",
+          "description": "Single page query limit.",
+          "type": "number"
+        },
+        {
+          "name": "compatibility",
+          "attribute": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        },
+        {
+          "name": "hasTwoLines",
+          "description": "True if the list item should be consisted of two lines of description.",
+          "type": "boolean"
+        },
+        {
+          "name": "querying",
+          "description": "True when the element is querying the database for the data.",
+          "type": "boolean"
+        },
+        {
+          "name": "noAutoProjects",
+          "attribute": "noAutoProjects",
+          "description": "When set the element won't request projects list when attached to the dom.\nWhen set `refreshProjects()` has to be called manually.",
+          "type": "boolean"
+        },
+        {
+          "name": "hasProjects",
+          "description": "True if `projects` has any items.",
+          "type": "boolean"
+        },
+        {
+          "name": "projects",
+          "description": "A list of available projects.",
+          "type": "ARCProject[] | undefined"
+        }
+      ]
+    },
+    {
+      "name": "rest-api-menu",
+      "path": "./rest-api-menu.js",
+      "description": "A list of REST APIs in the ARC main menu.",
+      "attributes": [
+        {
+          "name": "noAuto",
+          "description": "When set it won't query for data automatically when attached to the DOM.",
+          "type": "boolean"
+        },
+        {
+          "name": "listType",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "listActions",
+          "description": "When set it adds action buttons into the list elements.",
+          "type": "boolean"
+        },
+        {
+          "name": "pageLimit",
+          "description": "Single page query limit.",
+          "type": "number"
+        },
+        {
+          "name": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        }
+      ],
+      "properties": [
+        {
+          "name": "styles",
+          "type": "CSSResult[]"
+        },
+        {
+          "name": "items",
+          "description": "The list of request to render.\nIt can be either saved, history or project items.",
+          "type": "ARCRestApiIndex[]"
+        },
+        {
+          "name": "noAuto",
+          "attribute": "noAuto",
+          "description": "When set it won't query for data automatically when attached to the DOM.",
+          "type": "boolean"
+        },
+        {
+          "name": "hasItems",
+          "description": "Computed value. `true` if the `items` property has values.",
+          "type": "boolean"
+        },
+        {
+          "name": "dataUnavailable",
+          "description": "True when there's no requests after refreshing the state.",
+          "type": "boolean"
+        },
+        {
+          "name": "listType",
+          "attribute": "listType",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "listActions",
+          "attribute": "listActions",
+          "description": "When set it adds action buttons into the list elements.",
+          "type": "boolean"
+        },
+        {
+          "name": "pageLimit",
+          "attribute": "pageLimit",
+          "description": "Single page query limit.",
+          "type": "number"
+        },
+        {
+          "name": "compatibility",
+          "attribute": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        },
+        {
+          "name": "hasTwoLines",
+          "description": "True if the list item should be consisted of two lines of description.",
+          "type": "boolean"
+        },
+        {
+          "name": "querying",
+          "description": "True when the element is querying the database for the data.",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "saved-menu",
+      "path": "./saved-menu.js",
+      "description": "Advanced REST Client's history menu element.",
+      "attributes": [
+        {
+          "name": "type",
+          "description": "Requests list type. Can be one of:\n- saved\n- history\n- project\n\nDepending on the the type request change event is handled differently.\nFor saved and history requests corresponding type is processed.\nFor project requests list only request that has project id in the\nprojects list is processed.\n\nThis property must be set.",
+          "type": "\"saved\" | \"history\" | \"project\""
+        },
+        {
+          "name": "projectId",
+          "description": "Project datastore ID to display.\nThis should be set only when type is `project`",
+          "type": "string | undefined"
+        },
+        {
+          "name": "isSearch",
+          "description": "When set this component is in search mode.\nThis means that the list won't be loaded automatically and\nsome operations not related to search are disabled.",
+          "type": "boolean"
+        },
+        {
+          "name": "noAuto",
+          "description": "When set it won't query for data automatically when attached to the DOM.",
+          "type": "boolean"
+        },
+        {
+          "name": "detailedSearch",
+          "description": "When set the datastore query is performed with `detailed` option",
+          "type": "boolean"
+        },
+        {
+          "name": "draggableEnabled",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
+          "type": "boolean"
+        },
+        {
+          "name": "selectable",
+          "description": "When set the selection controls are rendered",
+          "type": "boolean"
+        },
+        {
+          "name": "listType",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "listActions",
+          "description": "When set it adds action buttons into the list elements.",
+          "type": "boolean"
+        },
+        {
+          "name": "pageLimit",
+          "description": "Single page query limit.",
+          "type": "number"
+        },
+        {
+          "name": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        }
+      ],
+      "properties": [
+        {
+          "name": "styles",
+          "type": "CSSResult"
+        },
+        {
+          "name": "requests",
+          "description": "The list of request to render.\nIt can be either saved, history or project items.",
+          "type": "ARCSavedRequest[]"
+        },
+        {
+          "name": "type",
+          "attribute": "type",
+          "description": "Requests list type. Can be one of:\n- saved\n- history\n- project\n\nDepending on the the type request change event is handled differently.\nFor saved and history requests corresponding type is processed.\nFor project requests list only request that has project id in the\nprojects list is processed.\n\nThis property must be set.",
+          "type": "\"saved\" | \"history\" | \"project\""
+        },
+        {
+          "name": "projectId",
+          "attribute": "projectId",
+          "description": "Project datastore ID to display.\nThis should be set only when type is `project`",
+          "type": "string | undefined"
+        },
+        {
+          "name": "project",
+          "description": "A project object associated with requests.\nThis is only valid when `type` is set to `project`. It is set automatically\nwhen `readProjectRequests()` is called.",
+          "type": "ARCProject | undefined"
+        },
+        {
+          "name": "isSearch",
+          "attribute": "isSearch",
+          "description": "When set this component is in search mode.\nThis means that the list won't be loaded automatically and\nsome operations not related to search are disabled.",
+          "type": "boolean"
+        },
+        {
+          "name": "noAuto",
+          "attribute": "noAuto",
+          "description": "When set it won't query for data automatically when attached to the DOM.",
+          "type": "boolean"
+        },
+        {
+          "name": "detailedSearch",
+          "attribute": "detailedSearch",
+          "description": "When set the datastore query is performed with `detailed` option",
+          "type": "boolean"
+        },
+        {
+          "name": "draggableEnabled",
+          "attribute": "draggableEnabled",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
+          "type": "boolean"
+        },
+        {
+          "name": "selectedItems",
+          "description": "List of selected requests' ids. It returns null when the `selectable` is not set.",
+          "type": "string[] | null"
+        },
+        {
+          "name": "selectable",
+          "attribute": "selectable",
+          "description": "When set the selection controls are rendered",
+          "type": "boolean"
+        },
+        {
+          "name": "hasRequests",
+          "description": "Computed value, true when the project has requests.",
+          "type": "boolean"
+        },
+        {
+          "name": "dataUnavailable",
+          "description": "True when there's no requests after refreshing the state.",
+          "type": "boolean"
+        },
+        {
+          "name": "searchListEmpty",
+          "description": "Computed value. True when the query has been performed and no items\nhas been returned. It is different from `listHidden` where less\nconditions has to be checked. It is set to true when it doesn't\nhave items, is not loading and is search.",
+          "type": "boolean"
+        },
+        {
+          "name": "listType",
+          "attribute": "listType",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
+          "type": "string"
+        },
+        {
+          "name": "listActions",
+          "attribute": "listActions",
+          "description": "When set it adds action buttons into the list elements.",
+          "type": "boolean"
+        },
+        {
+          "name": "pageLimit",
+          "attribute": "pageLimit",
+          "description": "Single page query limit.",
+          "type": "number"
+        },
+        {
+          "name": "compatibility",
+          "attribute": "compatibility",
+          "description": "Enables compatibility with Anypoint platform",
+          "type": "boolean"
+        },
+        {
+          "name": "hasTwoLines",
+          "description": "True if the list item should be consisted of two lines of description.",
+          "type": "boolean"
+        },
+        {
+          "name": "querying",
+          "description": "True when the element is querying the database for the data.",
+          "type": "boolean"
+        }
+      ]
+    }
+  ]
+}

@@ -4,37 +4,40 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
-  <title>ARC saved menu demo</title>
+  <title>ARC menu demo</title>
 
   <style>
   .centered[role="main"] {
     max-width: 1400px;
   }
 
-  history-menu,
-  saved-menu {
-    height: 700px;
-    width: 360px;
+  arc-menu {
+    height: 500px;
+    width: 320px;
   }
 
-  .menus {
-    display: flex;
+  body.styled {
+    --anypoint-dropdown-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
   }
 
-  pre {
+  #dragOutput {
     display: block;
+    padding: 8px;
     white-space: pre-wrap;
+    word-break: break-all;
+    background-color: #FFF8E1;
   }
 
-  .drop-area {
+  .drop-target {
     border: 2px transparent dashed;
     box-sizing: border-box;
     text-align: center;
     padding: 20px;
     border: 1px #e5e5e5 solid;
+    margin-bottom: 20px;
   }
 
-  .drop-area.drag-over {
+  .drop-target.drag-over {
     border-color: #8BC34A;
   }
 
@@ -48,7 +51,7 @@
 
 <body>
   <div id="demo"></div>
-  <script type="module" src="saved.js"></script>
+  <script type="module" src="menu.js"></script>
 </body>
 
 </html>

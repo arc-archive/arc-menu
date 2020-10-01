@@ -5,7 +5,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
   <title>ARC projects menu demo</title>
-  <script src="../node_modules/web-animations-js/web-animations.min.js"></script>
 
   <style>
   .centered[role="main"] {
@@ -13,7 +12,7 @@
   }
 
   body.styled {
-    --anypoiont-dropdown-shaddow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --anypoint-dropdown-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
   }
 
   projects-menu,
@@ -23,24 +22,16 @@
     width: 300px;
   }
 
-  .menus-wrapper {
+  .menus {
     display: flex;
-    flex-direction: row;
   }
 
-  .menu-item {
-    margin: 0 20px;
-  }
-
-  #dragOutput {
+  pre {
     display: block;
-    padding: 8px;
     white-space: pre-wrap;
-    word-break: break-all;
-    background-color: #FFF8E1;
   }
 
-  .drop-target {
+  .drop-area {
     border: 2px transparent dashed;
     box-sizing: border-box;
     text-align: center;
@@ -48,7 +39,7 @@
     border: 1px #e5e5e5 solid;
   }
 
-  .drop-target.drag-over {
+  .drop-area.drag-over {
     border-color: #8BC34A;
   }
 

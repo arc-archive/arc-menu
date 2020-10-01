@@ -1,19 +1,18 @@
+# arc-menu
+
 [![Published on NPM](https://img.shields.io/npm/v/@advanced-rest-client/arc-menu.svg)](https://www.npmjs.com/package/@advanced-rest-client/arc-menu)
 
-[![Build Status](https://travis-ci.org/advanced-rest-client/arc-menu.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/arc-menu)
+[![Build Status](https://travis-ci.com/advanced-rest-client/arc-menu.svg)](https://travis-ci.com/advanced-rest-client/arc-menu)
 
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/advanced-rest-client/arc-menu)
 
-# arc-menu
-
-Advanced REST Client main navigation. This component contains all navigation panels for ARC.
-
-Note, prior to version 3 each menu panel was maintained in separate repository. From version 3 all navigation panels are included in this repository.
+Advanced REST Client main navigation. This component contains all navigation elements for ARC.
 
 ## Usage
 
 ### Installation
-```
+
+```sh
 npm install --save @advanced-rest-client/arc-menu
 ```
 
@@ -43,25 +42,13 @@ customElements.define('sample-element', SampleElement);
 
 ### List sizing
 
-It is important to set implicit height of the element. It can be static value like `500px`, relative value like `100%` as long as a parent is sized for height, or a flex value, as long as parent is sized for height.
-The list of requests is set to load only portion of the requests from the data store and load more when list scroll is near end. If there's no scroll then the element will load whole data store at initialization time.
+The menu items load more results (performs pagination) on list scroll. Because of that the list has to have a fixed height. Either use flex layout or set a height value on element styles.
 
 ### Drag and drop
 
 API components related to a request object support drag and drop. Set `draggableenabled` property to enable the support.
 
 The `DataTransfer` property of the drag event contains `effectAllowed` set to `copy` for all by default and `copyMove` for saved requests when ctrl/meta key is pressed. Only targets that allow the same effect will accept the request/project item.
-The same property contains serialized request data under `arc/request-object` media type. It contains request ID under `arc/[saved|history]-request` and `arc-source/[saved|history|project]-menu` media types.
-
-```javascript
-_dropHandler(e) {
-  e.preventDefault();
-  const data = e.dataTransfer.getData('arc/request-object');
-  const request = JSON.parse(data);
-  const id = e.dataTransfer.getData('arc/saved-request');
-  console.log(request, id);
-}
-```
 
 ## Development
 
@@ -76,7 +63,3 @@ npm install
 ```sh
 npm test
 ```
-
-## API components
-
-This components is a part of [API components ecosystem](https://elements.advancedrestclient.com/)
