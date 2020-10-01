@@ -16,6 +16,7 @@ import {
   dragTypeCallbackValue,
   dragOverTimeoutValue,
   openMenuDragOver,
+  MenuTypes,
 } from '../src/ArcMenuElement.js';
 
 /** @typedef {import('..').ArcMenuElement} ArcMenuElement */
@@ -114,11 +115,11 @@ describe('ArcMenuElement', () => {
       element = await noHistoryFixture();
     });
 
-    it('Selects saved menu', () => {
+    it('selects saved menu by default', () => {
       assert.equal(element.selected, 1);
     });
 
-    it('Selects projects menu when saved is also hidden', async () => {
+    it('selects projects menu when saved is also hidden', async () => {
       element.hideSaved = true;
       await nextFrame();
       assert.equal(element.selected, 2);
@@ -305,18 +306,18 @@ describe('ArcMenuElement', () => {
       // no error, coverage
     });
 
-    it('refreshHistoryList() calls [refreshList]() with argument', async () => {
+    it('refreshHistory() calls [refreshList]() with argument', async () => {
       element.selected = 0;
       await nextFrame();
       const spy = sinon.spy(element, refreshList);
-      element.refreshHistoryList();
+      element.refreshHistory();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'history-menu');
     });
 
-    it('Refresh history button calls [refreshList]()', () => {
+    it('calls [refreshList]() from refresh history button', () => {
       const spy = sinon.spy(element, refreshList);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="refresh-history"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`[data-action="refresh-${MenuTypes.history}"]`));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'history-menu');
@@ -324,16 +325,16 @@ describe('ArcMenuElement', () => {
 
     it('refreshSavedList() calls [refreshList]() with argument', () => {
       const spy = sinon.spy(element, refreshList);
-      element.refreshSavedList();
+      element.refreshSaved();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'saved-menu');
     });
 
-    it('Refresh history button calls [refreshList]()', async () => {
+    it('calls [refreshList]() from refresh saved button', async () => {
       element.selected = 1;
       await nextFrame();
       const spy = sinon.spy(element, refreshList);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="refresh-saved"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`[data-action="refresh-${MenuTypes.saved}"]`));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'saved-menu');
@@ -341,16 +342,16 @@ describe('ArcMenuElement', () => {
 
     it('refreshProjectsList() calls [refreshList]() with argument', () => {
       const spy = sinon.spy(element, refreshList);
-      element.refreshProjectsList();
+      element.refreshProjects();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'projects-menu');
     });
 
-    it('Refresh projects button calls [refreshList]()', async () => {
+    it('calls [refreshList]() from refresh projects button', async () => {
       element.selected = 2;
       await nextFrame();
       const spy = sinon.spy(element, refreshList);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="refresh-projects"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`[data-action="refresh-${MenuTypes.projects}"]`));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'projects-menu');
@@ -358,16 +359,16 @@ describe('ArcMenuElement', () => {
 
     it('refreshApisList() calls [refreshList]() with argument', () => {
       const spy = sinon.spy(element, refreshList);
-      element.refreshApisList();
+      element.refreshApiDocs();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'rest-api-menu');
     });
 
-    it('Refresh apis button calls [refreshList]()', async () => {
+    it('calls [refreshList]() from refresh apis button', async () => {
       element.selected = 3;
       await nextFrame();
       const spy = sinon.spy(element, refreshList);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="refresh-rest-apis"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`[data-action="refresh-${MenuTypes.apiDocs}"]`));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'rest-api-menu');
@@ -387,6 +388,14 @@ describe('ArcMenuElement', () => {
       assert.isTrue(spy.called);
     });
 
+    it('ignores history popup event when no popup', () => {
+      element.popup = false;
+      const spy = sinon.spy();
+      element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
+      element.popupHistory();
+      assert.isFalse(spy.called);
+    });
+
     it('dispatches the event from history panel', async () => {
       element.selected = 0;
       await element.requestUpdate();
@@ -402,6 +411,14 @@ describe('ArcMenuElement', () => {
       element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
       element.popupSaved();
       assert.isTrue(spy.called);
+    });
+
+    it('ignores saved popup event when no popups', () => {
+      element.popup = false;
+      const spy = sinon.spy();
+      element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
+      element.popupSaved();
+      assert.isFalse(spy.called);
     });
 
     it('dispatches the event from saved panel', async () => {
@@ -421,6 +438,14 @@ describe('ArcMenuElement', () => {
       assert.isTrue(spy.called);
     });
 
+    it('ignores projects popup event when popup is not set', () => {
+      element.popup = false;
+      const spy = sinon.spy();
+      element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
+      element.popupProjects();
+      assert.isFalse(spy.called);
+    });
+
     it('dispatches the event from projects panel', async () => {
       element.selected = 2;
       await element.requestUpdate();
@@ -434,8 +459,16 @@ describe('ArcMenuElement', () => {
     it('dispatches rest apis popup event', () => {
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
-      element.popupApis();
+      element.popupApiDocs();
       assert.isTrue(spy.called);
+    });
+
+    it('dispatignoresches rest apis popup event when popup is not set', () => {
+      element.popup = false;
+      const spy = sinon.spy();
+      element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
+      element.popupApiDocs();
+      assert.isFalse(spy.called);
     });
 
     it('dispatches the event from rest apis panel', async () => {
@@ -443,7 +476,7 @@ describe('ArcMenuElement', () => {
       await element.requestUpdate();
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="popup-rest-apis"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="popup-apiDocs"]'));
       node.click();
       assert.isTrue(spy.called);
     });

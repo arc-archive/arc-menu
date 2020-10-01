@@ -11,6 +11,16 @@ export class RestApiMenuElement extends RestApiListMixin(LitElement) {
     return [ListStyles, RestApiStyles];
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('scroll', this[internals.listScrollHandler]);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('scroll', this[internals.listScrollHandler]);
+  }
+
   /**
    * @returns {TemplateResult}
    */

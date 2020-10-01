@@ -14,12 +14,19 @@ export default css`
   overflow: hidden;
 }
 
+.menu-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 history-menu,
 saved-menu,
 rest-api-menu,
 projects-menu {
-  flex: 1;
-  height: calc(100% - 96px);
+  overflow: auto;
+  display: block;
 }
 
 .menu-actions {
@@ -29,11 +36,16 @@ projects-menu {
   align-items: center;
 }
 
+.right-action {
+  margin-left: auto;
+}
+
 .spacer {
   flex: 1;
 }
 
-[hidden] {
+[hidden],
+.hidden {
   display: none !important;
 }
 
@@ -61,4 +73,10 @@ anypoint-tab {
   width: 24px;
   height: 24px;
   fill: currentColor;
-}`;
+}
+
+.list-search {
+  margin: 0;
+  width: 100%;
+}
+`;

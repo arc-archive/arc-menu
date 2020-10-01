@@ -22,12 +22,22 @@ export class SavedMenuElement extends SavedListMixin(LitElement) {
     return ListStyles;
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('scroll', this[internals.listScrollHandler]);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('scroll', this[internals.listScrollHandler]);
+  }
+
   render() {
     return html`
     ${this[internals.busyTemplate]()}
     ${this[internals.unavailableTemplate]()}
     ${this[internals.dropTargetTemplate]()}
-    <div class="list" @scroll="${this[internals.listScrollHandler]}">
+    <div class="list">
     ${this[internals.listTemplate]()}
     </div>
     `;

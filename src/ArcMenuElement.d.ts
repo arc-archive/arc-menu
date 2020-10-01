@@ -38,18 +38,44 @@ export declare const dragOverTimeoutValue: unique symbol;
 export declare const cancelDragTimeout: unique symbol;
 export declare const openMenuDragOver: unique symbol;
 export declare const tabsHandler: unique symbol;
-export declare const menuTemplate: unique symbol;
 export declare const tabsTemplate: unique symbol;
 export declare const historyTemplate: unique symbol;
+export declare const historyActionsTemplate: unique symbol;
 export declare const savedTemplate: unique symbol;
+export declare const savedActionsTemplate: unique symbol;
 export declare const projectsTemplate: unique symbol;
 export declare const apisTemplate: unique symbol;
+export declare const popupButtonTemplate: unique symbol;
+export declare const searchButtonTemplate: unique symbol;
+export declare const searchInputTemplate: unique symbol;
+export declare const refreshButtonTemplate: unique symbol;
+export declare const refreshHandler: unique symbol;
+export declare const popupHandler: unique symbol;
+export declare const openedValue: unique symbol;
+export declare const effectiveSelected: unique symbol;
+export declare const searchOpenedValue: unique symbol;
+export declare const searchToggleHandler: unique symbol;
+export declare const searchHandler: unique symbol;
 
 /**
  * Finds anypoint-tab element in event path.
  * @param e Event with `path` or `composedPath()`
  */
 export declare function findTab(e: Event): AnypointTab|undefined;
+
+declare interface MenuTypes {
+  history: string;
+  saved: string;
+  projects: string;
+  apiDocs: string;
+}
+
+/**
+ * A list of types of the menu elements.
+ */
+export declare const MenuTypes: MenuTypes;
+export declare const popupAriaLabels: MenuTypes;
+export declare const popupButtonTitles: MenuTypes;
 
 export declare class ArcMenuElement extends LitElement {
   static readonly styles: CSSResult;
@@ -121,6 +147,26 @@ export declare class ArcMenuElement extends LitElement {
    */
   dragOpenTimeout: number;
 
+  /**
+   * The value of selected item, accounting for history item that toggles
+   */
+  readonly [effectiveSelected]: number;
+
+  /**
+   * Holds a list of once opened menus.
+   * When an editor is once opened it does not disapear from the DOM
+   * but is rather hidden. This list allows to differenciate the state.
+   * 
+   * Note, don't put all menus in the into the DOM at startup as this 
+   * would make a lot of queries and DOM mutations when it's not needed.
+   */
+  [openedValue]: string;
+
+  /**
+   * A list of menu names that has currently search bar opened.
+   * @type {string[]}
+   */
+  [searchOpenedValue]: string[];
 
   constructor();
 
@@ -137,22 +183,22 @@ export declare class ArcMenuElement extends LitElement {
   /**
    * Forces to refresh history list
    */
-  refreshHistoryList(): void;
+  refreshHistory(): void;
 
   /**
    * Forces to refresh saved list
    */
-  refreshSavedList(): void;
+  refreshSaved(): void;
 
   /**
    * Forces to refresh projects list
    */
-  refreshProjectsList(): void;
+  refreshProjects(): void;
 
   /**
    * Forces to refresh apis list
    */
-  refreshApisList(): void;
+  refreshApiDocs(): void;
 
   /**
    * Requests to popup history menu.
@@ -172,7 +218,7 @@ export declare class ArcMenuElement extends LitElement {
   /**
    * Requests to popup apis menu.
    */
-  popupApis(): void;
+  popupApiDocs(): void;
 
   /**
    * Selects first panel that is not hidden
@@ -231,7 +277,24 @@ export declare class ArcMenuElement extends LitElement {
 
   [openMenuDragOver](): void;
 
+  /**
+   * A handler for the popup menu button click
+   */
+  [popupHandler](e: PointerEvent): void;
+
+  /**
+   * A handler for the refresh menu button click
+   */
+  [refreshHandler](e: PointerEvent): void;
+
   [tabsHandler](e: CustomEvent): void;
+
+  [searchToggleHandler](e: CustomEvent): void;
+
+  /**
+   * Handler for the search box keydown event
+   */
+  [searchHandler](e: CustomEvent): void;
 
   /**
    * @returns Template for the tabs
@@ -241,24 +304,58 @@ export declare class ArcMenuElement extends LitElement {
   /**
    * @returns Template for the history menu
    */
-  [historyTemplate](): TemplateResult;
+  [historyTemplate](): TemplateResult | string;
+
+  /**
+   * @returns A template for the history menu actions
+   */
+  [historyActionsTemplate](): TemplateResult
+
+  /**
+   * @param type Menu type that has this input.
+   * @return A template for the search input.
+   */
+  [searchInputTemplate](type: string): TemplateResult;
 
   /**
    * @returns Template for the saved menu
    */
-  [savedTemplate](): TemplateResult;
+  [savedTemplate](): TemplateResult|string;
+
+  /**
+   * @returns A template for the saved menu actions
+   */
+  [savedActionsTemplate](): TemplateResult
 
   /**
    * @returns Template for the projects menu
    */
-  [projectsTemplate](): TemplateResult;
+  [projectsTemplate](): TemplateResult | string;
 
   /**
    * @returns Template for the REST APIs menu
    */
-  [apisTemplate](): TemplateResult;
+  [apisTemplate](): TemplateResult | string;
 
-  [menuTemplate](): TemplateResult|string;
+  /**
+   * @param type The menu type
+   * @returns A template for the "popup nenu" button
+   */
+  [popupButtonTemplate](type: keyof MenuTypes): TemplateResult|string;
+
+  /**
+   * @param type The menu type
+   * @param alignRight Whether to add `right-action` class
+   * @returns A template for the "search menu" button
+   */
+  [searchButtonTemplate](type: keyof MenuTypes, alignRight?: boolean): TemplateResult;
+
+  /**
+   * @param type The menu type
+   * @param alignRight Whether to add `right-action` class
+   * @returns A template for the "refresh menu" button
+   */
+  [refreshButtonTemplate](type: keyof MenuTypes, alignRight?: boolean): TemplateResult;
 
   render(): TemplateResult;
 }

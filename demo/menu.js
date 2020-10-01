@@ -11,8 +11,8 @@ import '@advanced-rest-client/arc-models/project-model.js';
 import '@advanced-rest-client/arc-models/rest-api-model.js';
 import { DataGenerator } from '@advanced-rest-client/arc-data-generator/arc-data-generator.js';
 import { ArcNavigationEventTypes, ImportEvents } from '@advanced-rest-client/arc-events';
-import '../arc-menu.js';
 import { ArcModelEvents } from '@advanced-rest-client/arc-models';
+import '../arc-menu.js';
 
 /** @typedef {import('@advanced-rest-client/arc-events').ARCProjectNavigationEvent} ARCProjectNavigationEvent */
 /** @typedef {import('@advanced-rest-client/arc-events').ARCRequestNavigationEvent} ARCRequestNavigationEvent */
@@ -70,14 +70,14 @@ class ComponentDemoPage extends DemoPage {
    * @param {ARCProjectNavigationEvent} e 
    */
   navigateProjectHandler(e) {
-    console.log('Navigate project', e.id, e.route, e.action);
+    console.log('Project navigation', e.id, e.route, e.action);
   } 
 
   /**
    * @param {ARCRestApiNavigationEvent} e 
    */
   navigateRestApiHandler(e) {
-    console.log('Navigate requested', 'Version', e.version, 'id', e.api, 'Action', e.action);
+    console.log('API docs navigation', 'Version', e.version, 'id', e.api, 'Action', e.action);
   }
 
   /**
@@ -85,14 +85,14 @@ class ComponentDemoPage extends DemoPage {
    */
   navigateHandler(e) {
     // @ts-ignore
-    console.log('Navigate requested', 'Route', e.route, 'base', e.base, 'opts', e.opts);
+    console.log('General navigation', 'Route', e.route, 'base', e.base, 'opts', e.opts);
   }  
   
   /**
    * @param {ARCMenuPopupEvent} e 
    */
   popupHandler(e) {
-    console.log('Navigate requested', 'menu', e.menu);
+    console.log('Popup navigation', 'menu', e.menu);
   }
 
   _listTypeHandler(e) {
@@ -111,13 +111,17 @@ class ComponentDemoPage extends DemoPage {
     });
     await DataGenerator.insertSavedRequestData({
       requestsSize: 100,
-      projectsSize: 15
+      projectsSize: 15,
+      forceProject: true,
     });
     await DataGenerator.insertHistoryRequestData({
       requestsSize: 500
     });
 
     ImportEvents.dataimported(document.body);
+    const indexer = document.querySelector('url-indexer');
+    indexer.reindex('saved');
+    indexer.reindex('history');
   }
 
   async deleteData() {
@@ -139,24 +143,36 @@ class ComponentDemoPage extends DemoPage {
     e.currentTarget.classList.add('drag-over');
   }
 
-  _dropHandler(e) {
+  /**
+   * @param {DragEvent} e
+   */
+  async _dropHandler(e) {
     e.preventDefault();
-    let data;
-    if (e.dataTransfer.types.indexOf('arc/request-object') !== -1) {
-      data = e.dataTransfer.getData('arc/request-object');
-    } else if (e.dataTransfer.types.indexOf('arc/project-object') !== -1) {
-      data = e.dataTransfer.getData('arc/project-object');
+    const props = {};
+    Array.from(e.dataTransfer.items).forEach((item) => {
+      props[item.type] = e.dataTransfer.getData(item.type);
+    });
+
+    /** @type HTMLElement */ (e.currentTarget).classList.remove('drag-over');
+    let request;
+    let project;
+    const id = e.dataTransfer.getData('arc/id');
+    const type = e.dataTransfer.getData('arc/type');
+    if (type === 'request') {
+      request = await ArcModelEvents.Request.read(document.body, type, id);
+    } else if (type === 'project') {
+      project = await ArcModelEvents.Project.read(document.body, id);
     }
-    // format data
-    if (data) {
-      data = JSON.parse(data);
-      console.log(data);
-      data = JSON.stringify(data, null, 2);
-    } else {
-      data = '';
-    }
-    this.dropValue = data;
-    e.currentTarget.classList.remove('drag-over');
+
+    this.dropValue = `Event data: 
+${JSON.stringify(props, null, 2)}
+
+${request ? `Read request: 
+${JSON.stringify(request, null, 2)}` : ''}
+
+${project ? `Read project: 
+${JSON.stringify(project, null, 2)}` : ''}
+`;
   }
 
   _demoTemplate() {
@@ -311,7 +327,7 @@ class ComponentDemoPage extends DemoPage {
       <p>
         This section allows you to control demo data
       </p>
-      <anypoint-button @click="${this.generateData}">Generate 100 projects</anypoint-button>
+      <anypoint-button @click="${this.generateData}">Generate data</anypoint-button>
       <anypoint-button @click="${this.deleteData}">Clear list</anypoint-button>
     </section>`;
   }
