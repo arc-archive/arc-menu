@@ -257,3 +257,17 @@
  [a63be3a](https://github.com/advanced-rest-client/arc-menu/commit/a63be3a2a954c78f964e86458384f1c8bb00f3b0) by Pawel Psztyc
 
 
+<a name="4.0.1"></a>
+## [4.0.1](https://github.com/advanced-rest-client/arc-menu/compare/3.0.1...4.0.1) (2020-10-07)
+
+### Update
+
+* upgrading events, models, and types [ec5f49c](https://github.com/advanced-rest-client/arc-menu/commit/ec5f49ce44fe364b798c42c2c9b65aa0c2e559c6) by Pawel
+* [ci skip] automated merge master->stage. syncing main branches [c0a872f](https://github.com/advanced-rest-client/arc-menu/commit/c0a872fba3b96a8db0c4eb0e39648e841c02b7d6) by Ci agent
+
+
+### Refactor
+
+* upgrading all components to the new system (#8) [6a6f2a2](https://github.com/advanced-rest-client/arc-menu/commit/6a6f2a26b49c950e1477608fc03bf27c3e42ea6b) by Paweł Psztyć
+
+
