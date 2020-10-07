@@ -279,8 +279,8 @@ export class ArcMenuElement extends LitElement {
     this.listType = undefined;
     /**
      * Holds a list of once opened menus.
-     * When an editor is once opened it does not disapear from the DOM
-     * but is rather hidden. This list allows to differenciate the state.
+     * When an editor is once opened it does not disappear from the DOM
+     * but is rather hidden. This list allows to differentiate the state.
      * 
      * Note, don't put all menus in the into the DOM at startup as this 
      * would make a lot of queries and DOM mutations when it's not needed.
@@ -872,7 +872,7 @@ export class ArcMenuElement extends LitElement {
 
   /**
    * @param {keyof MenuTypes} type The menu type
-   * @returns {TemplateResult|string} A template for the "popup nenu" button
+   * @returns {TemplateResult|string} A template for the "popup menu" button
    */
   [popupButtonTemplate](type) {
     const { popup, compatibility } = this;

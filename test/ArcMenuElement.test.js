@@ -466,7 +466,7 @@ describe('ArcMenuElement', () => {
       assert.isTrue(spy.called);
     });
 
-    it('dispatignoresches rest apis popup event when popup is not set', () => {
+    it('ignores rest apis popup event when popup is not set', () => {
       element.popup = false;
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
