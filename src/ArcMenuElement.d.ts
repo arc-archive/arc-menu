@@ -12,7 +12,6 @@ License for the specific language governing permissions and limitations under
 the License.
 */
 import { LitElement, TemplateResult, CSSResult } from 'lit-element';
-import {AnypointTab} from '@anypoint-web-components/anypoint-tabs';
 
 export declare const historyValue: unique symbol;
 export declare const historyChanged: unique symbol;
@@ -24,10 +23,6 @@ export declare const hideProjectsValue: unique symbol;
 export declare const hideProjectsChanged: unique symbol;
 export declare const hideApisValue: unique symbol;
 export declare const hideApisChanged: unique symbol;
-export declare const openHistoryHandler: unique symbol;
-export declare const openSavedHandler: unique symbol;
-export declare const openApisHandler: unique symbol;
-export declare const openExchangeHandler: unique symbol;
 export declare const refreshList: unique symbol;
 export declare const selectFirstAvailable: unique symbol;
 export declare const updateSelectionIfNeeded: unique symbol;
@@ -37,31 +32,36 @@ export declare const dragTypeCallbackValue: unique symbol;
 export declare const dragOverTimeoutValue: unique symbol;
 export declare const cancelDragTimeout: unique symbol;
 export declare const openMenuDragOver: unique symbol;
-export declare const tabsHandler: unique symbol;
-export declare const tabsTemplate: unique symbol;
 export declare const historyTemplate: unique symbol;
-export declare const historyActionsTemplate: unique symbol;
 export declare const savedTemplate: unique symbol;
-export declare const savedActionsTemplate: unique symbol;
 export declare const projectsTemplate: unique symbol;
 export declare const apisTemplate: unique symbol;
-export declare const popupButtonTemplate: unique symbol;
-export declare const searchButtonTemplate: unique symbol;
-export declare const searchInputTemplate: unique symbol;
-export declare const refreshButtonTemplate: unique symbol;
-export declare const refreshHandler: unique symbol;
-export declare const popupHandler: unique symbol;
 export declare const openedValue: unique symbol;
 export declare const effectiveSelected: unique symbol;
-export declare const searchOpenedValue: unique symbol;
-export declare const searchToggleHandler: unique symbol;
-export declare const searchHandler: unique symbol;
+export declare const railTemplate: unique symbol;
+export declare const panelsTemplate: unique symbol;
+export declare const railClickHandler: unique symbol;
+export declare const contextMenuSelectedHandler: unique symbol;
+export declare const runHistoryAction: unique symbol;
+export declare const runSavedAction: unique symbol;
+export declare const runProjectAction: unique symbol;
+export declare const runRestApiAction: unique symbol;
+export declare const acceptExportOptions: unique symbol;
+export declare const cancelExportOptions: unique symbol;
+export declare const exportRequestHandler: unique symbol;
+export declare const exportTemplate: unique symbol;
+export declare const sheetClosedHandler: unique symbol;
+export declare const exportTypeValue: unique symbol;
+export declare const deleteAllTemplate: unique symbol;
+export declare const deleteDialogCloseHandler: unique symbol;
+export declare const deleteAllHandler: unique symbol;
+export declare const deleteTypeValue: unique symbol;
 
 /**
  * Finds anypoint-tab element in event path.
  * @param e Event with `path` or `composedPath()`
  */
-export declare function findTab(e: Event): AnypointTab|undefined;
+export declare function findTab(e: Event): HTMLElement|undefined;
 
 declare interface MenuTypes {
   history: string;
@@ -148,9 +148,18 @@ export declare class ArcMenuElement extends LitElement {
   dragOpenTimeout: number;
 
   /**
+   * Indicates that the export options panel is currently rendered.
+   */
+  exportOptionsOpened: boolean;
+  /**
+   * Indicates that the delete all data dialog is currently rendered.
+   */
+  deleteAllDialogOpened: boolean;
+
+  /**
    * The value of selected item, accounting for history item that toggles
    */
-  readonly [effectiveSelected]: number;
+  get [effectiveSelected](): number;
 
   /**
    * Holds a list of once opened menus.
@@ -162,21 +171,7 @@ export declare class ArcMenuElement extends LitElement {
    */
   [openedValue]: string;
 
-  /**
-   * A list of menu names that has currently search bar opened.
-   * @type {string[]}
-   */
-  [searchOpenedValue]: string[];
-
   constructor();
-
-  [openHistoryHandler](): void;
-
-  [openSavedHandler](): void;
-
-  [openApisHandler](): void;
-
-  [openExchangeHandler](): void;
 
   [refreshList](type: string): void;
 
@@ -277,29 +272,74 @@ export declare class ArcMenuElement extends LitElement {
 
   [openMenuDragOver](): void;
 
+  
   /**
-   * A handler for the popup menu button click
+   * A handler for any of the panels context menu selection.
    */
-  [popupHandler](e: PointerEvent): void;
-
-  /**
-   * A handler for the refresh menu button click
-   */
-  [refreshHandler](e: PointerEvent): void;
-
-  [tabsHandler](e: CustomEvent): void;
-
-  [searchToggleHandler](e: CustomEvent): void;
+  [contextMenuSelectedHandler](e: Event): void;
 
   /**
-   * Handler for the search box keydown event
+   * @param {string} action 
    */
-  [searchHandler](e: CustomEvent): void;
+  [runHistoryAction](action: string): void;
+
+  [runSavedAction](action: string): void;
+
+  [runProjectAction](action: string): void;
+
+  [runRestApiAction](action: string): void;
 
   /**
-   * @returns Template for the tabs
+   * A handler for the click on the rail icon button.
    */
-  [tabsTemplate](): TemplateResult;
+  [railClickHandler](e: PointerEvent): void;
+
+  /**
+   * Handler for `accept` event dispatched by export options element.
+   *
+   * @returns Result of calling `[doExportItems]()`
+   */
+  [acceptExportOptions](e: CustomEvent): Promise<void>;
+
+  /**
+   * Re-sets export variables to the initial state.
+   */
+  [cancelExportOptions](): void;
+
+  /**
+   * Opens the export options dialog.
+   */
+  [exportRequestHandler](type: string): void;
+
+  /**
+   * A handler for the `<bottom-sheet>` close event.
+   * It sets a property defined as `data-open-property` of this class to false.
+   */
+  [sheetClosedHandler](e: any): void;
+
+  /**
+   * A function to be called when delete all menu option has been selected
+   * @param type The type of the data to delete
+   */
+  [deleteAllHandler](type: string): void;
+
+  /**
+   * A handler for the delete all dialog close event.
+   * When the dialog is confirmed by the user it dispatches the event to the models to delete data.
+   */
+  [deleteDialogCloseHandler](e: CustomEvent): void;
+
+  render(): TemplateResult;
+
+  /**
+   * @returns The template for navigation rail
+   */
+  [railTemplate](): TemplateResult;
+
+  /**
+   * @returns The template for the content panels
+   */
+  [panelsTemplate](): TemplateResult;
 
   /**
    * @returns Template for the history menu
@@ -307,25 +347,9 @@ export declare class ArcMenuElement extends LitElement {
   [historyTemplate](): TemplateResult | string;
 
   /**
-   * @returns A template for the history menu actions
-   */
-  [historyActionsTemplate](): TemplateResult
-
-  /**
-   * @param type Menu type that has this input.
-   * @return A template for the search input.
-   */
-  [searchInputTemplate](type: string): TemplateResult;
-
-  /**
    * @returns Template for the saved menu
    */
   [savedTemplate](): TemplateResult|string;
-
-  /**
-   * @returns A template for the saved menu actions
-   */
-  [savedActionsTemplate](): TemplateResult
 
   /**
    * @returns Template for the projects menu
@@ -337,25 +361,10 @@ export declare class ArcMenuElement extends LitElement {
    */
   [apisTemplate](): TemplateResult | string;
 
-  /**
-   * @param type The menu type
-   * @returns A template for the "popup menu" button
-   */
-  [popupButtonTemplate](type: keyof MenuTypes): TemplateResult|string;
+  [exportTemplate](): TemplateResult;
 
   /**
-   * @param type The menu type
-   * @param alignRight Whether to add `right-action` class
-   * @returns A template for the "search menu" button
+   * @returns Template for the delete all confirmation
    */
-  [searchButtonTemplate](type: keyof MenuTypes, alignRight?: boolean): TemplateResult;
-
-  /**
-   * @param type The menu type
-   * @param alignRight Whether to add `right-action` class
-   * @returns A template for the "refresh menu" button
-   */
-  [refreshButtonTemplate](type: keyof MenuTypes, alignRight?: boolean): TemplateResult;
-
-  render(): TemplateResult;
+  [deleteAllTemplate](): TemplateResult|string;  
 }

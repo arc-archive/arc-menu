@@ -4,6 +4,7 @@ export default css`
 .list-options {
   margin: 0;
   padding: 0;
+  --anypoint-menu-button-border-radius: 12px;
 }
 
 .project-item {
@@ -65,5 +66,14 @@ export default css`
 
 .request-list-item.drop-below::before {
   bottom: 0;
+}
+
+.dropdown-list {
+  padding: 4px 0;
+}
+
+.menu-item {
+  padding-left: 24px;
+  padding-right: 24px;
 }
 `;

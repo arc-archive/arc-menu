@@ -3,10 +3,6 @@ import { fixture, assert, nextFrame } from '@open-wc/testing';
 import sinon from 'sinon';
 import '../arc-menu.js';
 import {
-  openHistoryHandler,
-  openSavedHandler,
-  openApisHandler,
-  openExchangeHandler,
   refreshList,
   updateSelectionIfNeeded,
   historyChanged,
@@ -17,12 +13,10 @@ import {
   dragOverTimeoutValue,
   openMenuDragOver,
 	MenuTypes,
-	searchOpenedValue,
 } from '../src/ArcMenuElement.js';
 
 /** @typedef {import('..').ArcMenuElement} ArcMenuElement */
 /** @typedef {import('..').HistoryMenuElement} HistoryMenuElement */
-/** @typedef {import('@anypoint-web-components/anypoint-input').AnypointInput} AnypointInput */
 
 describe('ArcMenuElement', () => {
   /**
@@ -136,7 +130,7 @@ describe('ArcMenuElement', () => {
     });
 
     it('history tab is hidden', () => {
-      const node = element.shadowRoot.querySelectorAll('anypoint-tab')[0];
+      const node = element.shadowRoot.querySelectorAll('.rail .menu-item')[0];
       assert.isTrue(node.hasAttribute('hidden'));
     });
   });
@@ -159,7 +153,7 @@ describe('ArcMenuElement', () => {
     });
 
     it('Saved tab is hidden', () => {
-      const node = element.shadowRoot.querySelectorAll('anypoint-tab')[1];
+      const node = element.shadowRoot.querySelectorAll('.rail .menu-item')[1];
       assert.isTrue(node.hasAttribute('hidden'));
     });
   });
@@ -182,7 +176,7 @@ describe('ArcMenuElement', () => {
     });
 
     it('Saved tab is hidden', () => {
-      const node = element.shadowRoot.querySelectorAll('anypoint-tab')[2];
+      const node = element.shadowRoot.querySelectorAll('.rail .menu-item')[2];
       assert.isTrue(node.hasAttribute('hidden'));
     });
   });
@@ -205,7 +199,7 @@ describe('ArcMenuElement', () => {
     });
 
     it('Saved tab is hidden', () => {
-      const node = element.shadowRoot.querySelectorAll('anypoint-tab')[3];
+      const node = element.shadowRoot.querySelectorAll('.rail .menu-item')[3];
       assert.isTrue(node.hasAttribute('hidden'));
     });
   });
@@ -216,29 +210,13 @@ describe('ArcMenuElement', () => {
       element = await historyFixture();
     });
 
-    it('[openHistoryHandler]() opens history screen', () => {
-      const spy = sinon.spy();
-      element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      element[openHistoryHandler]();
-      assert.isTrue(spy.called);
-      assert.equal(spy.args[0][0].route, 'history');
-    });
-
     it('open history button dispatches the event', () => {
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="open-history"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.list[data-type="history"] [data-action="open-panel"]'));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0].route, 'history');
-    });
-
-    it('[openSavedHandler]() opens saved screen', () => {
-      const spy = sinon.spy();
-      element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      element[openSavedHandler]();
-      assert.isTrue(spy.called);
-      assert.equal(spy.args[0][0].route, 'saved');
     });
 
     it('open saved button dispatches the event', async () => {
@@ -246,18 +224,10 @@ describe('ArcMenuElement', () => {
       await nextFrame();
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="open-saved"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.list[data-type="saved"] [data-action="open-panel"]'));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0].route, 'saved');
-    });
-
-    it('[openApisHandler]() opens rest apis screen', () => {
-      const spy = sinon.spy();
-      element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      element[openApisHandler]();
-      assert.isTrue(spy.called);
-      assert.equal(spy.args[0][0].route, 'rest-projects');
     });
 
     it('open APIs button dispatches the event', async () => {
@@ -265,18 +235,10 @@ describe('ArcMenuElement', () => {
       await nextFrame();
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="open-rest-apis"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.list[data-type="apiDocs"] [data-action="open-panel"]'));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0].route, 'rest-projects');
-    });
-
-    it('[openExchangeHandler]() opens exchange screen', () => {
-      const spy = sinon.spy();
-      element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      element[openExchangeHandler]();
-      assert.isTrue(spy.called);
-      assert.equal(spy.args[0][0].route, 'exchange-search');
     });
 
     it('dispatches the event when explore button is clicked', async () => {
@@ -284,7 +246,7 @@ describe('ArcMenuElement', () => {
       await nextFrame();
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="explore-rest-apis"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.list[data-type="apiDocs"] [data-action="explore"]'));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0].route, 'exchange-search');
@@ -320,7 +282,7 @@ describe('ArcMenuElement', () => {
 
     it('calls [refreshList]() from refresh history button', () => {
       const spy = sinon.spy(element, refreshList);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`[data-action="refresh-${MenuTypes.history}"]`));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.list[data-type="${MenuTypes.history}"] [data-action="refresh"]`));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'history-menu');
@@ -337,7 +299,7 @@ describe('ArcMenuElement', () => {
       element.selected = 1;
       await nextFrame();
       const spy = sinon.spy(element, refreshList);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`[data-action="refresh-${MenuTypes.saved}"]`));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.list[data-type="${MenuTypes.saved}"] [data-action="refresh"]`));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'saved-menu');
@@ -354,7 +316,7 @@ describe('ArcMenuElement', () => {
       element.selected = 2;
       await nextFrame();
       const spy = sinon.spy(element, refreshList);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`[data-action="refresh-${MenuTypes.projects}"]`));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.list[data-type="${MenuTypes.projects}"] [data-action="refresh"]`));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'projects-menu');
@@ -371,7 +333,7 @@ describe('ArcMenuElement', () => {
       element.selected = 3;
       await nextFrame();
       const spy = sinon.spy(element, refreshList);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`[data-action="refresh-${MenuTypes.apiDocs}"]`));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.list[data-type="${MenuTypes.apiDocs}"] [data-action="refresh"]`));
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0], 'rest-api-menu');
@@ -404,7 +366,7 @@ describe('ArcMenuElement', () => {
       await element.requestUpdate();
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="popup-history"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.list[data-type="${MenuTypes.history}"] [data-action="popup"]`));
       node.click();
       assert.isTrue(spy.called);
     });
@@ -429,7 +391,7 @@ describe('ArcMenuElement', () => {
       await element.requestUpdate();
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="popup-saved"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.list[data-type="${MenuTypes.saved}"] [data-action="popup"]`));
       node.click();
       assert.isTrue(spy.called);
     });
@@ -454,7 +416,7 @@ describe('ArcMenuElement', () => {
       await element.requestUpdate();
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="popup-projects"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.list[data-type="${MenuTypes.projects}"] [data-action="popup"]`));
       node.click();
       assert.isTrue(spy.called);
     });
@@ -479,7 +441,7 @@ describe('ArcMenuElement', () => {
       await element.requestUpdate();
       const spy = sinon.spy();
       element.addEventListener(ArcNavigationEventTypes.popupMenu, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="popup-apiDocs"]'));
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.list[data-type="${MenuTypes.apiDocs}"] [data-action="popup"]`));
       node.click();
       assert.isTrue(spy.called);
     });
@@ -512,8 +474,8 @@ describe('ArcMenuElement', () => {
       element = await historyFixture();
     });
 
-    it('returns anypoint-tab from path', () => {
-      const node = element.shadowRoot.querySelector('anypoint-tab');
+    it('returns the element from path', () => {
+      const node = element.shadowRoot.querySelector('.rail .menu-item');
       assert.ok(node);
       const e = {
         composedPath: () => [document.createElement('span'), node],
@@ -523,7 +485,7 @@ describe('ArcMenuElement', () => {
       assert.isTrue(node === result);
     });
 
-    it('Return undefined when nod is not found', () => {
+    it('return undefined when nod is not found', () => {
       const e = {
         composedPath: () => [document.createElement('span')]
       };
@@ -541,7 +503,7 @@ describe('ArcMenuElement', () => {
     });
 
     function dispatchEvent(types=['arc/request'], type='saved') {
-      const selector = `anypoint-tab[data-type="${type}"]`;
+      const selector = `.rail .menu-item[data-type="${type}"]`;
       const node = element.shadowRoot.querySelector(selector);
       const dataTransfer = new DataTransfer();
       const e = new DragEvent('dragover', {
@@ -632,7 +594,7 @@ describe('ArcMenuElement', () => {
     });
 
     function dispatch(target, types=['arc/request']) {
-      const selector = 'anypoint-tab[data-type="saved"]';
+      const selector = '.rail .menu-item[data-type="saved"]';
       const node = target.shadowRoot.querySelector(selector);
       const dataTransfer = new DataTransfer();
       const e = new DragEvent('dragleave', {
@@ -733,67 +695,4 @@ describe('ArcMenuElement', () => {
       assert.equal(element.selected, 0);
     });
   });
-
-	describe('[searchToggleHandler]()', () => {
-		let element = /** @type ArcMenuElement */ (null);
-		beforeEach(async () => {
-			element = await historyFixture();
-		});
-
-		it('toggles search item when icon click', () => {
-			const button = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="search-history"]'));
-			button.click();
-			assert.deepEqual(element[searchOpenedValue], ['history']);
-		});
-
-		it('toggles back search item when icon click', () => {
-			const button = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="search-history"]'));
-			button.click();
-			button.click();
-			assert.deepEqual(element[searchOpenedValue], []);
-		});
-
-		it('renders search input', async () => {
-			const button = /** @type HTMLElement */ (element.shadowRoot.querySelector('[data-action="search-history"]'));
-			button.click();
-			await nextFrame();
-			const input = /** @type HTMLElement */ (element.shadowRoot.querySelector('.list-search'));
-			assert.ok(input);
-		});
-	});
-
-	describe('[searchHandler]()', () => {
-		let element = /** @type ArcMenuElement */ (null);
-		let input = /** @type AnypointInput */ (null);
-		let menu = /** @type HistoryMenuElement */ (null);
-		beforeEach(async () => {
-			element = await historyFixture();
-			element[searchOpenedValue] = ['history'];
-			await element.requestUpdate();
-			input = element.shadowRoot.querySelector('.list-search');
-			menu = element.shadowRoot.querySelector('history-menu');
-		});
-
-		it('queries the menu when has data', () => {
-			const spy = sinon.spy(menu, 'query');
-			input.value = 'test';
-			input.dispatchEvent(new CustomEvent('search'));
-			assert.isTrue(spy.called, 'query function is called');
-			assert.equal(spy.args[0][0], 'test', 'passing query term');
-		});
-
-		it('queries the menu with empty value', () => {
-			const spy = sinon.spy(menu, 'query');
-			input.value = '';
-			input.dispatchEvent(new CustomEvent('search'));
-			assert.isTrue(spy.called, 'query function is called');
-			assert.equal(spy.args[0][0], '', 'passing query term');
-		});
-
-		it('clears menu from the opened search list', () => {
-			input.value = '';
-			input.dispatchEvent(new CustomEvent('search'));
-			assert.deepEqual(element[searchOpenedValue], []);
-		});
-	});
 });

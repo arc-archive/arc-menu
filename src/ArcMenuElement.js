@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /**
 @license
 Copyright 2018 The Advanced REST client authors <arc@mulesoft.com>
@@ -14,22 +15,27 @@ the License.
 /* eslint-disable no-plusplus */
 import { LitElement, html } from 'lit-element';
 import { classMap } from 'lit-html/directives/class-map.js';
-import '@anypoint-web-components/anypoint-tabs/anypoint-tabs.js';
-import '@anypoint-web-components/anypoint-tabs/anypoint-tab.js';
-import '@anypoint-web-components/anypoint-input/anypoint-input.js';
 import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import '@advanced-rest-client/arc-icons/arc-icon.js';
-import { ArcNavigationEvents } from '@advanced-rest-client/arc-events';
+import '@anypoint-web-components/anypoint-menu-button/anypoint-menu-button.js';
+import '@anypoint-web-components/anypoint-listbox/anypoint-listbox.js';
+import '@anypoint-web-components/anypoint-item/anypoint-icon-item.js';
+import '@anypoint-web-components/anypoint-dialog/anypoint-dialog.js';
+import '@advanced-rest-client/arc-ie/export-options.js';
+import '@advanced-rest-client/bottom-sheet/bottom-sheet.js';
+import { ArcNavigationEvents, ExportEvents, TelemetryEvents } from '@advanced-rest-client/arc-events';
+import { ArcModelEvents } from '@advanced-rest-client/arc-models';
 import '../saved-menu.js';
 import '../history-menu.js';
 import '../rest-api-menu.js';
 import '../projects-menu.js';
 import menuStyles from './styles/ArcMenu.js';
 
-/** @typedef {import('@anypoint-web-components/anypoint-tabs').AnypointTab} AnypointTab */
-/** @typedef {import('@anypoint-web-components/anypoint-tabs').AnypointTabs} AnypointTabs */
-/** @typedef {import('@anypoint-web-components/anypoint-input').AnypointInput} AnypointInput */
+/** @typedef {import('@anypoint-web-components/anypoint-listbox').AnypointListbox} AnypointListbox */
+/** @typedef {import('@anypoint-web-components/anypoint-button').AnypointIconButton} AnypointIconButton */
+/** @typedef {import('@advanced-rest-client/arc-types').DataExport.ProviderOptions} ProviderOptions */
+/** @typedef {import('@advanced-rest-client/arc-types').DataExport.ExportOptions} ExportOptions */
 /** @typedef {import('./HistoryMenuElement').HistoryMenuElement} HistoryMenuElement */
 /** @typedef {import('lit-element').TemplateResult} TemplateResult */
 
@@ -43,10 +49,6 @@ export const hideProjectsValue = Symbol('hideProjectsValue');
 export const hideProjectsChanged = Symbol('hideProjectsChanged');
 export const hideApisValue = Symbol('hideApisValue');
 export const hideApisChanged = Symbol('hideApisChanged');
-export const openHistoryHandler = Symbol('openHistoryHandler');
-export const openSavedHandler = Symbol('openSavedHandler');
-export const openApisHandler = Symbol('openApisHandler');
-export const openExchangeHandler = Symbol('openExchangeHandler');
 export const refreshList = Symbol('refreshList');
 export const selectFirstAvailable = Symbol('selectFirstAvailable');
 export const updateSelectionIfNeeded = Symbol('updateSelectionIfNeeded');
@@ -56,37 +58,44 @@ export const dragTypeCallbackValue = Symbol('dragTypeCallbackValue');
 export const dragOverTimeoutValue = Symbol('dragOverTimeoutValue');
 export const cancelDragTimeout = Symbol('cancelDragTimeout');
 export const openMenuDragOver = Symbol('openMenuDragOver');
-export const tabsHandler = Symbol('tabsHandler');
-export const tabsTemplate = Symbol('tabsTemplate');
 export const historyTemplate = Symbol('historyTemplate');
-export const historyActionsTemplate = Symbol('historyActionsTemplate');
 export const savedTemplate = Symbol('savedTemplate');
-export const savedActionsTemplate = Symbol('savedActionsTemplate');
 export const projectsTemplate = Symbol('projectsTemplate');
 export const apisTemplate = Symbol('apisTemplate');
-export const popupButtonTemplate = Symbol('popupButtonTemplate');
-export const searchButtonTemplate = Symbol('searchButtonTemplate');
-export const searchInputTemplate = Symbol('searchButtonTemplate');
-export const refreshButtonTemplate = Symbol('refreshButtonTemplate');
-export const refreshHandler = Symbol('refreshHandler');
-export const popupHandler = Symbol('popupHandler');
 export const openedValue = Symbol('openedValue');
 export const effectiveSelected = Symbol('effectiveSelected');
-export const searchOpenedValue = Symbol('searchOpenedValue');
-export const searchToggleHandler = Symbol('searchToggleHandler');
-export const searchHandler = Symbol('searchHandler');
+export const railTemplate = Symbol('railTemplate');
+export const panelsTemplate = Symbol('panelsTemplate');
+export const railClickHandler = Symbol('railClickHandler');
+export const contextMenuSelectedHandler = Symbol('contextMenuSelectedHandler');
+export const runHistoryAction = Symbol('runHistoryAction');
+export const runSavedAction = Symbol('runSavedAction');
+export const runProjectAction = Symbol('runProjectAction');
+export const runRestApiAction = Symbol('runRestApiAction');
+export const acceptExportOptions = Symbol('acceptExportOptions');
+export const cancelExportOptions = Symbol('cancelExportOptions');
+export const exportRequestHandler = Symbol('exportRequestHandler');
+export const exportTemplate = Symbol('exportTemplate');
+export const sheetClosedHandler = Symbol('sheetClosedHandler');
+export const exportTypeValue = Symbol('exportTypeValue');
+export const deleteAllTemplate = Symbol('deleteAllTemplate');
+export const deleteDialogCloseHandler = Symbol('deleteDialogCloseHandler');
+export const deleteAllHandler = Symbol('deleteAllHandler');
+export const deleteTypeValue = Symbol('deleteTypeValue');
+
+const telemetryCategory = 'ARC menu';
 
 /**
- * Finds anypoint-tab element in event path.
+ * Finds menu item element in event path.
  * @param {Event} e Event with `path` or `composedPath()`
- * @return {AnypointTab|undefined}
+ * @return {AnypointIconButton|undefined}
  */
 export function findTab(e) {
   const path = e.composedPath();
   for (let i = 0, len = path.length; i < len; i++) {
     const target = /** @type HTMLElement */ (path[i]);
-    if (target.localName === 'anypoint-tab') {
-      return /** @type AnypointTab */ (target);
+    if (target.matches && target.matches('.rail .menu-item')) {
+      return /** @type AnypointIconButton */ (target);
     }
   }
   return undefined;
@@ -177,7 +186,16 @@ export class ArcMenuElement extends LitElement {
        * A timeout after which the project item is opened when dragging a
        * request over.
        */
-      dragOpenTimeout: { type: Number }
+      dragOpenTimeout: { type: Number },
+
+      /**
+       * Indicates that the export options panel is currently rendered.
+       */
+      exportOptionsOpened: { type: Boolean },
+      /**
+       * Indicates that the delete all data dialog is currently rendered.
+       */
+      deleteAllDialogOpened: { type: Boolean },
     };
   }
 
@@ -276,6 +294,7 @@ export class ArcMenuElement extends LitElement {
     this.hideProjects = false;
     this.hideApis = false;
     this.dataTransfer = false;
+    this.deleteAllDialogOpened = false;
     this.listType = undefined;
     /**
      * Holds a list of once opened menus.
@@ -288,27 +307,6 @@ export class ArcMenuElement extends LitElement {
      * @type {string[]}
      */
     this[openedValue] = ['history'];
-    /**
-     * A list of menu names that has currently search bar opened.
-     * @type {string[]}
-     */
-    this[searchOpenedValue] = [];
-  }
-
-  [openHistoryHandler]() {
-    ArcNavigationEvents.navigate(this, 'history');
-  }
-
-  [openSavedHandler]() {
-    ArcNavigationEvents.navigate(this, 'saved');
-  }
-
-  [openApisHandler]() {
-    ArcNavigationEvents.navigate(this, 'rest-projects');
-  }
-
-  [openExchangeHandler]() {
-    ArcNavigationEvents.navigate(this, 'exchange-search');
   }
 
   /**
@@ -494,7 +492,7 @@ export class ArcMenuElement extends LitElement {
       return;
     }
     const { type } = tab.dataset;
-    if (['saved', 'projects'].indexOf(type) === -1) {
+    if (!['saved', 'projects'].includes(type)) {
       return;
     }
     e.preventDefault();
@@ -559,113 +557,297 @@ export class ArcMenuElement extends LitElement {
   }
 
   /**
-   * A handler for the popup menu button click
-   * @param {PointerEvent} e
+   * A handler for any of the panels context menu selection.
+   * @param {Event} e 
    */
-  [popupHandler](e) {
-    const button = /** @type HTMLElement */ (e.currentTarget);
-    const { type } = button.dataset;
-    const fnName = `popup${type[0].toUpperCase()}${type.substr(1)}`;
-    this[fnName]();
-  }
-
-  /**
-   * A handler for the refresh menu button click
-   * @param {PointerEvent} e
-   */
-  [refreshHandler](e) {
-    const button = /** @type HTMLElement */ (e.currentTarget);
-    const { type } = button.dataset;
-    const fnName = `refresh${type[0].toUpperCase()}${type.substr(1)}`;
-    this[fnName]();
-  }
-
-  /**
-   * @param {CustomEvent} e
-   */
-  [tabsHandler](e) {
-    const tabs = /** @type AnypointTabs */ (e.currentTarget);
-    this.selected = e.detail.value;
-    if (!tabs.selectedItem) {
+  [contextMenuSelectedHandler](e) {
+    const node = /** @type AnypointListbox */ (e.target);
+    if (!node.selectedItem) {
       return;
     }
-    const { type } = tabs.selectedItem.dataset;
-    if (!this[openedValue].includes(type)) {
-      this[openedValue].push(type);
+    const { type } = node.dataset;
+    const { action } = node.selectedItem.dataset;
+    switch (type) {
+      case MenuTypes.history: this[runHistoryAction](action); break;
+      case MenuTypes.saved: this[runSavedAction](action); break;
+      case MenuTypes.projects: this[runProjectAction](action); break;
+      case MenuTypes.apiDocs: this[runRestApiAction](action); break;
+      default:
     }
   }
 
   /**
-   * @param {CustomEvent} e
+   * @param {string} action 
    */
-  [searchToggleHandler](e) {
-    const button = /** @type HTMLElement */ (e.currentTarget);
-    const { type } = button.dataset;
-    const opened = this[searchOpenedValue];
-    if (!opened.includes(type)) {
-      opened.push(type);
-    } else {
-      const index = opened.indexOf(type);
-      opened.splice(index, 1);
+  [runHistoryAction](action) {
+    switch (action) {
+      case 'refresh': this.refreshHistory(); break;
+      case 'popup': this.popupHistory(); break;
+      case 'open-panel': ArcNavigationEvents.navigate(this, 'history'); break;
+      case 'export-all': this[exportRequestHandler]('history'); break;
+      case 'delete-all': this[deleteAllHandler]('history'); break;
+      case 'help': ArcNavigationEvents.helpTopic(this, 'history'); break;
+      default:
     }
-    this.requestUpdate();
   }
 
   /**
-   * Handler for the search box keydown event
+   * @param {string} action 
+   */
+  [runSavedAction](action) {
+    switch (action) {
+      case 'refresh': this.refreshSaved(); break;
+      case 'popup': this.popupSaved(); break;
+      case 'open-panel': ArcNavigationEvents.navigate(this, 'saved'); break;
+      case 'export-all': this[exportRequestHandler]('saved'); break;
+      case 'delete-all': this[deleteAllHandler]('saved'); break;
+      case 'help': ArcNavigationEvents.helpTopic(this, 'saved'); break;
+      default:
+    }
+  }
+
+  /**
+   * @param {string} action 
+   */
+  [runProjectAction](action) {
+    switch (action) {
+      case 'refresh': this.refreshProjects(); break;
+      case 'popup': this.popupProjects(); break;
+      case 'help': ArcNavigationEvents.helpTopic(this, 'projects'); break;
+      default:
+    }
+  }
+
+  /**
+   * @param {string} action 
+   */
+  [runRestApiAction](action) {
+    switch (action) {
+      case 'refresh': this.refreshApiDocs(); break;
+      case 'popup': this.popupApiDocs(); break;
+      case 'open-panel': ArcNavigationEvents.navigate(this, 'rest-projects'); break;
+      case 'explore': ArcNavigationEvents.navigate(this, 'exchange-search'); break;
+      case 'help': ArcNavigationEvents.helpTopic(this, 'rest-api-docs'); break;
+      default:
+    }
+  }
+
+  /**
+   * A handler for the click on the rail icon button.
+   * @param {PointerEvent} e 
+   */
+  [railClickHandler](e) {
+    const node = /** @type HTMLElement */ (e.currentTarget);
+    const { type } = node.dataset;
+    let selected;
+    switch (type) {
+      case MenuTypes.history: selected = 0; break;
+      case MenuTypes.saved: selected = 1; break;
+      case MenuTypes.projects: selected = 2; break;
+      case MenuTypes.apiDocs: selected = 3; break;
+      default:
+    }
+    this.selected = selected;
+  }
+
+  /**
+   * Handler for `accept` event dispatched by export options element.
+   * @param {CustomEvent} e
+   * @return {Promise} Result of calling `[doExportItems]()`
+   */
+  async [acceptExportOptions](e) {
+    this.exportOptionsOpened = false;
+    if (!this[exportTypeValue]) {
+      return;
+    }
+    const type = this[exportTypeValue];
+    this[exportTypeValue] = undefined;
+    const { detail } = e;
+    const provider = /** @type ProviderOptions */ (detail.providerOptions);
+    const options = /** @type ExportOptions */ (detail.exportOptions);
+    
+    options.kind = 'ARC#AllDataExport';
+    const data = {};
+    if (type === 'saved') {
+      data.requests = true;
+    } else if (type === 'history') {
+      data.history = true;
+    } else {
+      return;
+    }
+
+    TelemetryEvents.event(this, {
+      category: telemetryCategory,
+      action: 'export',
+      label: options.provider,
+    });
+
+    try {
+      const result = await ExportEvents.nativeData(this, data, options, provider);
+      if (!result) {
+        throw new Error('ArcMenu: Export module not found');
+      }
+      // if (detail.options.provider === 'drive') {
+      //   // TODO: Render link to the folder
+      //   this.shadowRoot.querySelector('#driveSaved').opened = true;
+      // }
+    } catch (err) {
+      TelemetryEvents.exception(this, err.description, false);
+      throw err;
+    }
+  }
+
+  /**
+   * Re-sets export variables to the initial state.
+   */
+  [cancelExportOptions]() {
+    this.exportOptionsOpened = false;
+    this[exportTypeValue] = undefined;
+    TelemetryEvents.event(this, {
+      category: telemetryCategory,
+      action: 'cancel-export',
+    });
+  }
+
+  /**
+   * Opens the export options dialog.
+   * @param {string} type 
+   */
+  [exportRequestHandler](type) {
+    this[exportTypeValue] = type;
+    this.exportOptionsOpened = true;
+  }
+
+  /**
+   * A handler for the `<bottom-sheet>` close event.
+   * It sets a property defined as `data-open-property` of this class to false.
+   * @param {any} e 
+   */
+  [sheetClosedHandler](e) {
+    const prop = e.target.dataset.openProperty;
+    this[prop] = e.detail.value;
+  }
+
+  /**
+   * A function to be called when delete all menu option has been selected
+   * @param {string} type The type of the data to delete
+   */
+  [deleteAllHandler](type) {
+    this[deleteTypeValue] = type;
+    this.deleteAllDialogOpened = true;
+    TelemetryEvents.event(this, {
+      category: telemetryCategory,
+      action: 'delete requested',
+      label: type,
+    });
+  }
+
+  /**
+   * A handler for the delete all dialog close event.
+   * When the dialog is confirmed by the user it dispatches the event to the models to delete data.
+   * 
    * @param {CustomEvent} e 
    */
-  [searchHandler](e) {
-    const input = /** @type AnypointInput */ (e.target);
-    const { value, dataset } = input;
-    const { type } = dataset;
-    const node = /** @type HistoryMenuElement */ (this.shadowRoot.querySelector(`${type}-menu`));
-    if (value) {
-      node.query(input.value);
-    } else {
-      node.query('');
-      const opened = this[searchOpenedValue];
-      const index = opened.indexOf(type);
-      opened.splice(index, 1);
-      this.requestUpdate();
-    } 
+  [deleteDialogCloseHandler](e) {
+    this.deleteAllDialogOpened = false;
+    const type = this[deleteTypeValue];
+    this[deleteTypeValue] = undefined;
+    if (!type || e.detail.canceled || !e.detail.confirmed) {
+      return;
+    }
+    if (type === 'saved') {
+      ArcModelEvents.destroy(this, ['saved-requests']);
+    } else if (type === 'history') {
+      ArcModelEvents.destroy(this, ['history-requests']);
+    }
+    TelemetryEvents.event(this, {
+      category: telemetryCategory,
+      action: 'delete',
+    });
+  }
+
+  render() {
+    return html`
+    <div class="menu">
+      ${this[railTemplate]()}
+      ${this[panelsTemplate]()}
+    </div>
+    ${this[exportTemplate]()}
+    ${this[deleteAllTemplate]()}
+    `;
   }
 
   /**
-   * @returns {TemplateResult} Template for the tabs
+   * @returns {TemplateResult} The template for navigation rail
    */
-  [tabsTemplate]() {
-    const { selected, history, hideHistory, hideSaved, hideProjects, hideApis, compatibility } = this;
+  [railTemplate]() {
+    const { compatibility, selected, history, hideHistory, hideSaved, hideProjects, hideApis } = this;
+    
     return html`
-    <anypoint-tabs
-      .selected="${selected}"
-      id="tabs"
+    <div 
+      class="rail"
       @dragover="${this[dragoverHandler]}"
       @dragleave="${this[dragleaveHandler]}"
-      @selected-changed="${this[tabsHandler]}"
-      ?compatibility="${compatibility}"
     >
-      ${history ? html`<anypoint-tab
-        data-type="${MenuTypes.history}"
+      ${history ? html`<anypoint-icon-button
+        title="Select history"
+        ?compatibility="${compatibility}"
+        class=${classMap({'menu-item': true, selected: selected === 0})}
         ?hidden="${hideHistory}"
+        data-type="${MenuTypes.history}"
+        @click="${this[railClickHandler]}"
+      >
+        <arc-icon icon="history"></arc-icon>
+      </anypoint-icon-button>` : ''}
+
+      <anypoint-icon-button
+        title="Select saved"
         ?compatibility="${compatibility}"
-      >History</anypoint-tab>` : ''}
-      <anypoint-tab
-        ?compatibility="${compatibility}"
-        data-type="${MenuTypes.saved}"
         ?hidden="${hideSaved}"
-      >Saved</anypoint-tab>
-      <anypoint-tab
+        class=${classMap({'menu-item': true, selected: selected === 1})}
+        data-type="${MenuTypes.saved}"
+        @click="${this[railClickHandler]}"
+      >
+        <arc-icon icon="save"></arc-icon>
+      </anypoint-icon-button>
+
+      <anypoint-icon-button
+        title="Select projects"
         ?compatibility="${compatibility}"
-        data-type="${MenuTypes.projects}"
         ?hidden="${hideProjects}"
-      >Projects</anypoint-tab>
-      <anypoint-tab
+        class=${classMap({'menu-item': true, selected: selected === 2})}
+        data-type="${MenuTypes.projects}"
+        @click="${this[railClickHandler]}"
+      >
+        <arc-icon icon="collectionsBookmark"></arc-icon>
+      </anypoint-icon-button>
+
+      <anypoint-icon-button
+        title="Select REST APIs"
         ?compatibility="${compatibility}"
-        data-type="${MenuTypes.apiDocs}"
         ?hidden="${hideApis}"
-      >APIs</anypoint-tab>
-    </anypoint-tabs>`;
+        class=${classMap({'menu-item': true, selected: selected ===3})}
+        data-type="${MenuTypes.apiDocs}"
+        @click="${this[railClickHandler]}"
+      >
+        <arc-icon icon="cloudOutline"></arc-icon>
+      </anypoint-icon-button>
+    </div>
+    `;
+  }
+
+  /**
+   * @returns {TemplateResult} The template for the content panels
+   */
+  [panelsTemplate]() {
+    return html`
+    <div class="content">
+    ${this[historyTemplate]()}
+    ${this[savedTemplate]()}
+    ${this[projectsTemplate]()}
+    ${this[apisTemplate]()}
+    </div>
+    `;
   }
 
   /**
@@ -682,60 +864,98 @@ export class ArcMenuElement extends LitElement {
     if (!menuOpened && !wasOpened) {
       return '';
     }
-    const { listType, dataTransfer, compatibility } = this;
-    const classes = {
-      hidden: !menuOpened,
-      'menu-content': true,
-    };
-    const searchOpened = this[searchOpenedValue].includes(MenuTypes.history);
+    const { listType, dataTransfer, compatibility, popup } = this;
     return html`
-    <div class="${classMap(classes)}">
-      <div class="menu-actions">
-        ${searchOpened ? this[searchInputTemplate](MenuTypes.history) : this[historyActionsTemplate]() }
-      </div>
-      <history-menu
-        .listType="${listType}"
-        ?draggableEnabled="${dataTransfer}"
+    <div class="menu-title" ?hidden=${!menuOpened}>
+      <span class="menu-title-label">History</span>
+      <anypoint-menu-button
+        dynamicalign
+        closeOnActivate
+        class="list-options"
+        horizontalalign="right"
         ?compatibility="${compatibility}"
-      ></history-menu>
-    </div>`;
-  }
-
-  /**
-   * @returns {TemplateResult} A template for the history menu actions
-   */
-  [historyActionsTemplate]() {
-    const { compatibility } = this;
-    return html`
-    <anypoint-button
-      @click="${this[openHistoryHandler]}"
-      data-action="open-history"
-      title="Opens history in the main content area"
+      >
+        <anypoint-icon-button
+          class="menu-icon"
+          aria-label="Activate to open context menu"
+          slot="dropdown-trigger"
+          ?compatibility="${compatibility}"
+        >
+          <arc-icon icon="moreVert" class="list-drop-icon"></arc-icon>
+        </anypoint-icon-button>
+        <anypoint-listbox
+          slot="dropdown-content"
+          ?compatibility="${compatibility}"
+          selectable="anypoint-icon-item"
+          class="list"
+          data-type="${MenuTypes.history}"
+          @selected="${this[contextMenuSelectedHandler]}"
+        >
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="refresh"
+            title="Refresh the list"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="refresh"></arc-icon>
+            Refresh
+          </anypoint-icon-item>
+          ${popup ? html`<anypoint-icon-item
+            class="context-menu-item"
+            data-action="popup"
+            title="${popupButtonTitles[MenuTypes.history]}"
+            aria-label="${popupAriaLabels[MenuTypes.history]}"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="openInNew"></arc-icon>
+            Detach
+          </anypoint-icon-item>` : ''}
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="open-panel"
+            title="Open the history screen"
+            tabindex="-1"
+          >
+            All history
+          </anypoint-icon-item>
+          <div class="divider"></div>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="export-all"
+            title="Export all history"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="archiveOutline"></arc-icon>
+            Export all
+          </anypoint-icon-item>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="delete-all"
+            title="Delete all history"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="deleteOutline"></arc-icon>
+            Delete all
+          </anypoint-icon-item>
+          <div class="divider"></div>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="help"
+            title="Opens help for history"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="helpOutline"></arc-icon>
+            Learn more
+          </anypoint-icon-item>
+        </anypoint-listbox>
+      </anypoint-menu-button>
+    </div>
+    <history-menu
+      .listType="${listType}"
+      ?draggableEnabled="${dataTransfer}"
       ?compatibility="${compatibility}"
-    >All</anypoint-button>
-    ${this[searchButtonTemplate]('history', true)}
-    ${this[refreshButtonTemplate]('history')}
-    ${this[popupButtonTemplate]('history')}
-    `
-  }
-
-  /**
-   * @param {string} type Menu type that has this input.
-   * @return {TemplateResult} A template for the search input.
-   */
-  [searchInputTemplate](type) {
-    const { compatibility } = this;
-    return html`
-    <anypoint-input 
-      class="list-search" 
-      type="search" 
-      data-type="${type}" 
-      ?compatibility="${compatibility}" 
-      noLabelFloat
-      @search="${this[searchHandler]}"
-    >
-      <label slot="label">Search</label>
-    </anypoint-input>
+      ?hidden=${!menuOpened}
+    ></history-menu>
     `;
   }
 
@@ -753,41 +973,99 @@ export class ArcMenuElement extends LitElement {
     if (!menuOpened && !wasOpened) {
       return '';
     }
-    const { listType, dataTransfer, compatibility } = this;
-    const classes = {
-      hidden: !menuOpened,
-      'menu-content': true,
-    };
-    const searchOpened = this[searchOpenedValue].includes(MenuTypes.saved);
+    const { listType, dataTransfer, compatibility, popup } = this;
     return html`
-    <div class="${classMap(classes)}">
-      <div class="menu-actions">
-        ${searchOpened ? this[searchInputTemplate](MenuTypes.saved) : this[savedActionsTemplate]() }
-      </div>
-      <saved-menu
-        .listType="${listType}"
-        ?draggableEnabled="${dataTransfer}"
-        ?compatibility="${compatibility}"
-      ></saved-menu>
-    </div>
-    `;
-  }
+    <div class="menu-title" ?hidden=${!menuOpened}>
+      <span class="menu-title-label">Saved</span>
 
-  /**
-   * @returns {TemplateResult} A template for the saved menu actions
-   */
-  [savedActionsTemplate]() {
-    const { compatibility } = this;
-    return html`
-    <anypoint-button
-      @click="${this[openSavedHandler]}"
-      data-action="open-saved"
-      title="Opens saved requests list in full screen"
+      <anypoint-menu-button
+        dynamicalign
+        closeOnActivate
+        class="list-options"
+        horizontalalign="right"
+        ?compatibility="${compatibility}"
+      >
+        <anypoint-icon-button
+          class="menu-icon"
+          aria-label="Activate to open context menu"
+          slot="dropdown-trigger"
+          ?compatibility="${compatibility}"
+        >
+          <arc-icon icon="moreVert" class="list-drop-icon"></arc-icon>
+        </anypoint-icon-button>
+        <anypoint-listbox
+          slot="dropdown-content"
+          ?compatibility="${compatibility}"
+          selectable="anypoint-icon-item"
+          class="list"
+          data-type="${MenuTypes.saved}"
+          @selected="${this[contextMenuSelectedHandler]}"
+        >
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="refresh"
+            title="Refresh the list"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="refresh"></arc-icon>
+            Refresh
+          </anypoint-icon-item>
+          ${popup ? html`<anypoint-icon-item
+            class="context-menu-item"
+            data-action="popup"
+            title="${popupButtonTitles[MenuTypes.saved]}"
+            aria-label="${popupAriaLabels[MenuTypes.saved]}"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="openInNew"></arc-icon>
+            Detach
+          </anypoint-icon-item>`: ''}
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="open-panel"
+            title="Open the saved requests screen"
+            tabindex="-1"
+          >
+            All Saved
+          </anypoint-icon-item>
+          <div class="divider"></div>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="export-all"
+            title="Export all saved-requests"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="archiveOutline"></arc-icon>
+            Export all
+          </anypoint-icon-item>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="delete-all"
+            title="Delete all saved requests"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="deleteOutline"></arc-icon>
+            Delete all
+          </anypoint-icon-item>
+          <div class="divider"></div>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="help"
+            title="Opens help for saved requests"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="helpOutline"></arc-icon>
+            Learn more
+          </anypoint-icon-item>
+        </anypoint-listbox>
+      </anypoint-menu-button>
+    </div>
+    <saved-menu
+      .listType="${listType}"
+      ?draggableEnabled="${dataTransfer}"
       ?compatibility="${compatibility}"
-    >All</anypoint-button>
-    ${this[searchButtonTemplate]('saved', true)}
-    ${this[refreshButtonTemplate]('saved')}
-    ${this[popupButtonTemplate]('saved')}
+      ?hidden=${!menuOpened}
+    ></saved-menu>
     `;
   }
 
@@ -805,23 +1083,71 @@ export class ArcMenuElement extends LitElement {
     if (!menuOpened && !wasOpened) {
       return '';
     }
-    const { listType, dataTransfer, compatibility } = this;
-    const classes = {
-      hidden: !menuOpened,
-      'menu-content': true,
-    };
+    const { listType, dataTransfer, compatibility, popup } = this;
     return html`
-    <div class="${classMap(classes)}">
-      <div class="menu-actions">
-        ${this[refreshButtonTemplate]('projects', true)}
-        ${this[popupButtonTemplate]('projects')}
-      </div>
-      <projects-menu
-        .listType="${listType}"
-        ?draggableEnabled="${dataTransfer}"
+    <div class="menu-title" ?hidden=${!menuOpened}>
+      <span class="menu-title-label">Projects</span>
+      <anypoint-menu-button
+        dynamicalign
+        closeOnActivate
+        class="list-options"
+        horizontalalign="right"
         ?compatibility="${compatibility}"
-      ></projects-menu>
+      >
+        <anypoint-icon-button
+          class="menu-icon"
+          aria-label="Activate to open context menu"
+          slot="dropdown-trigger"
+          ?compatibility="${compatibility}"
+        >
+          <arc-icon icon="moreVert" class="list-drop-icon"></arc-icon>
+        </anypoint-icon-button>
+        <anypoint-listbox
+          slot="dropdown-content"
+          ?compatibility="${compatibility}"
+          selectable="anypoint-icon-item"
+          class="list"
+          data-type="${MenuTypes.projects}"
+          @selected="${this[contextMenuSelectedHandler]}"
+        >
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="refresh"
+            title="Refresh the list"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="refresh"></arc-icon>
+            Refresh
+          </anypoint-icon-item>
+          ${popup ? html`<anypoint-icon-item
+            class="context-menu-item"
+            data-action="popup"
+            title="${popupButtonTitles[MenuTypes.projects]}"
+            aria-label="${popupAriaLabels[MenuTypes.projects]}"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="openInNew"></arc-icon>
+            Detach
+          </anypoint-icon-item>`: ''}
+          <div class="divider"></div>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="help"
+            title="Opens help for projects"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="helpOutline"></arc-icon>
+            Learn more
+          </anypoint-icon-item>
+        </anypoint-listbox>
+      </anypoint-menu-button>
     </div>
+    <projects-menu
+      .listType="${listType}"
+      ?draggableEnabled="${dataTransfer}"
+      ?compatibility="${compatibility}"
+      ?hidden=${!menuOpened}
+    ></projects-menu>
     `;
   }
 
@@ -839,120 +1165,128 @@ export class ArcMenuElement extends LitElement {
     if (!menuOpened && !wasOpened) {
       return '';
     }
-    const { listType, compatibility } = this;
-    const classes = {
-      hidden: !menuOpened,
-      'menu-content': true,
-    };
+    const { listType, compatibility, popup } = this;
     return html`
-    <div class="${classMap(classes)}">
-      <div class="menu-actions">
-        <anypoint-button
-          @click="${this[openApisHandler]}"
-          data-action="open-rest-apis"
-          title="Opens saved requests list in full screen"
-          ?compatibility="${compatibility}"
-        >All APIs</anypoint-button>
-        <anypoint-button
-          @click="${this[openExchangeHandler]}"
-          data-action="explore-rest-apis"
-          title="Opens APIs explorer screen"
-          ?compatibility="${compatibility}"
-        >Explore</anypoint-button>
-        ${this[refreshButtonTemplate]('apiDocs', true)}
-        ${this[popupButtonTemplate]('apiDocs')}
-      </div>
-      <rest-api-menu
-        .listType="${listType}"
+    <div class="menu-title" ?hidden=${!menuOpened}>
+      <span class="menu-title-label">REST APIs</span>
+
+      <anypoint-menu-button
+        dynamicalign
+        closeOnActivate
+        class="list-options"
+        horizontalalign="right"
         ?compatibility="${compatibility}"
-      ></rest-api-menu>
+      >
+        <anypoint-icon-button
+          class="menu-icon"
+          aria-label="Activate to open context menu"
+          slot="dropdown-trigger"
+          ?compatibility="${compatibility}"
+        >
+          <arc-icon icon="moreVert" class="list-drop-icon"></arc-icon>
+        </anypoint-icon-button>
+        <anypoint-listbox
+          slot="dropdown-content"
+          ?compatibility="${compatibility}"
+          selectable="anypoint-icon-item"
+          class="list"
+          data-type="${MenuTypes.apiDocs}"
+          @selected="${this[contextMenuSelectedHandler]}"
+        >
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="refresh"
+            title="Refresh the list"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="refresh"></arc-icon>
+            Refresh
+          </anypoint-icon-item>
+          ${popup ? html`<anypoint-icon-item
+            class="context-menu-item"
+            data-action="popup"
+            title="${popupButtonTitles[MenuTypes.apiDocs]}"
+            aria-label="${popupAriaLabels[MenuTypes.apiDocs]}"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="openInNew"></arc-icon>
+            Detach
+          </anypoint-icon-item>` : ''}
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="open-panel"
+            title="Open the APIs list screen"
+            tabindex="-1"
+          >
+            All APIs
+          </anypoint-icon-item>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="explore"
+            title="Export APIs in Anypoint Exchange catalogue"
+            tabindex="-1"
+          >
+            Explore
+          </anypoint-icon-item>
+          <div class="divider"></div>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="help"
+            title="Opens help for REST APIs"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="helpOutline"></arc-icon>
+            Learn more
+          </anypoint-icon-item>
+        </anypoint-listbox>
+      </anypoint-menu-button>
     </div>
+    <rest-api-menu
+      .listType="${listType}"
+      ?compatibility="${compatibility}"
+      ?hidden=${!menuOpened}
+    ></rest-api-menu>
     `;
   }
 
+  [exportTemplate]() {
+    const { compatibility, exportOptionsOpened } = this;
+    return html`
+    <bottom-sheet
+      class="bottom-sheet-container"
+      .opened="${exportOptionsOpened}"
+      data-open-property="exportOptionsOpened"
+      @closed="${this[sheetClosedHandler]}"
+    >
+      <export-options
+        id="exportOptions"
+        ?compatibility="${compatibility}"
+        withEncrypt
+        file="arc-requests.json"
+        provider="file"
+        @accept="${this[acceptExportOptions]}"
+        @cancel="${this[cancelExportOptions]}"
+      ></export-options>
+    </bottom-sheet>`;
+  }
+
   /**
-   * @param {keyof MenuTypes} type The menu type
-   * @returns {TemplateResult|string} A template for the "popup menu" button
+   * @returns {TemplateResult|string} Template for the delete all confirmation
    */
-  [popupButtonTemplate](type) {
-    const { popup, compatibility } = this;
-    if (!popup) {
+  [deleteAllTemplate]() {
+    const { compatibility, deleteAllDialogOpened } = this;
+    if (!deleteAllDialogOpened) {
       return '';
     }
-    const label = popupAriaLabels[type];
-    const title = popupButtonTitles[type];
     return html`
-    <anypoint-icon-button
-      @click="${this[popupHandler]}"
-      data-action="popup-${type}"
-      data-type="${type}"
-      aria-label="${label}"
-      title="${title}"
-      ?compatibility="${compatibility}"
-    >
-      <arc-icon icon="openInNew"></arc-icon>
-    </anypoint-icon-button>`;
-  }
-
-  /**
-   * @param {keyof MenuTypes} type The menu type
-   * @param {boolean=} alignRight Whether to add `right-action` class
-   * @returns {TemplateResult} A template for the "search menu" button
-   */
-  [searchButtonTemplate](type, alignRight=false) {
-    const { compatibility } = this;
-    const classes = {
-      'right-action': alignRight,
-    };
-    return html`
-    <anypoint-icon-button
-      @click="${this[searchToggleHandler]}"
-      data-action="search-${type}"
-      data-type="${type}"
-      aria-label="Activate to search the menu"
-      title="Search the menu"
-      ?compatibility="${compatibility}"
-      class="${classMap(classes)}"
-    >
-      <arc-icon icon="search"></arc-icon>
-    </anypoint-icon-button>`;
-  }
-
-  /**
-   * @param {keyof MenuTypes} type The menu type
-   * @param {boolean=} alignRight Whether to add `right-action` class
-   * @returns {TemplateResult} A template for the "refresh menu" button
-   */
-  [refreshButtonTemplate](type, alignRight=false) {
-    const { compatibility } = this;
-    const classes = {
-      'right-action': alignRight,
-    };
-    return html`
-    <anypoint-icon-button
-      @click="${this[refreshHandler]}"
-      data-action="refresh-${type}"
-      data-type="${type}"
-      aria-label="Activate to refresh the menu"
-      title="Refresh the menu"
-      ?compatibility="${compatibility}"
-      class="${classMap(classes)}"
-    >
-      <arc-icon icon="refresh"></arc-icon>
-    </anypoint-icon-button>`;
-  }
-
-  render() {
-    return html`
-    <div class="menu">
-      <div class="tabs">
-        ${this[tabsTemplate]()}
+    <anypoint-dialog ?compatibility="${compatibility}" @closed="${this[deleteDialogCloseHandler]}" opened>
+      <h2>Confirm delete all</h2>
+      <p>This action cannot be undone. Are you sure you want to delete all data?</p>
+      <div class="buttons">
+        <anypoint-button data-dialog-dismiss>Cancel</anypoint-button>
+        <anypoint-button data-dialog-confirm>Confirm</anypoint-button>
       </div>
-      ${this[historyTemplate]()}
-      ${this[savedTemplate]()}
-      ${this[projectsTemplate]()}
-      ${this[apisTemplate]()}
-    </div>
+    </anypoint-dialog>
     `;
   }
 }

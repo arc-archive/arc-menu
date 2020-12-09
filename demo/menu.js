@@ -9,9 +9,11 @@ import '@advanced-rest-client/arc-models/request-model.js';
 import '@advanced-rest-client/arc-models/url-indexer.js';
 import '@advanced-rest-client/arc-models/project-model.js';
 import '@advanced-rest-client/arc-models/rest-api-model.js';
+import '@advanced-rest-client/arc-ie/arc-data-export.js';
 import { DataGenerator } from '@advanced-rest-client/arc-data-generator/arc-data-generator.js';
-import { ArcNavigationEventTypes, ImportEvents } from '@advanced-rest-client/arc-events';
+import { ArcNavigationEventTypes, ImportEvents, ArcNavigationEvents, DataExportEventTypes, GoogleDriveEventTypes } from '@advanced-rest-client/arc-events';
 import { ArcModelEvents } from '@advanced-rest-client/arc-models';
+import listenEncoding from './EncodingHelpers.js';
 import '../arc-menu.js';
 
 /** @typedef {import('@advanced-rest-client/arc-events').ARCProjectNavigationEvent} ARCProjectNavigationEvent */
@@ -19,6 +21,8 @@ import '../arc-menu.js';
 /** @typedef {import('@advanced-rest-client/arc-events').ARCRestApiNavigationEvent} ARCRestApiNavigationEvent */
 /** @typedef {import('@advanced-rest-client/arc-events').ARCNavigationEvent} ARCNavigationEvent */
 /** @typedef {import('@advanced-rest-client/arc-events').ARCMenuPopupEvent} ARCMenuPopupEvent */
+/** @typedef {import('@advanced-rest-client/arc-events').ArcExportFilesystemEvent} ArcExportFilesystemEvent */
+/** @typedef {import('@advanced-rest-client/arc-events').ARCHelpTopicEvent} ARCHelpTopicEvent */
 
 class ComponentDemoPage extends DemoPage {
   constructor() {
@@ -32,7 +36,8 @@ class ComponentDemoPage extends DemoPage {
       'hideApis',
       'allowPopup',
       'draggableEnabled',
-      'dropValue'
+      'dropValue',
+      'exportSheetOpened', 'exportFile', 'exportData',
     ]);
     this.componentName = 'arc-menu';
     this.demoStates = ['Material', 'Anypoint'];
@@ -42,8 +47,19 @@ class ComponentDemoPage extends DemoPage {
     this.hideSaved = false;
     this.hideProjects = false;
     this.hideApis = false;
-    this.allowPopup = false;
-    this.draggableEnabled = false;
+    this.allowPopup = true;
+    this.draggableEnabled = true;
+    this.renderViewControls = true;
+
+    const darkPreferences = window.matchMedia('(prefers-color-scheme: dark)');
+    if (darkPreferences.matches) {
+      this.darkThemeActive = true;
+    }
+    darkPreferences.addEventListener('change', (event) => {
+      this.darkThemeActive = event.matches;
+    });
+
+    this.openedPopups = [];
 
     this._listTypeHandler = this._listTypeHandler.bind(this);
     this.generateData = this.generateData.bind(this);
@@ -51,12 +67,24 @@ class ComponentDemoPage extends DemoPage {
     this._dragoverHandler = this._dragoverHandler.bind(this);
     this._dragleaveHandler = this._dragleaveHandler.bind(this);
     this._dropHandler = this._dropHandler.bind(this);
+    this._exportOpenedChanged = this._exportOpenedChanged.bind(this);
 
     window.addEventListener(ArcNavigationEventTypes.navigateProject, this.navigateProjectHandler.bind(this));
     window.addEventListener(ArcNavigationEventTypes.navigateRequest, this.navigateRequestHandler.bind(this));
     window.addEventListener(ArcNavigationEventTypes.navigateRestApi, this.navigateRestApiHandler.bind(this));
     window.addEventListener(ArcNavigationEventTypes.navigate, this.navigateHandler.bind(this));
     window.addEventListener(ArcNavigationEventTypes.popupMenu, this.popupHandler.bind(this));
+    window.addEventListener(ArcNavigationEventTypes.helpTopic, this.helpHandler.bind(this));
+    window.addEventListener(DataExportEventTypes.fileSave, this.fileSaveHandler.bind(this));
+    window.addEventListener(DataExportEventTypes.fileSave, this._fileExportHandler.bind(this));
+    window.addEventListener(GoogleDriveEventTypes.save, this._fileExportHandler.bind(this));
+
+    window.onbeforeunload = () => {
+      this.openedPopups.forEach((item) => item.ref.close());
+    };
+    window.addEventListener('message', this._messageHandler.bind(this));
+
+    listenEncoding();
   }
 
   /**
@@ -87,12 +115,128 @@ class ComponentDemoPage extends DemoPage {
     // @ts-ignore
     console.log('General navigation', 'Route', e.route, 'base', e.base, 'opts', e.opts);
   }  
+
+  /**
+   * @param {ARCHelpTopicEvent} e 
+   */
+  helpHandler(e) {
+    console.log('Help navigation', e.topic);
+  }  
   
   /**
    * @param {ARCMenuPopupEvent} e 
    */
   popupHandler(e) {
-    console.log('Popup navigation', 'menu', e.menu);
+    const url = `popup.html?type=${e.menu}`;
+    const ref = window.open(url, e.menu, 'width=360,height=700,resizable');
+    if (!ref) {
+      return;
+    }
+    this.openedPopups.push({
+      ref,
+      type: e.menu,
+    });
+    switch(e.menu) {
+      case 'history-menu': this.hideHistory = true; break;
+      case 'saved-menu': this.hideSaved = true; break;
+      case 'projects-menu': this.hideProjects = true; break;
+      case 'rest-api-menu': this.hideApis = true; break;
+      default:
+    }
+  }
+
+  /**
+   * 
+   * @param {MessageEvent} e 
+   */
+  _messageHandler(e) {
+    const {data} = e;
+    if (!data.payload) {
+      return;
+    }
+    if (data.payload === 'popup-closing') {
+      this.popupClosed(data.type);
+    } else if (data.payload === 'popup-navigate') {
+      this.proxyNavigation(data);
+    }
+  }
+
+  /**
+   * Called when the popup window closed.
+   * @param {string} type 
+   */
+  popupClosed(type) {
+    switch(type) {
+      case 'history-menu': this.hideHistory = false; break;
+      case 'saved-menu': this.hideSaved = false; break;
+      case 'projects-menu': this.hideProjects = false; break;
+      case 'rest-api-menu': this.hideApis = false; break;
+      default:
+    }
+    const index = this.openedPopups.find((item) => item.type === type);
+    if (index !== -1) {
+      this.openedPopups.splice(index, 1);
+    }
+  }
+
+  /**
+   * @param {any} data 
+   */
+  proxyNavigation(data) {
+    switch (data.type) {
+      case 'project': ArcNavigationEvents.navigateProject(document.body, data.id, data.action); break;
+      case 'request': ArcNavigationEvents.navigateRequest(document.body, data.requestId, data.requestType, data.action); break;
+      case 'api': ArcNavigationEvents.navigateRestApi(document.body, data.api, data.version, data.action); break;
+      case 'navigate': ArcNavigationEvents.navigate(document.body, data.route, data.opts); break;
+      default: 
+    }
+  }
+
+  /** 
+   * @param {ArcExportFilesystemEvent} e
+   */
+  fileSaveHandler(e) {
+    const { data, providerOptions  } = e;
+    const a = document.createElement('a');
+    const blob = new Blob([data], { type: providerOptions.contentType });
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = providerOptions.file;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);  
+    }, 0);
+  }
+
+  /**
+   * @param {ArcExportFilesystemEvent} e
+   */
+  _fileExportHandler(e) {
+    const { providerOptions, data } = e;
+    const { file } = providerOptions;
+    
+    setTimeout(() => {
+      try {
+        this.exportData = JSON.stringify(JSON.parse(data), null, 2);
+      } catch (_) {
+        this.exportData = data;
+      }
+      this.exportFile = file;
+      this.exportSheetOpened = true;
+    });
+    e.preventDefault();
+    e.detail.result = Promise.resolve({
+      fileId: file,
+      success: true,
+      interrupted: false,
+      parentId: null,
+    });
+  }
+
+  _exportOpenedChanged() {
+    this.exportSheetOpened = false;
   }
 
   _listTypeHandler(e) {
@@ -118,7 +262,7 @@ class ComponentDemoPage extends DemoPage {
       requestsSize: 500
     });
 
-    ImportEvents.dataimported(document.body);
+    ImportEvents.dataImported(document.body);
     const indexer = document.querySelector('url-indexer');
     indexer.reindex('saved');
     indexer.reindex('history');
@@ -229,6 +373,7 @@ ${JSON.stringify(project, null, 2)}` : ''}
             aria-describedby="mainOptionsLabel"
             slot="options"
             name="draggableEnabled"
+            .checked="${draggableEnabled}"
             @change="${this._toggleMainOption}"
           >
             Draggable
@@ -237,6 +382,7 @@ ${JSON.stringify(project, null, 2)}` : ''}
             aria-describedby="mainOptionsLabel"
             slot="options"
             name="hideHistory"
+            .checked="${hideHistory}"
             @change="${this._toggleMainOption}"
           >
             Hide history
@@ -245,6 +391,7 @@ ${JSON.stringify(project, null, 2)}` : ''}
             aria-describedby="mainOptionsLabel"
             slot="options"
             name="hideSaved"
+            .checked="${hideSaved}"
             @change="${this._toggleMainOption}"
           >
             Hide saved
@@ -253,6 +400,7 @@ ${JSON.stringify(project, null, 2)}` : ''}
             aria-describedby="mainOptionsLabel"
             slot="options"
             name="hideProjects"
+            .checked="${hideProjects}"
             @change="${this._toggleMainOption}"
           >
             Hide projects
@@ -261,6 +409,7 @@ ${JSON.stringify(project, null, 2)}` : ''}
             aria-describedby="mainOptionsLabel"
             slot="options"
             name="hideApis"
+            .checked="${hideApis}"
             @change="${this._toggleMainOption}"
           >
             Hide APIs
@@ -269,6 +418,7 @@ ${JSON.stringify(project, null, 2)}` : ''}
             aria-describedby="mainOptionsLabel"
             slot="options"
             name="allowPopup"
+            .checked="${allowPopup}"
             @change="${this._toggleMainOption}"
           >
             Allow popup
@@ -360,17 +510,33 @@ ${JSON.stringify(project, null, 2)}` : ''}
     `;
   }
 
+  exportTemplate() {
+    const { exportSheetOpened, exportFile, exportData } = this;
+    return html`
+    <bottom-sheet
+      .opened="${exportSheetOpened}"
+      @closed="${this._exportOpenedChanged}">
+      <h3>Export demo</h3>
+      <p>This is a preview of the file. Normally export module would save this data to file / Drive.</p>
+      <p>File: ${exportFile}</p>
+      <pre>${exportData}</pre>
+    </bottom-sheet>
+    `;
+  }
+
   contentTemplate() {
     return html`
     <request-model></request-model>
     <url-indexer></url-indexer>
     <project-model></project-model>
     <rest-api-model></rest-api-model>
+    <arc-data-export appVersion="demo-page"></arc-data-export>
     <h2>ARC menu element</h2>
     ${this._demoTemplate()}
     ${this._controlsTemplate()}
     ${this._introductionTemplate()}
     ${this._usageTemplate()}
+    ${this.exportTemplate()}
     `;
   }
 }

@@ -663,7 +663,9 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
       </anypoint-icon-button>
       <anypoint-listbox
         slot="dropdown-content"
-        ?compatibility="${compatibility}">
+        ?compatibility="${compatibility}"
+        class="dropdown-list"
+      >
         <anypoint-item
           data-index="${index}"
           class="menu-item"

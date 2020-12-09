@@ -9,16 +9,97 @@ export default css`
 
 .menu {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: inherit;
   overflow: hidden;
+}
+
+.rail {
+  width: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+  padding: 12px 0;
+}
+
+.menu-item {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px var(--arc-rail-menu-icon-color, var(--accent-color)) solid;
+  margin-bottom: 20px;
+}
+
+.menu-item arc-icon {
+  color: var(--arc-rail-menu-icon-color, var(--accent-color));
+}
+
+.menu-item.selected {
+  background-color: var(--arc-rail-menu-icon-color, var(--accent-color));
+}
+
+.menu-item.selected arc-icon {
+  color: var(--arc-rail-menu-icon-selected-color, #fff);
 }
 
 .menu-content {
   display: flex;
   flex: 1;
   flex-direction: column;
+  height: inherit;
   overflow: hidden;
+}
+
+.menu > .content {
+  border-left: 1px var(--arc-menu-content-border-color, #e5e5e5) solid;
+  border-right: 1px var(--arc-menu-content-border-color, #e5e5e5) solid;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.menu-title {
+  background-color: var(--arc-menu-title-background-color);
+  color: var(--arc-menu-title-color);
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-title-label {
+  font-size: 20px;
+  margin-left: 24px;
+}
+
+.list-drop-icon {
+  color: var(--arc-menu-title-color);
+}
+
+.menu-title .list-options {
+  margin-left: auto;
+  color: initial;
+  font-size: initial;
+}
+
+.list {
+  padding: 4px 0;
+}
+
+.context-menu-item {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--menu-item-divider-color, #e5e5e5);
+  margin: 8px 0;
+}
+
+.list-options {
+  --anypoint-menu-button-border-radius: 12px;
 }
 
 history-menu,
@@ -26,7 +107,7 @@ saved-menu,
 rest-api-menu,
 projects-menu {
   overflow: auto;
-  display: block;
+  flex-direction: column;
 }
 
 .menu-actions {
@@ -78,5 +159,12 @@ anypoint-tab {
 .list-search {
   margin: 0;
   width: 100%;
+}
+
+.bottom-sheet-container  {
+  width: var(--bottom-sheet-width, 100%);
+  max-width: var(--bottom-sheet-max-width, 700px);
+  right: var(--cookie-manager-bottom-sheet-right, 40px);
+  left: var(--cookie-manager-bottom-sheet-left, auto);
 }
 `;
