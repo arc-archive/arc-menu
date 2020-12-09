@@ -271,3 +271,23 @@
 * upgrading all components to the new system (#8) [6a6f2a2](https://github.com/advanced-rest-client/arc-menu/commit/6a6f2a26b49c950e1477608fc03bf27c3e42ea6b) by Paweł Psztyć
 
 
+<a name="4.0.2"></a>
+## [4.0.2](https://github.com/advanced-rest-client/arc-menu/compare/4.0.0...4.0.2) (2020-12-09)
+
+### Update
+
+* [ci skip] automated merge master->stage. syncing main branches [badccdb](https://github.com/advanced-rest-client/arc-menu/commit/badccdb81abf99f9cd01afb6537ba38168f50ec0) by Ci agent
+* upgrading events, models, and types [ec5f49c](https://github.com/advanced-rest-client/arc-menu/commit/ec5f49ce44fe364b798c42c2c9b65aa0c2e559c6) by Pawel
+* [ci skip] automated merge master->stage. syncing main branches [c0a872f](https://github.com/advanced-rest-client/arc-menu/commit/c0a872fba3b96a8db0c4eb0e39648e841c02b7d6) by Ci agent
+
+
+### Documentation
+
+* updating build badge [d240a24](https://github.com/advanced-rest-client/arc-menu/commit/d240a249c835f48d71937766cae27ccc77047903) by Pawel Psztyc
+
+
+### Testing
+
+* moving to the new test framework [4ad93cd](https://github.com/advanced-rest-client/arc-menu/commit/4ad93cdc845d25505c5e5a64303da43c728a8bb6) by Pawel Psztyc
+
+
