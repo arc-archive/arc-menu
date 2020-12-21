@@ -22,6 +22,13 @@ describe('ArcMenuElement', () => {
   /**
    * @returns {Promise<ArcMenuElement>}
    */
+  async function basicFixture() {
+    return fixture(`<arc-menu></arc-menu>`);
+  }
+
+  /**
+   * @returns {Promise<ArcMenuElement>}
+   */
   async function historyFixture() {
     return fixture(`<arc-menu history></arc-menu>`);
   }
@@ -730,6 +737,65 @@ describe('ArcMenuElement', () => {
       const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.rail .menu-item'));
       node.click();
       assert.isTrue(spy.called);
+    });
+  });
+
+  describe('rail selection', () => {
+    let element = /** @type ArcMenuElement */ (null);
+    beforeEach(async () => {
+      element = await historyFixture();
+    });
+
+    it('has selected history by default', () => {
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.history}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected saved rails', async () => {
+      element.selected = 1;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.saved}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected projects rails', async () => {
+      element.selected = 2;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.projects}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected apiDocs rails', async () => {
+      element.selected = 3;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.apiDocs}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+  });
+
+  describe('rail selection without history', () => {
+    let element = /** @type ArcMenuElement */ (null);
+    beforeEach(async () => {
+      element = await basicFixture();
+    });
+
+    it('has selected saved by default', async () => {
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.saved}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected projects rails', async () => {
+      element.selected = 1;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.projects}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected apiDocs rails', async () => {
+      element.selected = 2;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.apiDocs}"]`));
+      assert.isTrue(node.classList.contains('selected'));
     });
   });
 });

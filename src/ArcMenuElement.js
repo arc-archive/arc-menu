@@ -653,6 +653,9 @@ export class ArcMenuElement extends LitElement {
       case MenuTypes.apiDocs: selected = 3; break;
       default:
     }
+    if (!this.history) {
+      selected -= 1;
+    }
     if (this.selected === selected) {
       this.minimized = !this.minimized;
       this[notifyMinimized]();
@@ -800,7 +803,11 @@ export class ArcMenuElement extends LitElement {
    * @returns {TemplateResult} The template for navigation rail
    */
   [railTemplate]() {
-    const { compatibility, selected, history, hideHistory, hideSaved, hideProjects, hideApis } = this;
+    const { compatibility, history, hideHistory, hideSaved, hideProjects, hideApis } = this;
+    let { selected } = this;
+    if (!history) {
+      selected += 1;
+    }
     
     return html`
     <div 

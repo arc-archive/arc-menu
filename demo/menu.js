@@ -41,7 +41,7 @@ class ComponentDemoPage extends DemoPage {
     ]);
     this.componentName = 'arc-menu';
     this.demoStates = ['Material', 'Anypoint'];
-    this.historyEnabled = true;
+    this.historyEnabled = false;
     this.compatibility = false;
     this.hideHistory = false;
     this.hideSaved = false;
