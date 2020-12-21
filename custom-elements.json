@@ -12,7 +12,7 @@
         },
         {
           "name": "listType",
-          "description": "Changes information density of list items.\r\nBy default it uses material's list item with two lines (72px height)\r\nPossible values are:\r\n\r\n- `default` or empty - regular list view\r\n- `comfortable` - enables MD single line list item vie (52px height)\r\n- `compact` - enables list that has 40px height (touch recommended)",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
           "type": "string"
         },
         {
@@ -22,7 +22,7 @@
         },
         {
           "name": "history",
-          "description": "If set the history menu is rendered. This comes from the application\r\nsettings and is different from `noHistory` which is intended to\r\ntemporarily remove the history from the view (for menu popup option)",
+          "description": "If set the history menu is rendered. This comes from the application\nsettings and is different from `noHistory` which is intended to\ntemporarily remove the history from the view (for menu popup option)",
           "type": "boolean"
         },
         {
@@ -52,13 +52,18 @@
         },
         {
           "name": "dataTransfer",
-          "description": "Adds draggable property to the request list item element.\r\nThe `dataTransfer` object has `arc/request-object` mime type with\r\nserialized JSON with request model.",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
           "type": "boolean"
         },
         {
           "name": "dragOpenTimeout",
-          "description": "A timeout after which the project item is opened when dragging a\r\nrequest over.",
+          "description": "A timeout after which the project item is opened when dragging a\nrequest over.",
           "type": "number"
+        },
+        {
+          "name": "minimized",
+          "description": "When set only the navigation rail is rendered.",
+          "type": "boolean"
         }
       ],
       "properties": [
@@ -75,7 +80,7 @@
         {
           "name": "listType",
           "attribute": "listType",
-          "description": "Changes information density of list items.\r\nBy default it uses material's list item with two lines (72px height)\r\nPossible values are:\r\n\r\n- `default` or empty - regular list view\r\n- `comfortable` - enables MD single line list item vie (52px height)\r\n- `compact` - enables list that has 40px height (touch recommended)",
+          "description": "Changes information density of list items.\nBy default it uses material's list item with two lines (72px height)\nPossible values are:\n\n- `default` or empty - regular list view\n- `comfortable` - enables MD single line list item vie (52px height)\n- `compact` - enables list that has 40px height (touch recommended)",
           "type": "string"
         },
         {
@@ -87,7 +92,7 @@
         {
           "name": "history",
           "attribute": "history",
-          "description": "If set the history menu is rendered. This comes from the application\r\nsettings and is different from `noHistory` which is intended to\r\ntemporarily remove the history from the view (for menu popup option)",
+          "description": "If set the history menu is rendered. This comes from the application\nsettings and is different from `noHistory` which is intended to\ntemporarily remove the history from the view (for menu popup option)",
           "type": "boolean"
         },
         {
@@ -123,14 +128,36 @@
         {
           "name": "dataTransfer",
           "attribute": "dataTransfer",
-          "description": "Adds draggable property to the request list item element.\r\nThe `dataTransfer` object has `arc/request-object` mime type with\r\nserialized JSON with request model.",
+          "description": "Adds draggable property to the request list item element.\nThe `dataTransfer` object has `arc/request-object` mime type with\nserialized JSON with request model.",
           "type": "boolean"
         },
         {
           "name": "dragOpenTimeout",
           "attribute": "dragOpenTimeout",
-          "description": "A timeout after which the project item is opened when dragging a\r\nrequest over.",
+          "description": "A timeout after which the project item is opened when dragging a\nrequest over.",
           "type": "number"
+        },
+        {
+          "name": "exportOptionsOpened",
+          "description": "Indicates that the export options panel is currently rendered.",
+          "type": "boolean"
+        },
+        {
+          "name": "deleteAllDialogOpened",
+          "description": "Indicates that the delete all data dialog is currently rendered.",
+          "type": "boolean"
+        },
+        {
+          "name": "minimized",
+          "attribute": "minimized",
+          "description": "When set only the navigation rail is rendered.",
+          "type": "boolean"
+        }
+      ],
+      "events": [
+        {
+          "name": "minimized",
+          "description": "When the `minimized` property change through internal interaction"
         }
       ]
     },
@@ -302,6 +329,19 @@
           "description": "True when the element is querying the database for the data.",
           "type": "boolean"
         }
+      ],
+      "events": [
+        {
+          "name": "details",
+          "description": "When the request details were requested"
+        },
+        {
+          "name": "select",
+          "description": "When selection change"
+        },
+        {
+          "name": "queryingchange"
+        }
       ]
     },
     {
@@ -311,7 +351,7 @@
       "attributes": [
         {
           "name": "dragOpenTimeout",
-          "description": "A timeout after which the project item is opened when dragging a\r\nrequest over.",
+          "description": "A timeout after which the project item is opened when dragging a\nrequest over.",
           "type": "number",
           "default": "\"700\""
         },
@@ -384,7 +424,7 @@
         {
           "name": "dragOpenTimeout",
           "attribute": "dragOpenTimeout",
-          "description": "A timeout after which the project item is opened when dragging a\r\nrequest over.",
+          "description": "A timeout after which the project item is opened when dragging a\nrequest over.",
           "type": "number",
           "default": "\"700\""
         },
@@ -510,6 +550,19 @@
           "description": "A list of available projects.",
           "type": "ARCProject[] | undefined"
         }
+      ],
+      "events": [
+        {
+          "name": "details",
+          "description": "When the request details were requested"
+        },
+        {
+          "name": "select",
+          "description": "When selection change"
+        },
+        {
+          "name": "queryingchange"
+        }
       ]
     },
     {
@@ -602,6 +655,11 @@
           "name": "querying",
           "description": "True when the element is querying the database for the data.",
           "type": "boolean"
+        }
+      ],
+      "events": [
+        {
+          "name": "queryingchange"
         }
       ]
     },
@@ -776,6 +834,19 @@
           "name": "querying",
           "description": "True when the element is querying the database for the data.",
           "type": "boolean"
+        }
+      ],
+      "events": [
+        {
+          "name": "details",
+          "description": "When the request details were requested"
+        },
+        {
+          "name": "select",
+          "description": "When selection change"
+        },
+        {
+          "name": "queryingchange"
         }
       ]
     }
