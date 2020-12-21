@@ -56,6 +56,7 @@ export declare const deleteAllTemplate: unique symbol;
 export declare const deleteDialogCloseHandler: unique symbol;
 export declare const deleteAllHandler: unique symbol;
 export declare const deleteTypeValue: unique symbol;
+export declare const notifyMinimized: unique symbol;
 
 /**
  * Finds anypoint-tab element in event path.
@@ -77,6 +78,9 @@ export declare const MenuTypes: MenuTypes;
 export declare const popupAriaLabels: MenuTypes;
 export declare const popupButtonTitles: MenuTypes;
 
+/**
+ * @fires minimized When the `minimized` property change through internal interaction
+ */
 export declare class ArcMenuElement extends LitElement {
   static readonly styles: CSSResult;
 
@@ -155,6 +159,11 @@ export declare class ArcMenuElement extends LitElement {
    * Indicates that the delete all data dialog is currently rendered.
    */
   deleteAllDialogOpened: boolean;
+  /**
+   * When set only the navigation rail is rendered.
+   * @attribute
+   */
+  minimized: boolean;
 
   /**
    * The value of selected item, accounting for history item that toggles
@@ -293,6 +302,8 @@ export declare class ArcMenuElement extends LitElement {
    * A handler for the click on the rail icon button.
    */
   [railClickHandler](e: PointerEvent): void;
+
+  [notifyMinimized](): void;
 
   /**
    * Handler for `accept` event dispatched by export options element.

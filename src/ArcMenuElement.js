@@ -82,6 +82,7 @@ export const deleteAllTemplate = Symbol('deleteAllTemplate');
 export const deleteDialogCloseHandler = Symbol('deleteDialogCloseHandler');
 export const deleteAllHandler = Symbol('deleteAllHandler');
 export const deleteTypeValue = Symbol('deleteTypeValue');
+export const notifyMinimized = Symbol('notifyMinimized');
 
 const telemetryCategory = 'ARC menu';
 
@@ -196,6 +197,10 @@ export class ArcMenuElement extends LitElement {
        * Indicates that the delete all data dialog is currently rendered.
        */
       deleteAllDialogOpened: { type: Boolean },
+      /**
+       * When set only the navigation rail is rendered.
+       */
+      minimized: { type: Boolean },
     };
   }
 
@@ -295,6 +300,7 @@ export class ArcMenuElement extends LitElement {
     this.hideApis = false;
     this.dataTransfer = false;
     this.deleteAllDialogOpened = false;
+    this.minimized = false;
     this.listType = undefined;
     /**
      * Holds a list of once opened menus.
@@ -647,7 +653,20 @@ export class ArcMenuElement extends LitElement {
       case MenuTypes.apiDocs: selected = 3; break;
       default:
     }
+    if (this.selected === selected) {
+      this.minimized = !this.minimized;
+      this[notifyMinimized]();
+      return;
+    }
     this.selected = selected;
+    if (this.minimized) {
+      this.minimized = false;
+      this[notifyMinimized]();
+    }
+  }
+
+  [notifyMinimized]() {
+    this.dispatchEvent(new CustomEvent('minimized'));
   }
 
   /**
@@ -841,7 +860,7 @@ export class ArcMenuElement extends LitElement {
    */
   [panelsTemplate]() {
     return html`
-    <div class="content">
+    <div class="content" ?hidden="${this.minimized}">
     ${this[historyTemplate]()}
     ${this[savedTemplate]()}
     ${this[projectsTemplate]()}

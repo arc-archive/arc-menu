@@ -695,4 +695,41 @@ describe('ArcMenuElement', () => {
       assert.equal(element.selected, 0);
     });
   });
+
+  describe('#minimized', () => {
+    let element = /** @type ArcMenuElement */ (null);
+    beforeEach(async () => {
+      element = await historyFixture();
+    });
+
+    it('does not render the menu content when set', async () => {
+      element.minimized = true;
+      await element.updateComplete;
+      const content = element.shadowRoot.querySelector('.content');
+      assert.isTrue(content.hasAttribute('hidden'));
+    });
+
+    it('toggles minimized when clicking on a selected rail tile', () => {
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.rail .menu-item'));
+      node.click();
+      assert.isTrue(element.minimized);
+    });
+
+    it('maximizes the menu when selecting another rail item', async () => {
+      element.minimized = true;
+      await element.updateComplete;
+      const items = element.shadowRoot.querySelectorAll('.rail .menu-item');
+      const node = /** @type HTMLElement */ (items[1]);
+      node.click();
+      assert.isFalse(element.minimized);
+    });
+
+    it('dispatches the minimized event', () => {
+      const spy = sinon.spy();
+      element.addEventListener('minimized', spy);
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.rail .menu-item'));
+      node.click();
+      assert.isTrue(spy.called);
+    });
+  });
 });
