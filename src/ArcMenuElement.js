@@ -30,6 +30,7 @@ import '../saved-menu.js';
 import '../history-menu.js';
 import '../rest-api-menu.js';
 import '../projects-menu.js';
+import '../search-menu.js';
 import menuStyles from './styles/ArcMenu.js';
 
 /** @typedef {import('@anypoint-web-components/anypoint-listbox').AnypointListbox} AnypointListbox */
@@ -62,6 +63,7 @@ export const historyTemplate = Symbol('historyTemplate');
 export const savedTemplate = Symbol('savedTemplate');
 export const projectsTemplate = Symbol('projectsTemplate');
 export const apisTemplate = Symbol('apisTemplate');
+export const searchMenuTemplate = Symbol('searchMenuTemplate');
 export const openedValue = Symbol('openedValue');
 export const effectiveSelected = Symbol('effectiveSelected');
 export const railTemplate = Symbol('railTemplate');
@@ -83,6 +85,9 @@ export const deleteDialogCloseHandler = Symbol('deleteDialogCloseHandler');
 export const deleteAllHandler = Symbol('deleteAllHandler');
 export const deleteTypeValue = Symbol('deleteTypeValue');
 export const notifyMinimized = Symbol('notifyMinimized');
+export const hideSearchValue = Symbol('hideSearchValue');
+export const hideSearchChanged = Symbol('hideSearchChanged');
+export const runSearchAction = Symbol('runSearchAction');
 
 const telemetryCategory = 'ARC menu';
 
@@ -110,6 +115,7 @@ export const MenuTypes = {
   saved: 'saved',
   projects: 'projects',
   apiDocs: 'apiDocs',
+  search: 'search',
 };
 
 export const popupAriaLabels = {
@@ -117,12 +123,14 @@ export const popupAriaLabels = {
   [MenuTypes.saved]: 'Popup saved menu',
   [MenuTypes.projects]: 'Popup projects menu',
   [MenuTypes.apiDocs]: 'Popup API docs menu',
+  [MenuTypes.search]: 'Popup search menu',
 };
 export const popupButtonTitles = {
   [MenuTypes.history]: 'Opens history menu in a new window',
   [MenuTypes.saved]: 'Opens saved menu in a new window',
   [MenuTypes.projects]: 'Opens projects menu in a new window',
   [MenuTypes.apiDocs]: 'Opens API docs menu in a new window',
+  [MenuTypes.search]: 'Opens search menu in a new window',
 };
 
 
@@ -173,6 +181,10 @@ export class ArcMenuElement extends LitElement {
        * When set it hides APIs list from the view
        */
       hideApis: { type: Boolean, reflect: true },
+      /**
+       * When set it hides search from the view
+       */
+      hideSearch: { type: Boolean, reflect: true },
       /**
        * Renders popup menu buttons when this property is set.
        */
@@ -279,6 +291,21 @@ export class ArcMenuElement extends LitElement {
     this[hideApisChanged](value);
   }
 
+  get hideSearch() {
+    return this[hideSearchValue];
+  }
+
+  set hideSearch(value) {
+    const old = this[hideSearchValue];
+    /* istanbul ignore if */
+    if (old === value) {
+      return;
+    }
+    this[hideSearchValue] = value;
+    this.requestUpdate('hideSearch', old);
+    this[hideSearchChanged](value);
+  }
+
   /**
    * @return {number} The value of selected item, accounting for history item that toggles
    */
@@ -298,6 +325,7 @@ export class ArcMenuElement extends LitElement {
     this.hideSaved = false;
     this.hideProjects = false;
     this.hideApis = false;
+    this.hideSearch = false;
     this.dataTransfer = false;
     this.deleteAllDialogOpened = false;
     this.minimized = false;
@@ -312,7 +340,7 @@ export class ArcMenuElement extends LitElement {
      * 
      * @type {string[]}
      */
-    this[openedValue] = ['history'];
+    this[openedValue] = [MenuTypes.history];
   }
 
   /**
@@ -397,6 +425,16 @@ export class ArcMenuElement extends LitElement {
   }
 
   /**
+   * Requests to popup search menu.
+   */
+  popupSearch() {
+    if (!this.popup) {
+      return;
+    }
+    ArcNavigationEvents.popupMenu(this, 'search-menu');
+  }
+
+  /**
    * Selects first panel that is not hidden
    */
   async [selectFirstAvailable]() {
@@ -412,6 +450,8 @@ export class ArcMenuElement extends LitElement {
       value = 2 + padding;
     } else if (!this.hideApis) {
       value = 3 + padding;
+    } else if (!this.hideSearch) {
+      value = 4 + padding;
     }
     await this.updateComplete;
     this.selected = value;
@@ -448,7 +488,7 @@ export class ArcMenuElement extends LitElement {
   }
 
   /**
-   * Updates selection when saved panel is removed
+   * Updates selection when projects panel is removed
    * @param {Boolean} val
    */
   [hideProjectsChanged](val) {
@@ -458,12 +498,22 @@ export class ArcMenuElement extends LitElement {
   }
 
   /**
-   * Updates selection when saved panel is removed
+   * Updates selection when APIs panel is removed
    * @param {Boolean} val
    */
   [hideApisChanged](val) {
     if (val) {
       this[updateSelectionIfNeeded](3);
+    }
+  }
+
+  /**
+   * Updates selection when search panel is removed
+   * @param {Boolean} val
+   */
+  [hideSearchChanged](val) {
+    if (val) {
+      this[updateSelectionIfNeeded](4);
     }
   }
 
@@ -475,9 +525,10 @@ export class ArcMenuElement extends LitElement {
   [historyChanged](val, old) {
     if (!val && old !== undefined) {
       this[updateSelectionIfNeeded](0);
-    } else if (val && this.selected !== 0) {
-      this.selected = 0;
     }
+    /* else if (val && this.selected !== 0) {
+      this.selected = 0;
+    } */
   }
 
   /**
@@ -578,6 +629,7 @@ export class ArcMenuElement extends LitElement {
       case MenuTypes.saved: this[runSavedAction](action); break;
       case MenuTypes.projects: this[runProjectAction](action); break;
       case MenuTypes.apiDocs: this[runRestApiAction](action); break;
+      case MenuTypes.search: this[runSearchAction](action); break;
       default:
     }
   }
@@ -638,6 +690,17 @@ export class ArcMenuElement extends LitElement {
   }
 
   /**
+   * @param {string} action 
+   */
+  [runSearchAction](action) {
+    switch (action) {
+      case 'popup': this.popupSearch(); break;
+      case 'help': ArcNavigationEvents.helpTopic(this, 'search-docs'); break;
+      default:
+    }
+  }
+
+  /**
    * A handler for the click on the rail icon button.
    * @param {PointerEvent} e 
    */
@@ -650,6 +713,7 @@ export class ArcMenuElement extends LitElement {
       case MenuTypes.saved: selected = 1; break;
       case MenuTypes.projects: selected = 2; break;
       case MenuTypes.apiDocs: selected = 3; break;
+      case MenuTypes.search: selected = 4; break;
       default:
     }
     if (!this.history) {
@@ -661,6 +725,10 @@ export class ArcMenuElement extends LitElement {
       return;
     }
     this.selected = selected;
+    const allOpened = /** @type string[] */ (this[openedValue]);
+    if (!allOpened.includes(type)) {
+      allOpened.push(type);
+    }
     if (this.minimized) {
       this.minimized = false;
       this[notifyMinimized]();
@@ -802,7 +870,7 @@ export class ArcMenuElement extends LitElement {
    * @returns {TemplateResult} The template for navigation rail
    */
   [railTemplate]() {
-    const { compatibility, history, hideHistory, hideSaved, hideProjects, hideApis } = this;
+    const { compatibility, history, hideHistory, hideSaved, hideProjects, hideApis, hideSearch } = this;
     let { selected } = this;
     if (!history) {
       selected += 1;
@@ -851,11 +919,22 @@ export class ArcMenuElement extends LitElement {
         title="Select REST APIs"
         ?compatibility="${compatibility}"
         ?hidden="${hideApis}"
-        class=${classMap({'menu-item': true, selected: selected ===3})}
+        class=${classMap({'menu-item': true, selected: selected === 3})}
         data-type="${MenuTypes.apiDocs}"
         @click="${this[railClickHandler]}"
       >
         <arc-icon icon="cloudOutline"></arc-icon>
+      </anypoint-icon-button>
+
+      <anypoint-icon-button
+        title="Select search"
+        ?compatibility="${compatibility}"
+        ?hidden="${hideSearch}"
+        class=${classMap({'menu-item': true, selected: selected === 4})}
+        data-type="${MenuTypes.search}"
+        @click="${this[railClickHandler]}"
+      >
+        <arc-icon icon="search"></arc-icon>
       </anypoint-icon-button>
     </div>
     `;
@@ -871,6 +950,7 @@ export class ArcMenuElement extends LitElement {
     ${this[savedTemplate]()}
     ${this[projectsTemplate]()}
     ${this[apisTemplate]()}
+    ${this[searchMenuTemplate]()}
     </div>
     `;
   }
@@ -1263,6 +1343,77 @@ export class ArcMenuElement extends LitElement {
       ?compatibility="${compatibility}"
       ?hidden=${!menuOpened}
     ></rest-api-menu>
+    `;
+  }
+
+  [searchMenuTemplate]() {
+    if (this.hideSearch) {
+      return '';
+    }
+    const allOpened = /** @type string[] */ (this[openedValue]);
+    const effective = this[effectiveSelected];
+    const wasOpened = allOpened.includes(MenuTypes.search);
+    const menuOpened = effective === 4;
+    if (!menuOpened && !wasOpened) {
+      return '';
+    }
+    const { listType, compatibility, popup, dataTransfer } = this;
+    return html`
+    <div class="menu-title" ?hidden=${!menuOpened}>
+      <span class="menu-title-label">Search</span>
+
+      <anypoint-menu-button
+        dynamicalign
+        closeOnActivate
+        class="list-options"
+        horizontalalign="right"
+        ?compatibility="${compatibility}"
+      >
+        <anypoint-icon-button
+          class="menu-icon"
+          aria-label="Activate to open context menu"
+          slot="dropdown-trigger"
+          ?compatibility="${compatibility}"
+        >
+          <arc-icon icon="moreVert" class="list-drop-icon"></arc-icon>
+        </anypoint-icon-button>
+        <anypoint-listbox
+          slot="dropdown-content"
+          ?compatibility="${compatibility}"
+          selectable="anypoint-icon-item"
+          class="list"
+          data-type="${MenuTypes.search}"
+          @selected="${this[contextMenuSelectedHandler]}"
+        >
+          ${popup ? html`<anypoint-icon-item
+            class="context-menu-item"
+            data-action="popup"
+            title="${popupButtonTitles[MenuTypes.search]}"
+            aria-label="${popupAriaLabels[MenuTypes.search]}"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="openInNew"></arc-icon>
+            Detach
+          </anypoint-icon-item>` : ''}
+          <div class="divider"></div>
+          <anypoint-icon-item
+            class="context-menu-item"
+            data-action="help"
+            title="Opens help for search"
+            tabindex="-1"
+          >
+            <arc-icon slot="item-icon" icon="helpOutline"></arc-icon>
+            Learn more
+          </anypoint-icon-item>
+        </anypoint-listbox>
+      </anypoint-menu-button>
+    </div>
+    <search-menu
+      .listType="${listType}"
+      ?compatibility="${compatibility}"
+      ?draggableEnabled="${dataTransfer}"
+      ?hidden=${!menuOpened}
+    ></search-menu>
     `;
   }
 

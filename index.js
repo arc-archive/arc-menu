@@ -3,3 +3,4 @@ export { HistoryMenuElement } from './src/HistoryMenuElement.js';
 export { SavedMenuElement } from './src/SavedMenuElement.js';
 export { ProjectsMenuElement } from './src/ProjectsMenuElement.js';
 export { RestApiMenuElement } from './src/RestApiMenuElement.js';
+export { SearchMenuElement } from './src/SearchMenuElement.js';
