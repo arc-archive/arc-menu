@@ -1346,6 +1346,9 @@ export class ArcMenuElement extends LitElement {
     `;
   }
 
+  /**
+   * @returns {TemplateResult|string} Template for the search menu
+   */
   [searchMenuTemplate]() {
     if (this.hideSearch) {
       return '';

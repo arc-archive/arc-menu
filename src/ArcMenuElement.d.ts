@@ -36,6 +36,7 @@ export declare const historyTemplate: unique symbol;
 export declare const savedTemplate: unique symbol;
 export declare const projectsTemplate: unique symbol;
 export declare const apisTemplate: unique symbol;
+export declare const searchMenuTemplate: unique symbol;
 export declare const openedValue: unique symbol;
 export declare const effectiveSelected: unique symbol;
 export declare const railTemplate: unique symbol;
@@ -57,6 +58,9 @@ export declare const deleteDialogCloseHandler: unique symbol;
 export declare const deleteAllHandler: unique symbol;
 export declare const deleteTypeValue: unique symbol;
 export declare const notifyMinimized: unique symbol;
+export declare const hideSearchValue: unique symbol;
+export declare const hideSearchChanged: unique symbol;
+export declare const runSearchAction: unique symbol;
 
 /**
  * Finds anypoint-tab element in event path.
@@ -69,6 +73,7 @@ declare interface MenuTypes {
   saved: string;
   projects: string;
   apiDocs: string;
+  search: string;
 }
 
 /**
@@ -132,6 +137,12 @@ export declare class ArcMenuElement extends LitElement {
    * @attribute
    */
   hideApis: boolean;
+  /**
+   * When set it hides search from the view
+   * @attribute
+   */
+  hideSearch: boolean;
+  [hideSearchValue]: boolean;
   /**
    * Renders popup menu buttons when this property is set.
    * @attribute
@@ -225,6 +236,11 @@ export declare class ArcMenuElement extends LitElement {
   popupApiDocs(): void;
 
   /**
+   * Requests to popup search menu.
+   */
+  popupSearch(): void;
+
+  /**
    * Selects first panel that is not hidden
    */
   [selectFirstAvailable](): Promise<void>;
@@ -257,6 +273,11 @@ export declare class ArcMenuElement extends LitElement {
    * 
    */
   [hideApisChanged](val: boolean): void;
+
+  /**
+   * Updates selection when search panel is removed
+   */
+  [hideSearchChanged](val: boolean): void;
 
   /**
    * Updates selection when history is disabled/enabled
@@ -371,6 +392,11 @@ export declare class ArcMenuElement extends LitElement {
    * @returns Template for the REST APIs menu
    */
   [apisTemplate](): TemplateResult | string;
+  
+  /**
+   * @returns Template for the search menu
+   */
+  [searchMenuTemplate](): TemplateResult | string;
 
   [exportTemplate](): TemplateResult;
 
