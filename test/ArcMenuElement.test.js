@@ -237,17 +237,6 @@ describe('ArcMenuElement', () => {
       assert.equal(spy.args[0][0].route, 'saved');
     });
 
-    it('open APIs button dispatches the event', async () => {
-      element.selected = 3;
-      await nextFrame();
-      const spy = sinon.spy();
-      element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.list[data-type="apiDocs"] [data-action="open-panel"]'));
-      node.click();
-      assert.isTrue(spy.called);
-      assert.equal(spy.args[0][0].route, 'rest-projects');
-    });
-
     it('dispatches the event when explore button is clicked', async () => {
       element.selected = 3;
       await nextFrame();

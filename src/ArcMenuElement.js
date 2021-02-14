@@ -631,7 +631,6 @@ export class ArcMenuElement extends LitElement {
     switch (action) {
       case 'refresh': this.refreshApiDocs(); break;
       case 'popup': this.popupApiDocs(); break;
-      case 'open-panel': ArcNavigationEvents.navigate(this, 'rest-projects'); break;
       case 'explore': ArcNavigationEvents.navigate(this, 'exchange-search'); break;
       case 'help': ArcNavigationEvents.helpTopic(this, 'rest-api-docs'); break;
       default:
@@ -1238,14 +1237,6 @@ export class ArcMenuElement extends LitElement {
             <arc-icon slot="item-icon" icon="openInNew"></arc-icon>
             Detach
           </anypoint-icon-item>` : ''}
-          <anypoint-icon-item
-            class="context-menu-item"
-            data-action="open-panel"
-            title="Open the APIs list screen"
-            tabindex="-1"
-          >
-            All APIs
-          </anypoint-icon-item>
           <anypoint-icon-item
             class="context-menu-item"
             data-action="explore"
