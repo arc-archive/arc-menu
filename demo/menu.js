@@ -34,6 +34,7 @@ class ComponentDemoPage extends DemoPage {
       'hideSaved',
       'hideProjects',
       'hideApis',
+      'hideSearch',
       'allowPopup',
       'draggableEnabled',
       'dropValue',
@@ -47,6 +48,7 @@ class ComponentDemoPage extends DemoPage {
     this.hideSaved = false;
     this.hideProjects = false;
     this.hideApis = false;
+    this.hideSearch = false;
     this.allowPopup = true;
     this.draggableEnabled = true;
     this.renderViewControls = true;
@@ -141,6 +143,7 @@ class ComponentDemoPage extends DemoPage {
       case 'saved-menu': this.hideSaved = true; break;
       case 'projects-menu': this.hideProjects = true; break;
       case 'rest-api-menu': this.hideApis = true; break;
+      case 'search-menu': this.hideSearch = true; break;
       default:
     }
   }
@@ -171,6 +174,7 @@ class ComponentDemoPage extends DemoPage {
       case 'saved-menu': this.hideSaved = false; break;
       case 'projects-menu': this.hideProjects = false; break;
       case 'rest-api-menu': this.hideApis = false; break;
+      case 'search-menu': this.hideSearch = false; break;
       default:
     }
     const index = this.openedPopups.find((item) => item.type === type);
@@ -330,6 +334,7 @@ ${JSON.stringify(project, null, 2)}` : ''}
       hideSaved,
       hideProjects,
       hideApis,
+      hideSearch,
       allowPopup,
       draggableEnabled,
     } = this;
@@ -354,6 +359,7 @@ ${JSON.stringify(project, null, 2)}` : ''}
             ?hideSaved="${hideSaved}"
             ?hideProjects="${hideProjects}"
             ?hideApis="${hideApis}"
+            ?hideSearch="${hideSearch}"
             ?popup="${allowPopup}"
             ?dataTransfer="${draggableEnabled}"
             slot="content"

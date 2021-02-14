@@ -105,9 +105,11 @@ export default css`
 history-menu,
 saved-menu,
 rest-api-menu,
-projects-menu {
+projects-menu,
+search-menu {
   overflow: auto;
   flex-direction: column;
+  flex: 1 1 0%;
 }
 
 .menu-actions {
