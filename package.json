@@ -1,7 +1,7 @@
 {
   "name": "@advanced-rest-client/arc-menu",
   "description": "Main navigation for Advanced REST Client",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "license": "Apache-2.0",
   "main": "index.js",
   "module": "index.js",
