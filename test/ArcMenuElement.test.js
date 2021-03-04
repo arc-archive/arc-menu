@@ -22,6 +22,13 @@ describe('ArcMenuElement', () => {
   /**
    * @returns {Promise<ArcMenuElement>}
    */
+  async function basicFixture() {
+    return fixture(`<arc-menu></arc-menu>`);
+  }
+
+  /**
+   * @returns {Promise<ArcMenuElement>}
+   */
   async function historyFixture() {
     return fixture(`<arc-menu history></arc-menu>`);
   }
@@ -228,17 +235,6 @@ describe('ArcMenuElement', () => {
       node.click();
       assert.isTrue(spy.called);
       assert.equal(spy.args[0][0].route, 'saved');
-    });
-
-    it('open APIs button dispatches the event', async () => {
-      element.selected = 3;
-      await nextFrame();
-      const spy = sinon.spy();
-      element.addEventListener(ArcNavigationEventTypes.navigate, spy);
-      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.list[data-type="apiDocs"] [data-action="open-panel"]'));
-      node.click();
-      assert.isTrue(spy.called);
-      assert.equal(spy.args[0][0].route, 'rest-projects');
     });
 
     it('dispatches the event when explore button is clicked', async () => {
@@ -460,12 +456,12 @@ describe('ArcMenuElement', () => {
       assert.equal(spy.args[0][0], 0);
     });
 
-    it('sets selection to 0 when re-enabling history', () => {
-      element.history = false;
-      element.selected = 1;
-      element[historyChanged](true, false);
-      assert.equal(element.selected, 0);
-    });
+    // it('sets selection to 0 when re-enabling history', () => {
+    //   element.history = false;
+    //   element.selected = 1;
+    //   element[historyChanged](true, false);
+    //   assert.equal(element.selected, 0);
+    // });
   });
 
   describe('findTab()', () => {
@@ -693,6 +689,119 @@ describe('ArcMenuElement', () => {
     it('ignores other types', () => {
       element[openMenuDragOver]();
       assert.equal(element.selected, 0);
+    });
+
+    it('dispatches the selected event', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('selected', spy);
+      element[dragTypeCallbackValue] = 'saved';
+      element[openMenuDragOver]();
+      assert.isTrue(spy.called);
+    });
+  });
+
+  describe('#minimized', () => {
+    let element = /** @type ArcMenuElement */ (null);
+    beforeEach(async () => {
+      element = await historyFixture();
+    });
+
+    it('does not render the menu content when set', async () => {
+      element.minimized = true;
+      await element.updateComplete;
+      const content = element.shadowRoot.querySelector('.content');
+      assert.isTrue(content.hasAttribute('hidden'));
+    });
+
+    it('toggles minimized when clicking on a selected rail tile', () => {
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.rail .menu-item'));
+      node.click();
+      assert.isTrue(element.minimized);
+    });
+
+    it('maximizes the menu when selecting another rail item', async () => {
+      element.minimized = true;
+      await element.updateComplete;
+      const items = element.shadowRoot.querySelectorAll('.rail .menu-item');
+      const node = /** @type HTMLElement */ (items[1]);
+      node.click();
+      assert.isFalse(element.minimized);
+    });
+
+    it('dispatches the minimized event', () => {
+      const spy = sinon.spy();
+      element.addEventListener('minimized', spy);
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector('.rail .menu-item'));
+      node.click();
+      assert.isTrue(spy.called);
+    });
+  });
+
+  describe('rail selection', () => {
+    let element = /** @type ArcMenuElement */ (null);
+    beforeEach(async () => {
+      element = await historyFixture();
+    });
+
+    it('has selected history by default', () => {
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.history}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected saved rails', async () => {
+      element.selected = 1;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.saved}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected projects rails', async () => {
+      element.selected = 2;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.projects}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected apiDocs rails', async () => {
+      element.selected = 3;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.apiDocs}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('dispatches the selected event', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('selected', spy);
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.saved}"]`));
+      node.click();
+      await nextFrame();
+      assert.isTrue(spy.called);
+    });
+  });
+
+  describe('rail selection without history', () => {
+    let element = /** @type ArcMenuElement */ (null);
+    beforeEach(async () => {
+      element = await basicFixture();
+    });
+
+    it('has selected saved by default', async () => {
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.saved}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected projects rails', async () => {
+      element.selected = 1;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.projects}"]`));
+      assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('has selected apiDocs rails', async () => {
+      element.selected = 2;
+      await nextFrame();
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.apiDocs}"]`));
+      assert.isTrue(node.classList.contains('selected'));
     });
   });
 });

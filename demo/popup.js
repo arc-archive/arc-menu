@@ -7,6 +7,7 @@ import '../saved-menu.js';
 import '../history-menu.js';
 import '../rest-api-menu.js';
 import '../projects-menu.js';
+import '../search-menu.js';
 
 /** @typedef {import('@advanced-rest-client/arc-events').ARCProjectNavigationEvent} ARCProjectNavigationEvent */
 /** @typedef {import('@advanced-rest-client/arc-events').ARCRequestNavigationEvent} ARCRequestNavigationEvent */
@@ -17,7 +18,7 @@ class MenuPopup {
   initialize() {
     const params = new URLSearchParams(window.location.search);
     const type = params.get('type');
-    const allowed = ['history-menu', 'saved-menu', 'projects-menu', 'rest-api-menu'];
+    const allowed = ['history-menu', 'saved-menu', 'projects-menu', 'rest-api-menu', 'search-menu'];
     if (!allowed.includes(type)) {
       this.renderUnknown(type);
       return;

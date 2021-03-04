@@ -36,6 +36,7 @@ export declare const historyTemplate: unique symbol;
 export declare const savedTemplate: unique symbol;
 export declare const projectsTemplate: unique symbol;
 export declare const apisTemplate: unique symbol;
+export declare const searchMenuTemplate: unique symbol;
 export declare const openedValue: unique symbol;
 export declare const effectiveSelected: unique symbol;
 export declare const railTemplate: unique symbol;
@@ -56,6 +57,11 @@ export declare const deleteAllTemplate: unique symbol;
 export declare const deleteDialogCloseHandler: unique symbol;
 export declare const deleteAllHandler: unique symbol;
 export declare const deleteTypeValue: unique symbol;
+export declare const notifyMinimized: unique symbol;
+export declare const hideSearchValue: unique symbol;
+export declare const hideSearchChanged: unique symbol;
+export declare const runSearchAction: unique symbol;
+export declare const notifySelection: unique symbol;
 
 /**
  * Finds anypoint-tab element in event path.
@@ -68,6 +74,7 @@ declare interface MenuTypes {
   saved: string;
   projects: string;
   apiDocs: string;
+  search: string;
 }
 
 /**
@@ -77,6 +84,10 @@ export declare const MenuTypes: MenuTypes;
 export declare const popupAriaLabels: MenuTypes;
 export declare const popupButtonTitles: MenuTypes;
 
+/**
+ * @fires minimized When the `minimized` property change through internal interaction
+ * @fires selected When the selection has been changed cause by the user interaction.
+ */
 export declare class ArcMenuElement extends LitElement {
   static readonly styles: CSSResult;
 
@@ -129,6 +140,12 @@ export declare class ArcMenuElement extends LitElement {
    */
   hideApis: boolean;
   /**
+   * When set it hides search from the view
+   * @attribute
+   */
+  hideSearch: boolean;
+  [hideSearchValue]: boolean;
+  /**
    * Renders popup menu buttons when this property is set.
    * @attribute
    */
@@ -155,6 +172,11 @@ export declare class ArcMenuElement extends LitElement {
    * Indicates that the delete all data dialog is currently rendered.
    */
   deleteAllDialogOpened: boolean;
+  /**
+   * When set only the navigation rail is rendered.
+   * @attribute
+   */
+  minimized: boolean;
 
   /**
    * The value of selected item, accounting for history item that toggles
@@ -216,6 +238,11 @@ export declare class ArcMenuElement extends LitElement {
   popupApiDocs(): void;
 
   /**
+   * Requests to popup search menu.
+   */
+  popupSearch(): void;
+
+  /**
    * Selects first panel that is not hidden
    */
   [selectFirstAvailable](): Promise<void>;
@@ -248,6 +275,11 @@ export declare class ArcMenuElement extends LitElement {
    * 
    */
   [hideApisChanged](val: boolean): void;
+
+  /**
+   * Updates selection when search panel is removed
+   */
+  [hideSearchChanged](val: boolean): void;
 
   /**
    * Updates selection when history is disabled/enabled
@@ -293,6 +325,10 @@ export declare class ArcMenuElement extends LitElement {
    * A handler for the click on the rail icon button.
    */
   [railClickHandler](e: PointerEvent): void;
+
+  [notifyMinimized](): void;
+  
+  [notifySelection](): void;
 
   /**
    * Handler for `accept` event dispatched by export options element.
@@ -360,6 +396,11 @@ export declare class ArcMenuElement extends LitElement {
    * @returns Template for the REST APIs menu
    */
   [apisTemplate](): TemplateResult | string;
+  
+  /**
+   * @returns Template for the search menu
+   */
+  [searchMenuTemplate](): TemplateResult | string;
 
   [exportTemplate](): TemplateResult;
 
