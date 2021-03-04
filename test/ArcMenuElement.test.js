@@ -690,6 +690,14 @@ describe('ArcMenuElement', () => {
       element[openMenuDragOver]();
       assert.equal(element.selected, 0);
     });
+
+    it('dispatches the selected event', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('selected', spy);
+      element[dragTypeCallbackValue] = 'saved';
+      element[openMenuDragOver]();
+      assert.isTrue(spy.called);
+    });
   });
 
   describe('#minimized', () => {
@@ -759,6 +767,15 @@ describe('ArcMenuElement', () => {
       await nextFrame();
       const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.apiDocs}"]`));
       assert.isTrue(node.classList.contains('selected'));
+    });
+
+    it('dispatches the selected event', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('selected', spy);
+      const node = /** @type HTMLElement */ (element.shadowRoot.querySelector(`.menu-item[data-type="${MenuTypes.saved}"]`));
+      node.click();
+      await nextFrame();
+      assert.isTrue(spy.called);
     });
   });
 

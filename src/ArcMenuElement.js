@@ -88,6 +88,7 @@ export const notifyMinimized = Symbol('notifyMinimized');
 export const hideSearchValue = Symbol('hideSearchValue');
 export const hideSearchChanged = Symbol('hideSearchChanged');
 export const runSearchAction = Symbol('runSearchAction');
+export const notifySelection = Symbol('notifySelection');
 
 const telemetryCategory = 'ARC menu';
 
@@ -454,7 +455,10 @@ export class ArcMenuElement extends LitElement {
       value = 4 + padding;
     }
     await this.updateComplete;
-    this.selected = value;
+    if (this.selected !== value) {
+      this.selected = value;
+      this[notifySelection]();
+    }
   }
 
   /**
@@ -528,6 +532,7 @@ export class ArcMenuElement extends LitElement {
     }
     /* else if (val && this.selected !== 0) {
       this.selected = 0;
+      this[notifySelection]();
     } */
   }
 
@@ -611,6 +616,7 @@ export class ArcMenuElement extends LitElement {
       return;
     }
     this.selected = selection;
+    this[notifySelection]();
   }
 
   /**
@@ -725,6 +731,7 @@ export class ArcMenuElement extends LitElement {
       return;
     }
     this.selected = selected;
+    this[notifySelection]();
     const allOpened = /** @type string[] */ (this[openedValue]);
     if (!allOpened.includes(type)) {
       allOpened.push(type);
@@ -737,6 +744,10 @@ export class ArcMenuElement extends LitElement {
 
   [notifyMinimized]() {
     this.dispatchEvent(new CustomEvent('minimized'));
+  }
+
+  [notifySelection]() {
+    this.dispatchEvent(new CustomEvent('selected'));
   }
 
   /**

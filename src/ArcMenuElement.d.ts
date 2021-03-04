@@ -61,6 +61,7 @@ export declare const notifyMinimized: unique symbol;
 export declare const hideSearchValue: unique symbol;
 export declare const hideSearchChanged: unique symbol;
 export declare const runSearchAction: unique symbol;
+export declare const notifySelection: unique symbol;
 
 /**
  * Finds anypoint-tab element in event path.
@@ -85,6 +86,7 @@ export declare const popupButtonTitles: MenuTypes;
 
 /**
  * @fires minimized When the `minimized` property change through internal interaction
+ * @fires selected When the selection has been changed cause by the user interaction.
  */
 export declare class ArcMenuElement extends LitElement {
   static readonly styles: CSSResult;
@@ -325,6 +327,8 @@ export declare class ArcMenuElement extends LitElement {
   [railClickHandler](e: PointerEvent): void;
 
   [notifyMinimized](): void;
+  
+  [notifySelection](): void;
 
   /**
    * Handler for `accept` event dispatched by export options element.
