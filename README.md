@@ -2,9 +2,7 @@
 
 [![Published on NPM](https://img.shields.io/npm/v/@advanced-rest-client/arc-menu.svg)](https://www.npmjs.com/package/@advanced-rest-client/arc-menu)
 
-![Build Status](https://github.com/advanced-rest-client/arc-menu/workflows/tests/badge.svg)
-
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/advanced-rest-client/arc-menu)
+[![Tests and publishing](https://github.com/advanced-rest-client/arc-menu/actions/workflows/deployment.yml/badge.svg)](https://github.com/advanced-rest-client/arc-menu/actions/workflows/deployment.yml)
 
 Advanced REST Client main navigation. This component contains all navigation elements for ARC.
 
@@ -33,7 +31,7 @@ class SampleElement extends LitElement {
 
   render() {
     return html`
-    <arc-menu draggableenabled></arc-menu>
+    <arc-menu draggableEnabled></arc-menu>
     `;
   }
 }
@@ -46,7 +44,7 @@ The menu items load more results (performs pagination) on list scroll. Because o
 
 ### Drag and drop
 
-API components related to a request object support drag and drop. Set `draggableenabled` property to enable the support.
+API components related to a request object support drag and drop. Set `draggableEnabled` property to enable the support.
 
 The `DataTransfer` property of the drag event contains `effectAllowed` set to `copy` for all by default and `copyMove` for saved requests when ctrl/meta key is pressed. Only targets that allow the same effect will accept the request/project item.
 
