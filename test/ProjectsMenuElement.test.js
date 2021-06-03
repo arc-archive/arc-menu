@@ -4,8 +4,7 @@ import sinon from 'sinon';
 import { DataGenerator } from '@advanced-rest-client/arc-data-generator';
 import '@advanced-rest-client/arc-models/request-model.js';
 import '@advanced-rest-client/arc-models/project-model.js';
-import { ArcModelEvents, ArcModelEventTypes } from '@advanced-rest-client/arc-models';
-import { ArcNavigationEventTypes, ProjectActions } from '@advanced-rest-client/arc-events';
+import { ArcModelEvents, ArcModelEventTypes, ArcNavigationEventTypes, ProjectActions } from '@advanced-rest-client/arc-events';
 import { internals } from '@advanced-rest-client/requests-list';
 import '../projects-menu.js';
 import {
@@ -607,6 +606,7 @@ describe('ProjectsMenuElement', () => {
       dt.setData('arc/request', rRec.id);
       dt.setData('arc/id', rRec.id);
       dt.setData('arc/type', 'saved');
+      // @ts-ignore
       dt.dropEffect = 'copyMove';
       const e = new DragEvent('drop', {
         dataTransfer: dt,

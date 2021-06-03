@@ -24,8 +24,7 @@ import '@anypoint-web-components/anypoint-item/anypoint-item.js';
 import '@anypoint-web-components/anypoint-item/anypoint-item-body.js';
 import '@advanced-rest-client/arc-icons/arc-icon.js'
 import '@api-components/http-method-label/http-method-label.js';
-import { ArcNavigationEvents, ProjectActions } from '@advanced-rest-client/arc-events';
-import { ArcModelEvents } from '@advanced-rest-client/arc-models';
+import { ArcModelEvents, ArcNavigationEvents } from '@advanced-rest-client/arc-events';
 import ProjectStyles from './styles/ProjectStyles.js'
 import { cancelEvent, computeProjectDropEffect } from './Utils.js';
 
@@ -137,7 +136,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
     }
     const project = this.projects[index];
     const { _id } = project;
-    ArcNavigationEvents.navigateProject(this, _id, ProjectActions.addWorkspace);
+    ArcNavigationEvents.navigateProject(this, _id, 'addWorkspace');
   }
 
   /**
@@ -152,7 +151,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
     }
     const project = this.projects[index];
     const { _id } = project;
-    ArcNavigationEvents.navigateProject(this, _id, ProjectActions.replaceWorkspace);
+    ArcNavigationEvents.navigateProject(this, _id, 'replaceWorkspace');
   }
 
   /**
@@ -781,7 +780,7 @@ export class ProjectsMenuElement extends ProjectsListConsumerMixin(SavedListMixi
         ?compatibility="${compatibility}"
       >
         <div class="name">${request.name}</div>
-        <div secondary>${request.url}</div>
+        <div data-secondary>${request.url}</div>
       </anypoint-item-body>
     </anypoint-icon-item>
     `;

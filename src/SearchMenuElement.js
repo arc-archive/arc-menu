@@ -15,8 +15,7 @@ the License.
 */
 import { LitElement, html } from 'lit-element';
 import { ListStyles, ListMixin } from '@advanced-rest-client/requests-list';
-import { ArcModelEvents } from '@advanced-rest-client/arc-models';
-import { ArcNavigationEvents } from '@advanced-rest-client/arc-events';
+import { ArcModelEvents, ArcNavigationEvents } from '@advanced-rest-client/arc-events';
 import '@anypoint-web-components/anypoint-input/anypoint-input.js';
 import '@anypoint-web-components/anypoint-item/anypoint-item.js';
 import '@anypoint-web-components/anypoint-item/anypoint-item-body.js';

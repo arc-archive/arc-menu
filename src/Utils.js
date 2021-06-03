@@ -10,7 +10,7 @@ export function cancelEvent(e) {
 /**
  * Computes value for `dropEffect` property of the `DragEvent`.
  * @param {DragEvent} e
- * @return {string} Either `copy` or `move`.
+ * @returns {"link" | "none" | "copy" | "move"} Either `copy` or `move`.
  */
 export function computeProjectDropEffect(e) {
   const dt = e.dataTransfer;
@@ -19,7 +19,7 @@ export function computeProjectDropEffect(e) {
     // this 2 operations are supported here
     allowed = 'copyMove';
   }
-  allowed = allowed.toLowerCase();
+  allowed = /** @type {"none" | "copy" | "copyLink" | "copyMove" | "link" | "linkMove" | "move" | "all" | "uninitialized"} */ (allowed.toLowerCase());
   const type = [...dt.types];
   const isHistory = type.includes('arc/history');
   if ((e.ctrlKey || e.metaKey) && !isHistory && allowed.indexOf('move') !== -1) {
