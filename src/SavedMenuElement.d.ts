@@ -16,6 +16,7 @@ import { SavedListMixin } from '@advanced-rest-client/requests-list';
 
 /**
  * Advanced REST Client's history menu element.
+ * @deprecated Use `@advanced-rest-client/app` instead.
  */
 export class SavedMenuElement {
   static readonly styles: CSSResult;

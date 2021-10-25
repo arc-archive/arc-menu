@@ -34,6 +34,7 @@ export declare const postProcessSavedItem: unique symbol;
 
 /**
  * Advanced REST Client's history menu element.
+ * @deprecated Use `@advanced-rest-client/app` instead.
  */
 export declare class SearchMenuElement extends ListMixin(LitElement) {
   static get styles(): CSSResult;

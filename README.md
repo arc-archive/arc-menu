@@ -1,4 +1,8 @@
-# arc-menu
+# Deprecated
+
+This component is deprecated. Use `@advanced-rest-client/app` instead.
+
+----
 
 [![Published on NPM](https://img.shields.io/npm/v/@advanced-rest-client/arc-menu.svg)](https://www.npmjs.com/package/@advanced-rest-client/arc-menu)
 

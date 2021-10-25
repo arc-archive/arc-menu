@@ -60,6 +60,7 @@ export declare interface ProjectsMenuElement extends ProjectsListConsumerMixin, 
 
 /**
  * A list of projects in the ARC main menu.
+ * @deprecated Use `@advanced-rest-client/app` instead.
  */
 export declare class ProjectsMenuElement {
   static readonly styles: CSSResult[];

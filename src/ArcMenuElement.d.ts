@@ -87,6 +87,7 @@ export declare const popupButtonTitles: MenuTypes;
 /**
  * @fires minimized When the `minimized` property change through internal interaction
  * @fires selected When the selection has been changed cause by the user interaction.
+ * @deprecated Use `@advanced-rest-client/app` instead.
  */
 export declare class ArcMenuElement extends LitElement {
   static readonly styles: CSSResult;

@@ -6,6 +6,7 @@ export declare interface RestApiMenuElement extends RestApiListMixin, LitElement
 
 /**
  * A list of REST APIs in the ARC main menu.
+ * @deprecated Use `@advanced-rest-client/app` instead.
  */
 export declare class RestApiMenuElement {
   static readonly styles: CSSResult[];
